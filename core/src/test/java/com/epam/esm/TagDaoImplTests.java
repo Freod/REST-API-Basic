@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TagDaoImplTests {
     @Test
     public void testDao() {
+        //TODO:TEST NAME SELECT SELECT OR SAVE
         DataSource h2DataSource = new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("database/init-ddl.sql")
