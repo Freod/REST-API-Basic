@@ -18,7 +18,6 @@ import java.util.Map;
 @Repository
 //@AllArgsConstructor
 public class TagDaoImpl implements TagDao {
-    private static final String INSERT_TAG_QUERY = "INSERT INTO tags (name) VALUES (?)";
     private static final String SELECT_TAG_BY_ID_QUERY = "SELECT * FROM tags WHERE id = ?;";
     private static final String SELECT_TAG_BY_NAME_QUERY = "SELECT * FROM tags WHERE name = ?;";
     private static final String SELECT_ALL_TAGS_QUERY = "SELECT * FROM tags;";

@@ -20,8 +20,12 @@ public class GiftCertificate {
     private LocalDateTime lastUpdateDate;
     private Set<Tag> tags = new HashSet<>();
 
-    public void addTag(Tag tag){
+    public void addTag(Tag tag) {
         this.tags.add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
     }
 
     public GiftCertificate(String name, String description, double price, int duration, Set<Tag> tags) {
@@ -50,5 +54,14 @@ public class GiftCertificate {
         this.description = description;
         this.price = price;
         this.duration = duration;
+    }
+
+    public GiftCertificate(BigInteger id, String name, String description, double price, int duration, Set<Tag> tags) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.tags = tags;
     }
 }

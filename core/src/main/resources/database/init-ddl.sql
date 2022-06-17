@@ -13,7 +13,7 @@ CREATE TABLE gift_certificates
 CREATE TABLE tags
 (
     id   BIGSERIAL NOT NULL,
-    name CHARACTER VARYING(255),
+    name CHARACTER VARYING(255) UNIQUE,
     PRIMARY KEY (id)
 );
 

@@ -11,7 +11,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 import java.math.BigInteger;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -33,25 +32,32 @@ public class Main {
 //        tagDao.updateTag(new Tag(BigInteger.valueOf(1), "ChangedTag"));
 //        System.out.println(tagDao.selectTagById(BigInteger.valueOf(1)));
 //
-//        tagDao.selectAllTags();
+//        Set<Tag> tags = tagDao.selectAllTags().stream().collect(Collectors.toSet());
 //
 //        Set<Tag> tags = Arrays.asList(new Tag("Tag1"), new Tag("Tag2")).stream().collect(Collectors.toSet());
 //        tags.forEach(System.out::println);
 //
 //        System.out.println(giftCertificateDao.saveCertificate(new GiftCertificate("name", "description", 2.5, 2, tags)));
-//        giftCertificateDao.saveCertificate(new GiftCertificate("name", "description", 2.5, 2, tags));
+//        GiftCertificate gc1 = giftCertificateDao.saveCertificate(new GiftCertificate("name", "description", 2.5, 2, tags));
 //        giftCertificateDao.saveCertificate(new GiftCertificate("name", "description", 2.5, 2, tags));
 //
-        List<GiftCertificate> giftCertificates = giftCertificateDao.selectAllCertificates();
-        giftCertificates.stream().forEach(System.out::println);
+//        List<GiftCertificate> giftCertificates = giftCertificateDao.selectAllCertificates();
+//        giftCertificates.stream().forEach(System.out::println);
 //
 //        giftCertificateDao.deleteCertificateById(BigInteger.valueOf(1));
-        giftCertificateDao.updateCertificate(new GiftCertificate(BigInteger.valueOf(3), "Hello", "description", 3.5, 5));
+//        Set<Tag>
+//                tags = Arrays.asList(new Tag("Tag1"), new Tag("Tag3")).stream().collect(Collectors.toSet());
+//        giftCertificateDao.updateCertificate(new GiftCertificate(BigInteger.valueOf(1), "name", "description", 2.5, 5, tags));
+//        List<Tag> tagList = tags.stream().collect(Collectors.toList());
+//        tagList.remove(5);
+//        tags = tagList.stream().collect(Collectors.toSet());
+//        tags.add(new Tag(BigInteger.valueOf(5), "Tag6"));
+//        giftCertificateDao.updateCertificate(new GiftCertificate(BigInteger.valueOf(8), "name", "description", 3.5, 5, tags));
 
 //        System.out.println();
 //
-        giftCertificates = giftCertificateDao.selectAllCertificates();
-        giftCertificates.stream().forEach(System.out::println);
+//        giftCertificates = giftCertificateDao.selectAllCertificates();
+//        giftCertificates.stream().forEach(System.out::println);
 //
 //        System.out.println(giftCertificateDao.selectCertificateById(BigInteger.valueOf(3)));
 

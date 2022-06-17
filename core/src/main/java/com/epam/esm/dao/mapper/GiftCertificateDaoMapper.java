@@ -18,9 +18,6 @@ public class GiftCertificateDaoMapper implements RowMapper<GiftCertificate> {
                 resultSet.getInt("duration"),
                 LocalDateTime.parse(resultSet.getString("create_date")),
                 LocalDateTime.parse(resultSet.getString("last_update_date"))
-//                resultSet.getBigDecimal("tag_id").toBigInteger(),
-//                resultSet.getString("tag_name")
         );
-//        return null;
     }
 }
