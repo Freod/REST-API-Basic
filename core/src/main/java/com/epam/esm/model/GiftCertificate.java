@@ -1,6 +1,7 @@
 package com.epam.esm.model;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -8,6 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
 public class GiftCertificate {
     private BigInteger id;
     private String name;
@@ -40,5 +42,13 @@ public class GiftCertificate {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
+    }
+
+    public GiftCertificate(BigInteger id, String name, String description, double price, int duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
     }
 }

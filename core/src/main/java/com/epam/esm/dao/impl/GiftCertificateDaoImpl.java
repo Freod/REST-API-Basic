@@ -8,6 +8,7 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.model.TagRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private static final String SELECT_CERTIFICATE_ID_AND_TAG_BY_ID_QUERY = "SELECT g_c_t.certificate_id, g_c_t.tag_id, t.name as tag_name FROM gift_certificates_tags as g_c_t LEFT JOIN tags as t on g_c_t.tag_id=t.id where g_c_t.certificate_id = ?;";
     private static final String SELECT_ALL_CERTIFICATES_QUERY = "SELECT g_c.* FROM gift_certificates AS g_c";
     private static final String SELECT_CERTIFICATE_ID_AND_TAG_QUERY = "SELECT g_c_t.certificate_id, g_c_t.tag_id, t.name as tag_name FROM gift_certificates_tags as g_c_t LEFT JOIN tags as t on g_c_t.tag_id=t.id;";
-    private static final String UPDATE_CERTIFICATE_QUERY = "";
+    private static final String UPDATE_CERTIFICATE_QUERY = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_date = ? WHERE id = ?";
     private static final String DELETE_CERTIFICATE_BY_ID_QUERY = "DELETE FROM gift_certificates WHERE id = ?";
 
     @Autowired
@@ -67,6 +69,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
 
     @Override
+    @Transactional
     public GiftCertificate selectCertificateById(BigInteger id) {
         GiftCertificate giftCertificate = jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID_QUERY, new GiftCertificateDaoMapper(), id);
         List<TagRef> tagRefs = jdbcTemplate.query(SELECT_CERTIFICATE_ID_AND_TAG_BY_ID_QUERY, new RowMapper<TagRef>() {
@@ -88,9 +91,9 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
+    @Transactional
     public List<GiftCertificate> selectAllCertificates() {
         List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ALL_CERTIFICATES_QUERY, new GiftCertificateDaoMapper());
-
         List<TagRef> tagRefs = jdbcTemplate.query(SELECT_CERTIFICATE_ID_AND_TAG_QUERY, new RowMapper<TagRef>() {
             @Override
             public TagRef mapRow(ResultSet resultSet, int rowNum) throws SQLException {
@@ -114,8 +117,44 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
+    @Transactional
     public void updateCertificate(GiftCertificate giftCertificate) {
-        //TODO : UPDATE
+        if (giftCertificate.getId() != null) {
+            try {
+                GiftCertificate dbGiftCertificate = selectCertificateById(giftCertificate.getId());
+                dbGiftCertificate = replaceChangedFields(dbGiftCertificate, giftCertificate);
+                jdbcTemplate.update(UPDATE_CERTIFICATE_QUERY, dbGiftCertificate.getName(), dbGiftCertificate.getDescription(), dbGiftCertificate.getPrice(), dbGiftCertificate.getPrice(), dbGiftCertificate.getLastUpdateDate(), dbGiftCertificate.getId());
+
+                //            if(dbGiftCertificate.getTags().equals(changedGiftCertificate.getTags()))
+//            TODO: TAGS
+
+            } catch (EmptyResultDataAccessException e) {
+                throw new IllegalArgumentException("This id doesn't exist in db");
+            }
+        } else {
+            throw new IllegalArgumentException("giftCertificate doesn't have id");
+        }
+    }
+
+    private GiftCertificate replaceChangedFields(GiftCertificate dbGiftCertificate, GiftCertificate changedGiftCertificate) {
+        if (!dbGiftCertificate.equals(changedGiftCertificate)) {
+            if (!dbGiftCertificate.getName().equals(changedGiftCertificate.getName())) {
+                dbGiftCertificate.setName(changedGiftCertificate.getName());
+            }
+            if (!dbGiftCertificate.getDescription().equals(changedGiftCertificate.getDescription())) {
+                dbGiftCertificate.setDescription(changedGiftCertificate.getDescription());
+            }
+            if (dbGiftCertificate.getPrice() != changedGiftCertificate.getPrice()) {
+                dbGiftCertificate.setPrice(changedGiftCertificate.getPrice());
+            }
+            if (dbGiftCertificate.getDuration() != changedGiftCertificate.getDuration()) {
+                dbGiftCertificate.setDuration(changedGiftCertificate.getDuration());
+            }
+            dbGiftCertificate.setLastUpdateDate(LocalDateTime.now());
+
+            return dbGiftCertificate;
+        }
+        return dbGiftCertificate;
     }
 
     @Override
