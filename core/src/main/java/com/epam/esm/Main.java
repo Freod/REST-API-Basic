@@ -4,16 +4,13 @@ import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.impl.GiftCertificateDaoImpl;
 import com.epam.esm.dao.impl.TagDaoImpl;
+import com.epam.esm.model.Filters;
 import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.model.Tag;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.math.BigInteger;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @ComponentScan("com.epam.esm")
 public class Main {
@@ -38,11 +35,13 @@ public class Main {
 //        tags.forEach(System.out::println);
 //
 //        System.out.println(giftCertificateDao.saveCertificate(new GiftCertificate("name", "description", 2.5, 2, tags)));
-//        GiftCertificate gc1 = giftCertificateDao.saveCertificate(new GiftCertificate("name", "description", 2.5, 2, tags));
+//        GiftCertificate gc1 = giftCertificateDao.saveCertificate(new GiftCertificate("name2", "description", 2.5, 2, tags));
 //        giftCertificateDao.saveCertificate(new GiftCertificate("name", "description", 2.5, 2, tags));
 //
-//        List<GiftCertificate> giftCertificates = giftCertificateDao.selectAllCertificates();
-//        giftCertificates.stream().forEach(System.out::println);
+        List<GiftCertificate> giftCertificates = giftCertificateDao.selectAllCertificates(new Filters());
+        giftCertificates.stream().forEach(System.out::println);
+
+        System.out.println(giftCertificateDao.selectCertificateById(BigInteger.valueOf(1)));
 //
 //        giftCertificateDao.deleteCertificateById(BigInteger.valueOf(1));
 //        Set<Tag>

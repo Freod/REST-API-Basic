@@ -1,5 +1,6 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.model.Filters;
 import com.epam.esm.model.GiftCertificate;
 
 import java.math.BigInteger;
@@ -10,7 +11,7 @@ public interface GiftCertificateDao {
 
     GiftCertificate selectCertificateById(BigInteger id);
 
-    List<GiftCertificate> selectAllCertificates();
+    List<GiftCertificate> selectAllCertificates(Filters filters);
 
     void updateCertificate(GiftCertificate giftCertificate);
 
