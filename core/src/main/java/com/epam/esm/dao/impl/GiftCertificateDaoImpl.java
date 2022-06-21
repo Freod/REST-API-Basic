@@ -71,8 +71,25 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public List<GiftCertificate> selectAllCertificates(Filters filters) {
         List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ALL_CERTIFICATES_QUERY, new GiftCertificateExtractor(), filters.getName(), filters.getDescription(), filters.getTag());
-//        giftCertificates.sort(Comparator.comparing(GiftCertificate::getName).thenComparing(GiftCertificate::getLastUpdateDate));
-        //TODO:SORTING
+
+        Comparator comparator;
+        switch (filters.getOrderBy()) {
+            case "last_update_date":
+                comparator = Comparator.comparing(GiftCertificate::getLastUpdateDate);
+                break;
+            case "create_date":
+                comparator = Comparator.comparing(GiftCertificate::getCreateDate);
+                break;
+            default:
+                comparator = Comparator.comparing(GiftCertificate::getName);
+        }
+
+        if(filters.getDirection().equals("desc")){
+            comparator = comparator.reversed();
+        }
+
+        giftCertificates.sort(comparator);
+
         return giftCertificates;
     }
 
