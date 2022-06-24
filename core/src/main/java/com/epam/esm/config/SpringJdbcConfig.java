@@ -34,18 +34,8 @@ public class SpringJdbcConfig {
         return dataSource;
     }
 
-    @Bean
-    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
-        return new JdbcTemplate(dataSource);
-    }
-
-    @Bean(name = "simpleJdbcInsertGiftCertificates")
-    public SimpleJdbcInsert simpleJdbcInsertGiftCertificates(JdbcTemplate jdbcTemplate) {
-        return new SimpleJdbcInsert(jdbcTemplate).withTableName("gift_certificates").usingGeneratedKeyColumns("id");
-    }
-
-    @Bean(name = "simpleJdbcInsertTags")
-    public SimpleJdbcInsert simpleJdbcInsertTags(JdbcTemplate jdbcTemplate) {
-        return new SimpleJdbcInsert(jdbcTemplate).withTableName("tags").usingGeneratedKeyColumns("id");
-    }
+//    @Bean(name = "simpleJdbcInsertTags")
+//    public SimpleJdbcInsert simpleJdbcInsertTags(JdbcTemplate jdbcTemplate) {
+//        return new SimpleJdbcInsert(jdbcTemplate).withTableName("tags").usingGeneratedKeyColumns("id");
+//    }
 }

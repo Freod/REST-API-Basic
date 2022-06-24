@@ -1,18 +1,19 @@
 package com.epam.esm.service;
 
+import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.model.Filters;
-import com.epam.esm.model.GiftCertificate;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public interface GiftCertificateService {
-    GiftCertificate saveGiftCertificate(GiftCertificate giftCertificate);
+    GiftCertificateDto saveGiftCertificate(GiftCertificateDto giftCertificateDto);
 
-    GiftCertificate selectGiftCertificate(GiftCertificate giftCertificate);
+    GiftCertificateDto selectGiftCertificate(BigInteger id);
 
-    List<GiftCertificate> selectAllGiftCertificates(Filters filters);
+    List<GiftCertificateDto> selectAllGiftCertificates(Filters filters);
 
-    void updateGiftCertificate(GiftCertificate giftCertificate);
+    void updateGiftCertificate(GiftCertificateDto giftCertificateDto);
 
-    void deleteGiftCertificate(GiftCertificate giftCertificate);
+    void deleteGiftCertificate(BigInteger id);
 }

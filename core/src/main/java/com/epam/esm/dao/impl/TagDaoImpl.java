@@ -5,18 +5,20 @@ import com.epam.esm.dao.mapper.TagDaoMapper;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-//@AllArgsConstructor
 public class TagDaoImpl implements TagDao {
     private static final String SELECT_TAG_BY_ID_QUERY = "SELECT * FROM tags WHERE id = ?;";
     private static final String SELECT_TAG_BY_NAME_QUERY = "SELECT * FROM tags WHERE name = ?;";
@@ -24,11 +26,19 @@ public class TagDaoImpl implements TagDao {
     private static final String UPDATE_TAG_QUERY = "UPDATE tags SET name = ? WHERE id = ?;";
     private static final String DELETE_TAG_QUERY = "DELETE FROM tags WHERE id = ?;";
 
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-    @Autowired
-    @Qualifier("simpleJdbcInsertTags")
-    private SimpleJdbcInsert simpleJdbcInsert;
+    private final JdbcTemplate jdbcTemplate;
+    private final SimpleJdbcInsert simpleJdbcInsert;
+
+    public TagDaoImpl() {
+        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/module2");
+        dataSource.setSchema("public");
+        dataSource.setUsername("postgres");
+        dataSource.setPassword("postgres");
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("tags").usingGeneratedKeyColumns("id");
+    }
 
     @Override
     public Tag saveTag(Tag tag) {

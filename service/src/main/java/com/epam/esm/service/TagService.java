@@ -1,19 +1,20 @@
 package com.epam.esm.service;
 
-import com.epam.esm.model.Tag;
+import com.epam.esm.dto.TagDto;
 
+import java.math.BigInteger;
 import java.util.List;
 
 public interface TagService {
-    Tag saveTag(Tag tag);
+    TagDto saveTag(TagDto tagDto);
 
-    Tag selectTagByName(Tag tag);
+    TagDto selectTagByName(String name);
 
-    Tag selectTagById(Tag tag);
+    TagDto selectTagById(BigInteger id);
 
-    List<Tag> selectAllTags();
+    List<TagDto> selectAllTags();
 
-    void updateTag(Tag tag);
+    void updateTag(BigInteger id, TagDto tagDto);
 
-    void deleteTag(Tag tag);
+    void deleteTag(BigInteger id);
 }
