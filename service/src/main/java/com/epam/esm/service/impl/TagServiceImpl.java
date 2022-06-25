@@ -5,8 +5,6 @@ import com.epam.esm.dao.impl.TagDaoImpl;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.TagService;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
@@ -17,39 +15,33 @@ import java.util.stream.Collectors;
 public class TagServiceImpl implements TagService {
     private TagDao tagDao = new TagDaoImpl();
 
-    private ModelMapper modelMapper = new ModelMapper();
-
     @Override
     public TagDto saveTag(TagDto tagDto) {
-        //TODO:MAPPER PROBLEM
-        Tag tag = modelMapper.map(tagDto, Tag.class);
-        System.out.println(tag);
-        tag = tagDao.saveTag(tag);
-        return modelMapper.map(tag, TagDto.class);
+        return convertTagToTagDto(
+                tagDao.saveTag(
+                        convertTagDtoToTag(tagDto)
+                )
+        );
     }
 
     @Override
     public TagDto selectTagByName(String name) {
-        Tag tag = tagDao.selectTagByName(name);
-        return modelMapper.map(tag, TagDto.class);
+        return convertTagToTagDto(tagDao.selectTagByName(name));
     }
 
     @Override
     public TagDto selectTagById(BigInteger id) {
-        Tag tag = tagDao.selectTagById(id);
-        return modelMapper.map(tag, TagDto.class);
+        return convertTagToTagDto(tagDao.selectTagById(id));
     }
 
     @Override
     public List<TagDto> selectAllTags() {
-        List<Tag> tags = tagDao.selectAllTags();
-        return tags.stream().map(tag -> modelMapper.map(tag, TagDto.class)).collect(Collectors.toList());
+        return tagDao.selectAllTags().stream().map(this::convertTagToTagDto).collect(Collectors.toList());
     }
 
     @Override
     public void updateTag(BigInteger id, TagDto tagDto) {
-        //TODO:MAPPER PROBLEM
-        Tag tag = modelMapper.map(tagDto, Tag.class);
+        Tag tag = convertTagDtoToTag(tagDto);
         tag.setId(id);
         tagDao.updateTag(tag);
     }
@@ -57,5 +49,18 @@ public class TagServiceImpl implements TagService {
     @Override
     public void deleteTag(BigInteger id) {
         tagDao.deleteTag(id);
+    }
+
+    private Tag convertTagDtoToTag(TagDto tagDto) {
+        Tag tag = new Tag();
+        tag.setName(tagDto.getName());
+        return tag;
+    }
+
+    private TagDto convertTagToTagDto(Tag tag) {
+        TagDto tagDto = new TagDto();
+        tagDto.setId(tag.getId());
+        tagDto.setName(tag.getName());
+        return tagDto;
     }
 }

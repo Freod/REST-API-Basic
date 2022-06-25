@@ -7,15 +7,12 @@ import com.epam.esm.dao.mapper.GiftCertificateDaoMapper;
 import com.epam.esm.model.Filters;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,8 +28,8 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private static final String DELETE_CERTIFICATE_BY_ID_QUERY = "DELETE FROM gift_certificates WHERE id = ?";
     private static final String DELETE_TAG_FROM_CERTIFICATE_QUERY = "DELETE FROM gift_certificates_tags where certificate_id = ? AND tag_id = ?;";
 
-    @Autowired
-    private TagDao tagDao;
+//    @Autowired
+    private TagDao tagDao = new TagDaoImpl();
     private final JdbcTemplate jdbcTemplate;
     private final SimpleJdbcInsert simpleJdbcInsert;
 
@@ -60,7 +57,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
         giftCertificate.setId(BigInteger.valueOf(simpleJdbcInsert.executeAndReturnKey(certificateParameters).longValue()));
 
-        giftCertificate.setTags(giftCertificate.getTags().stream().map(tag -> tag = tagDao.selectOrSaveTag(tag)).collect(Collectors.toSet()));
+        giftCertificate.setTags(giftCertificate.getTags().stream().map(tag -> tag = tagDao.selectOrSaveTag(tag)).collect(Collectors.toList()));
 
         giftCertificate.getTags().stream().forEach(tag -> saveCertificateTags(giftCertificate.getId(), tag.getId()));
 
@@ -126,7 +123,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
                 dbGiftCertificate.setDuration(changedGiftCertificate.getDuration());
             }
 
-            changedGiftCertificate.setTags(changedGiftCertificate.getTags().stream().map(tag -> tag = tagDao.selectOrSaveTag(tag)).collect(Collectors.toSet()));
+            changedGiftCertificate.setTags(changedGiftCertificate.getTags().stream().map(tag -> tag = tagDao.selectOrSaveTag(tag)).collect(Collectors.toList()));
 
             if (!dbGiftCertificate.getTags().equals(changedGiftCertificate.getTags())) {
                 Set<Tag> tagsToRemove = new HashSet<>(dbGiftCertificate.getTags());

@@ -1,15 +1,13 @@
 package com.epam.esm.model;
 
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
-@NoArgsConstructor
 public class GiftCertificate {
     private BigInteger id;
     private String name;
@@ -18,7 +16,7 @@ public class GiftCertificate {
     private int duration;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
-    private Set<Tag> tags = new HashSet<>();
+    private List<Tag> tags = new ArrayList<>();
 
     public void addTag(Tag tag) {
         this.tags.add(tag);
@@ -28,7 +26,12 @@ public class GiftCertificate {
         this.tags.remove(tag);
     }
 
-    public GiftCertificate(String name, String description, double price, int duration, Set<Tag> tags) {
+    public GiftCertificate() {
+        this.createDate = LocalDateTime.now();
+        this.lastUpdateDate = LocalDateTime.now();
+    }
+
+    public GiftCertificate(String name, String description, double price, int duration, List<Tag> tags) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -56,7 +59,7 @@ public class GiftCertificate {
         this.duration = duration;
     }
 
-    public GiftCertificate(BigInteger id, String name, String description, double price, int duration, Set<Tag> tags) {
+    public GiftCertificate(BigInteger id, String name, String description, double price, int duration, List<Tag> tags) {
         this.id = id;
         this.name = name;
         this.description = description;

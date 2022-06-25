@@ -4,14 +4,8 @@ import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.impl.GiftCertificateDaoImpl;
 import com.epam.esm.dao.impl.TagDaoImpl;
-import com.epam.esm.model.Filters;
-import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.model.Tag;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
-
-import java.math.BigInteger;
-import java.util.List;
 
 @ComponentScan("com.epam.esm")
 public class Main {
@@ -24,8 +18,8 @@ public class Main {
 //        tagDao.saveTag(new Tag("Tag1"));
 //        tagDao.saveTag(new Tag("TestTag2"));
 //
-        List<Tag> tags1 = tagDao.selectAllTags();
-        tags1.stream().forEach(System.out::println);
+//        List<Tag> tags1 = tagDao.selectAllTags();
+//        tags1.stream().forEach(System.out::println);
 //
 //        tagDao.updateTag(new Tag(BigInteger.valueOf(1), "ChangedTag"));
 //        System.out.println(tagDao.selectTagById(BigInteger.valueOf(1)));

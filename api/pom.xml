@@ -10,19 +10,23 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<artifactId>api</artifactId>
+
+	<properties>
+		<maven.compiler.source>8</maven.compiler.source>
+		<maven.compiler.target>8</maven.compiler.target>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>5.3.20</version>
 		</dependency>
-		<!-- Required for converting JSON data to Java object and vice versa -->
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>2.13.3</version>
 		</dependency>
-		<!-- Servlet API -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
@@ -36,11 +40,6 @@
 			<scope>compile</scope>
 		</dependency>
 	</dependencies>
-
-	<properties>
-		<maven.compiler.source>8</maven.compiler.source>
-		<maven.compiler.target>8</maven.compiler.target>
-	</properties>
 
 	<build>
 		<finalName>rest-api-basic</finalName>

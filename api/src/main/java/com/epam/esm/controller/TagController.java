@@ -12,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/tag")
 public class TagController {
+//    @Autowired
     private TagService tagService = new TagServiceImpl();
 
     @GetMapping("/show/id/{id}")
@@ -41,7 +42,6 @@ public class TagController {
 
     @DeleteMapping("/delete/{id}")
     public void deleteTag(@PathVariable BigInteger id) {
-        System.out.println("Delete " + id);
         tagService.deleteTag(id);
     }
 }
