@@ -7,9 +7,9 @@ import com.epam.esm.dao.mapper.GiftCertificateDaoMapper;
 import com.epam.esm.model.Filters;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,22 +28,19 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private static final String DELETE_CERTIFICATE_BY_ID_QUERY = "DELETE FROM gift_certificates WHERE id = ?";
     private static final String DELETE_TAG_FROM_CERTIFICATE_QUERY = "DELETE FROM gift_certificates_tags where certificate_id = ? AND tag_id = ?;";
 
-//    @Autowired
-    private TagDao tagDao = new TagDaoImpl();
+    private final TagDao tagDao;
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
+    private final SimpleJdbcInsert simpleJdbcInsertGiftCertificates;
 
-    public GiftCertificateDaoImpl() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/module2");
-        dataSource.setSchema("public");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres");
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("gift_certificates").usingGeneratedKeyColumns("id");
+    @Autowired
+    public GiftCertificateDaoImpl(TagDao tagDao, JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsertGiftCertificates) {
+        this.tagDao = tagDao;
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsertGiftCertificates = simpleJdbcInsertGiftCertificates;
     }
 
+
+    //todo transactions
     @Override
     @Transactional
     public GiftCertificate saveCertificate(GiftCertificate giftCertificate) {
@@ -55,7 +52,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         certificateParameters.put("create_date", giftCertificate.getCreateDate());
         certificateParameters.put("last_update_date", giftCertificate.getLastUpdateDate());
 
-        giftCertificate.setId(BigInteger.valueOf(simpleJdbcInsert.executeAndReturnKey(certificateParameters).longValue()));
+        giftCertificate.setId(BigInteger.valueOf(simpleJdbcInsertGiftCertificates.executeAndReturnKey(certificateParameters).longValue()));
 
         giftCertificate.setTags(giftCertificate.getTags().stream().map(tag -> tag = tagDao.selectOrSaveTag(tag)).collect(Collectors.toList()));
 

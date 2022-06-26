@@ -3,7 +3,6 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.FiltersDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.service.GiftCertificateService;
-import com.epam.esm.service.impl.GiftCertificateServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,8 +12,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/giftCertificate")
 public class GiftCertificateController {
-//    @Autowired
-    private GiftCertificateService giftCertificateService = new GiftCertificateServiceImpl();;
+
+    private final GiftCertificateService giftCertificateService;
+
+    @Autowired
+    public GiftCertificateController(GiftCertificateService giftCertificateService) {
+        this.giftCertificateService = giftCertificateService;
+    }
 
     @GetMapping("/show/{id}")
     public GiftCertificateDto showGiftCertificate(@PathVariable BigInteger id) {

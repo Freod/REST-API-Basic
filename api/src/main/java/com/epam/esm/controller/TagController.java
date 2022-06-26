@@ -2,7 +2,6 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.TagService;
-import com.epam.esm.service.impl.TagServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,8 +11,13 @@ import java.util.List;
 @RestController
 @RequestMapping("/tag")
 public class TagController {
-//    @Autowired
-    private TagService tagService = new TagServiceImpl();
+
+    private final TagService tagService;
+
+    @Autowired
+    public TagController(TagService tagService) {
+        this.tagService = tagService;
+    }
 
     @GetMapping("/show/id/{id}")
     public TagDto showTag(@PathVariable BigInteger id) {

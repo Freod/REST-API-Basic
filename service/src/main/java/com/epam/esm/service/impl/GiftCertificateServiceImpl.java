@@ -1,7 +1,6 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.dao.impl.GiftCertificateDaoImpl;
 import com.epam.esm.dto.FiltersDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
@@ -9,14 +8,21 @@ import com.epam.esm.model.Filters;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Service
 public class GiftCertificateServiceImpl implements GiftCertificateService {
-    //    @Autowired
-    private GiftCertificateDao giftCertificateDao = new GiftCertificateDaoImpl();
+    private final GiftCertificateDao giftCertificateDao;
+
+    @Autowired
+    public GiftCertificateServiceImpl(GiftCertificateDao giftCertificateDao) {
+        this.giftCertificateDao = giftCertificateDao;
+    }
 
     @Override
     public GiftCertificateDto saveGiftCertificate(GiftCertificateDto giftCertificateDto) {

@@ -3,10 +3,10 @@ package com.epam.esm.dao.impl;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.mapper.TagDaoMapper;
 import com.epam.esm.model.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
@@ -23,24 +23,19 @@ public class TagDaoImpl implements TagDao {
     private static final String DELETE_TAG_QUERY = "DELETE FROM tags WHERE id = ?;";
 
     private final JdbcTemplate jdbcTemplate;
-    private final SimpleJdbcInsert simpleJdbcInsert;
+    private final SimpleJdbcInsert simpleJdbcInsertTags;
 
-    public TagDaoImpl() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/module2");
-        dataSource.setSchema("public");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres");
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-        this.simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate).withTableName("tags").usingGeneratedKeyColumns("id");
+    @Autowired
+    public TagDaoImpl(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsertTags) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.simpleJdbcInsertTags = simpleJdbcInsertTags;
     }
 
     @Override
     public Tag saveTag(Tag tag) {
         Map<String, Object> tagParameters = new HashMap<>();
         tagParameters.put("name", tag.getName());
-        tag.setId(BigInteger.valueOf(simpleJdbcInsert.executeAndReturnKey(tagParameters).longValue()));
+        tag.setId(BigInteger.valueOf(simpleJdbcInsertTags.executeAndReturnKey(tagParameters).longValue()));
         return tag;
     }
 
