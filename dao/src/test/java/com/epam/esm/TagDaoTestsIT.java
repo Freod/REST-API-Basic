@@ -3,6 +3,7 @@ package com.epam.esm;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.exception.DaoException;
 import com.epam.esm.model.Tag;
+import jdk.jfr.Category;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,7 @@ public class TagDaoTestsIT {
 
     @Test
     @Order(1)
-    public void testDaoSelectAll() {
+    public void testDaoTagSelectAll() {
         List<Tag> tagList = tagDao.selectAllTags();
 
         assertTrue(tagList.size() > 1);
@@ -39,7 +40,7 @@ public class TagDaoTestsIT {
 
     @Test
     @Order(2)
-    public void testDaoSelectById() {
+    public void testDaoTagSelectById() {
         Tag tag = new Tag(BigInteger.ONE, "tag1");
         Tag dbTag = tagDao.selectTagById(tag.getId());
 
@@ -56,7 +57,7 @@ public class TagDaoTestsIT {
 
     @Test
     @Order(3)
-    public void testDaoSelectByName() {
+    public void testDaoTagSelectByName() {
         Tag tag = new Tag(BigInteger.ONE, "tag1");
         Tag dbTag = tagDao.selectTagByName(tag.getName());
 
@@ -73,7 +74,7 @@ public class TagDaoTestsIT {
 
     @Test
     @Order(4)
-    public void testDaoInsert() {
+    public void testDaoTagInsert() {
         List<Tag> tagListBefore = tagDao.selectAllTags();
         Tag tag = new Tag("testing");
         Tag insertedTag = tagDao.saveTag(tag);
@@ -92,7 +93,7 @@ public class TagDaoTestsIT {
 
     @Test
     @Order(5)
-    public void testDaoDelete() {
+    public void testDaoTagDelete() {
         Tag dbTag = tagDao.selectTagById(BigInteger.ONE);
         List<Tag> tagListBefore = tagDao.selectAllTags();
         tagDao.deleteTag(dbTag.getId());

@@ -24,10 +24,9 @@ public class GiftCertificateDaoMapper implements RowMapper<GiftCertificate> {
         Tag tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
         giftCertificate.addTag(tag);
 
-        if (resultSet.next()) {
+        while (resultSet.next()) {
             tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
             giftCertificate.addTag(tag);
-
         }
 
         return giftCertificate;

@@ -65,7 +65,7 @@ public class TagDaoImpl implements TagDao {
     public Tag selectOrSaveTag(Tag tag) {
         try {
             tag = selectTagByName(tag.getName());
-        } catch (EmptyResultDataAccessException e) {
+        } catch (DaoException e) {
             tag = saveTag(tag);
         }
         return tag;

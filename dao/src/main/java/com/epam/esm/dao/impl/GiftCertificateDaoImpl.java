@@ -4,10 +4,12 @@ import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.extractor.GiftCertificateExtractor;
 import com.epam.esm.dao.mapper.GiftCertificateDaoMapper;
+import com.epam.esm.exception.DaoException;
 import com.epam.esm.model.Filters;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
@@ -68,8 +70,12 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public GiftCertificate selectCertificateById(BigInteger id) {
-        GiftCertificate giftCertificate = jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID_QUERY, new GiftCertificateDaoMapper(), id);
-        return giftCertificate;
+        try {
+            GiftCertificate giftCertificate = jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID_QUERY, new GiftCertificateDaoMapper(), id);
+            return giftCertificate;
+        }catch (EmptyResultDataAccessException exception){
+            throw new DaoException("Resource not found (id = " + id + ")");
+        }
     }
 
     @Override
