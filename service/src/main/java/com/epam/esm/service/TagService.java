@@ -14,7 +14,5 @@ public interface TagService {
 
     List<TagDto> selectAllTags();
 
-    void updateTag(BigInteger id, TagDto tagDto);
-
     void deleteTag(BigInteger id);
 }

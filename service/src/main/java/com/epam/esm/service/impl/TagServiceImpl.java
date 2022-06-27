@@ -46,13 +46,6 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public void updateTag(BigInteger id, TagDto tagDto) {
-        Tag tag = convertTagDtoToTag(tagDto);
-        tag.setId(id);
-        tagDao.updateTag(tag);
-    }
-
-    @Override
     public void deleteTag(BigInteger id) {
         tagDao.deleteTag(id);
     }

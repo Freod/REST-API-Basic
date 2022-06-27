@@ -39,11 +39,6 @@ public class TagController {
         return tagService.saveTag(tagDto);
     }
 
-    @PutMapping("/update/{id}")
-    public void updateTag(@PathVariable BigInteger id, @RequestBody TagDto tagDto) {
-        tagService.updateTag(id, tagDto);
-    }
-
     @DeleteMapping("/delete/{id}")
     public void deleteTag(@PathVariable BigInteger id) {
         tagService.deleteTag(id);
