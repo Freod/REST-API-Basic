@@ -1,7 +1,7 @@
 package com.epam.esm;
 
 import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.exception.DaoException;
+import com.epam.esm.exception.ResourceNotFound;
 import com.epam.esm.model.Filters;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
@@ -52,8 +52,8 @@ public class GiftCertificateDaoTestIT {
         assertEquals("2022-06-26T12:04:01.891", giftCertificate.getLastUpdateDate().toString());
         assertEquals("2022-06-26T12:04:01.891", giftCertificate.getCreateDate().toString());
 
-        DaoException thrown = assertThrows(
-                DaoException.class,
+        ResourceNotFound thrown = assertThrows(
+                ResourceNotFound.class,
                 () -> giftCertificateDao.selectCertificateById(BigInteger.ZERO)
         );
         assertEquals("Resource not found (id = 0)", thrown.getMessage());

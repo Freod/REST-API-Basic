@@ -1,9 +1,9 @@
 package com.epam.esm;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.exception.DaoException;
+import com.epam.esm.exception.ResourceNotFound;
+import com.epam.esm.exception.ResourceViolation;
 import com.epam.esm.model.Tag;
-import jdk.jfr.Category;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -48,8 +48,8 @@ public class TagDaoTestsIT {
         assertEquals("tag1", dbTag.getName());
         assertEquals(tag, dbTag);
 
-        DaoException thrown = assertThrows(
-                DaoException.class,
+        ResourceNotFound thrown = assertThrows(
+                ResourceNotFound.class,
                 () -> tagDao.selectTagById(BigInteger.ZERO)
         );
         assertEquals("Resource not found (id = 0)", thrown.getMessage());
@@ -65,8 +65,8 @@ public class TagDaoTestsIT {
         assertEquals("tag1", dbTag.getName());
         assertEquals(tag, dbTag);
 
-        DaoException thrown = assertThrows(
-                DaoException.class,
+        ResourceNotFound thrown = assertThrows(
+                ResourceNotFound.class,
                 () -> tagDao.selectTagByName("")
         );
         assertEquals("Resource not found (name = '')", thrown.getMessage());
@@ -84,8 +84,8 @@ public class TagDaoTestsIT {
         assertEquals(tagListBefore.size() + 1, tagListAfter.size());
         assertEquals(tagListAfter.get(tagListAfter.size()-1), insertedTag);
 
-        DaoException thrown = assertThrows(
-                DaoException.class,
+        ResourceViolation thrown = assertThrows(
+                ResourceViolation.class,
                 () -> tagDao.saveTag(tag)
         );
         assertEquals("Resource name or primary key violation (name = 'testing')", thrown.getMessage());
