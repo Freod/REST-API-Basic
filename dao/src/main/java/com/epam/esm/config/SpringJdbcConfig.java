@@ -32,7 +32,7 @@ public class SpringJdbcConfig {
         hikariConfig.setUsername(environment.getProperty("db_username"));
         hikariConfig.setPassword(environment.getProperty("db_password"));
         hikariConfig.setSchema(environment.getProperty("db_schema"));
-        hikariConfig.setDriverClassName("org.postgresql.Driver");
+        hikariConfig.setDriverClassName(environment.getProperty("db_driver"));
 
         return hikariConfig;
     }
@@ -49,6 +49,7 @@ public class SpringJdbcConfig {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("database/init-ddl.sql")
+                .addScript("database/insert-ddl.sql")
                 .build();
     }
 

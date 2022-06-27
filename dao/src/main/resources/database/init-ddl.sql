@@ -1,19 +1,19 @@
 CREATE TABLE gift_certificates
 (
     id               BIGSERIAL NOT NULL,
-    name             CHARACTER VARYING(255),
-    description      CHARACTER VARYING(255),
-    price            DOUBLE PRECISION,
-    duration         INT,
-    create_date      CHARACTER VARYING(40),
-    last_update_date CHARACTER VARYING(40),
+    name             CHARACTER VARYING(255) NOT NULL,
+    description      CHARACTER VARYING(255) NOT NULL,
+    price            DOUBLE PRECISION NOT NULL,
+    duration         INT NOT NULL,
+    create_date      CHARACTER VARYING(40) NOT NULL,
+    last_update_date CHARACTER VARYING(40) NOT NULL,
     PRIMARY KEY (id)
 );
 
 CREATE TABLE tags
 (
     id   BIGSERIAL NOT NULL,
-    name CHARACTER VARYING(255) UNIQUE,
+    name CHARACTER VARYING(255) NOT NULL UNIQUE,
     PRIMARY KEY (id)
 );
 

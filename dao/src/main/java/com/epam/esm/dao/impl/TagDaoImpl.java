@@ -2,8 +2,10 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.mapper.TagDaoMapper;
+import com.epam.esm.exception.DaoException;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -19,7 +21,6 @@ public class TagDaoImpl implements TagDao {
     private static final String SELECT_TAG_BY_ID_QUERY = "SELECT * FROM tags WHERE id = ?;";
     private static final String SELECT_TAG_BY_NAME_QUERY = "SELECT * FROM tags WHERE name = ?;";
     private static final String SELECT_ALL_TAGS_QUERY = "SELECT * FROM tags;";
-    private static final String UPDATE_TAG_QUERY = "UPDATE tags SET name = ? WHERE id = ?;";
     private static final String DELETE_TAG_QUERY = "DELETE FROM tags WHERE id = ?;";
 
     private final JdbcTemplate jdbcTemplate;
@@ -35,18 +36,30 @@ public class TagDaoImpl implements TagDao {
     public Tag saveTag(Tag tag) {
         Map<String, Object> tagParameters = new HashMap<>();
         tagParameters.put("name", tag.getName());
-        tag.setId(BigInteger.valueOf(simpleJdbcInsertTags.executeAndReturnKey(tagParameters).longValue()));
-        return tag;
+        try {
+            tag.setId(BigInteger.valueOf(simpleJdbcInsertTags.executeAndReturnKey(tagParameters).longValue()));
+            return tag;
+        } catch (DuplicateKeyException exception) {
+            throw new DaoException("Resource name or primary key violation (name = '" + tag.getName() + "')");
+        }
     }
 
     @Override
-    public Tag selectTagById(BigInteger id) {
-        return jdbcTemplate.queryForObject(SELECT_TAG_BY_ID_QUERY, new TagDaoMapper(), id);
+    public Tag selectTagById(BigInteger id) throws DaoException {
+        try {
+            return jdbcTemplate.queryForObject(SELECT_TAG_BY_ID_QUERY, new TagDaoMapper(), id);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new DaoException("Resource not found (id = " + id + ")");
+        }
     }
 
     @Override
     public Tag selectTagByName(String name) {
-        return jdbcTemplate.queryForObject(SELECT_TAG_BY_NAME_QUERY, new TagDaoMapper(), name);
+        try {
+            return jdbcTemplate.queryForObject(SELECT_TAG_BY_NAME_QUERY, new TagDaoMapper(), name);
+        } catch (EmptyResultDataAccessException exception) {
+            throw new DaoException("Resource not found (name = '" + name + "')");
+        }
     }
 
     public Tag selectOrSaveTag(Tag tag) {
@@ -61,11 +74,6 @@ public class TagDaoImpl implements TagDao {
     @Override
     public List<Tag> selectAllTags() {
         return jdbcTemplate.query(SELECT_ALL_TAGS_QUERY, new TagDaoMapper());
-    }
-
-    @Override
-    public void updateTag(Tag tag) {
-        jdbcTemplate.update(UPDATE_TAG_QUERY, tag.getName(), tag.getId());
     }
 
     @Override
