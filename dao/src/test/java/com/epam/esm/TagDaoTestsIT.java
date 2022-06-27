@@ -52,7 +52,7 @@ public class TagDaoTestsIT {
                 ResourceNotFound.class,
                 () -> tagDao.selectTagById(BigInteger.ZERO)
         );
-        assertEquals("Resource not found (id = 0)", thrown.getMessage());
+        assertEquals("Tag not found (id = 0)", thrown.getMessage());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class TagDaoTestsIT {
                 ResourceNotFound.class,
                 () -> tagDao.selectTagByName("")
         );
-        assertEquals("Resource not found (name = '')", thrown.getMessage());
+        assertEquals("Tag not found (name = '')", thrown.getMessage());
     }
 
     @Test
@@ -88,7 +88,7 @@ public class TagDaoTestsIT {
                 ResourceViolation.class,
                 () -> tagDao.saveTag(tag)
         );
-        assertEquals("Resource name or primary key violation (name = 'testing')", thrown.getMessage());
+        assertEquals("Tag name or primary key violation (name = 'testing')", thrown.getMessage());
     }
 
     @Test

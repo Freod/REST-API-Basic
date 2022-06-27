@@ -41,7 +41,7 @@ public class TagDaoImpl implements TagDao {
             tag.setId(BigInteger.valueOf(simpleJdbcInsertTags.executeAndReturnKey(tagParameters).longValue()));
             return tag;
         } catch (DuplicateKeyException exception) {
-            throw new ResourceViolation("Resource name or primary key violation (name = '" + tag.getName() + "')");
+            throw new ResourceViolation("Tag name or primary key violation (name = '" + tag.getName() + "')");
         }
     }
 
@@ -50,7 +50,7 @@ public class TagDaoImpl implements TagDao {
         try {
             return jdbcTemplate.queryForObject(SELECT_TAG_BY_ID_QUERY, new TagDaoMapper(), id);
         } catch (EmptyResultDataAccessException exception) {
-            throw new ResourceNotFound("Resource not found (id = " + id + ")");
+            throw new ResourceNotFound("Tag not found (id = " + id + ")");
         }
     }
 
@@ -59,7 +59,7 @@ public class TagDaoImpl implements TagDao {
         try {
             return jdbcTemplate.queryForObject(SELECT_TAG_BY_NAME_QUERY, new TagDaoMapper(), name);
         } catch (EmptyResultDataAccessException exception) {
-            throw new ResourceNotFound("Resource not found (name = '" + name + "')");
+            throw new ResourceNotFound("Tag not found (name = '" + name + "')");
         }
     }
 

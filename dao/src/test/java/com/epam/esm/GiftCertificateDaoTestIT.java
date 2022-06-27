@@ -56,7 +56,7 @@ public class GiftCertificateDaoTestIT {
                 ResourceNotFound.class,
                 () -> giftCertificateDao.selectCertificateById(BigInteger.ZERO)
         );
-        assertEquals("Resource not found (id = 0)", thrown.getMessage());
+        assertEquals("Certificate not found (id = 0)", thrown.getMessage());
     }
 
     @Test

@@ -74,7 +74,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             GiftCertificate giftCertificate = jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID_QUERY, new GiftCertificateDaoMapper(), id);
             return giftCertificate;
         }catch (EmptyResultDataAccessException exception){
-            throw new ResourceNotFound("Resource not found (id = " + id + ")");
+            throw new ResourceNotFound("Certificate not found (id = " + id + ")");
         }
     }
 
