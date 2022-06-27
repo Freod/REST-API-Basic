@@ -20,9 +20,6 @@ public class TagController {
     }
 
     @GetMapping("/show/id/{id}")
-//    @ExceptionHandler(DaoException.class)
-//    @ResponseStatus(value = HttpStatus.CONFLICT, reason = "Okkkk")
-//    @ResponseBody ErrorInfo
     public TagDto showTag(@PathVariable BigInteger id) {
         return tagService.selectTagById(id);
     }
