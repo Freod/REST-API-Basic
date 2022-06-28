@@ -3,7 +3,6 @@ package com.epam.esm;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.exception.DaoException;
 import com.epam.esm.model.Tag;
-import jdk.jfr.Category;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
