@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDto saveGiftCertificate(GiftCertificateDto giftCertificateDto) {
-        giftCertificateDto.setTags(giftCertificateDto.getTags().stream().collect(Collectors.toSet()).stream().collect(Collectors.toList()));
+        giftCertificateDto.setTags(giftCertificateDto.getTags().stream().collect(Collectors.toSet()).stream().sorted(Comparator.comparing(tagDto -> tagDto.getId())).collect(Collectors.toList()));
         return convertModelToDto(
                 giftCertificateDao.saveCertificate(
                         convertDtoToModel(giftCertificateDto)
@@ -41,7 +42,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificateDto> selectAllGiftCertificates(FiltersDto filtersDto) {
-        return giftCertificateDao.selectAllCertificates(new Filters()).stream().map(this::convertModelToDto).collect(Collectors.toList());
+        return giftCertificateDao.selectAllCertificates(convertFiltersDtoToFilters(filtersDto)).stream().map(this::convertModelToDto).collect(Collectors.toList());
     }
 
     @Override
@@ -90,5 +91,20 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         tagDto.setId(tag.getId());
         tagDto.setName(tag.getName());
         return tagDto;
+    }
+
+    private Filters convertFiltersDtoToFilters(FiltersDto filtersDto) {
+        Filters filters = new Filters();
+        if (filtersDto.getTag() != null)
+            filters.setTag(filtersDto.getTag());
+        if (filtersDto.getName() != null)
+            filters.setName(filtersDto.getName());
+        if (filtersDto.getDirection() != null)
+            filters.setDescription(filtersDto.getDescription());
+        if (filtersDto.getDirection() != null)
+            filters.setDirection(filtersDto.getDirection());
+        if (filtersDto.getOrderBy() != null)
+            filters.setOrderBy(filtersDto.getOrderBy());
+        return filters;
     }
 }
