@@ -4,7 +4,7 @@ import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.extractor.GiftCertificateExtractor;
 import com.epam.esm.dao.mapper.GiftCertificateDaoMapper;
-import com.epam.esm.exception.DaoException;
+import com.epam.esm.exception.ResourceNotFound;
 import com.epam.esm.model.Filters;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
@@ -74,7 +74,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             GiftCertificate giftCertificate = jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID_QUERY, new GiftCertificateDaoMapper(), id);
             return giftCertificate;
         }catch (EmptyResultDataAccessException exception){
-            throw new DaoException("Resource not found (id = " + id + ")");
+            throw new ResourceNotFound("Certificate not found (id = " + id + ")");
         }
     }
 

@@ -2,7 +2,8 @@ package com.epam.esm.dao.impl;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.mapper.TagDaoMapper;
-import com.epam.esm.exception.DaoException;
+import com.epam.esm.exception.ResourceNotFound;
+import com.epam.esm.exception.ResourceViolation;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DuplicateKeyException;
@@ -40,16 +41,16 @@ public class TagDaoImpl implements TagDao {
             tag.setId(BigInteger.valueOf(simpleJdbcInsertTags.executeAndReturnKey(tagParameters).longValue()));
             return tag;
         } catch (DuplicateKeyException exception) {
-            throw new DaoException("Resource name or primary key violation (name = '" + tag.getName() + "')");
+            throw new ResourceViolation("Tag name or primary key violation (name = '" + tag.getName() + "')");
         }
     }
 
     @Override
-    public Tag selectTagById(BigInteger id) throws DaoException {
+    public Tag selectTagById(BigInteger id) throws ResourceNotFound {
         try {
             return jdbcTemplate.queryForObject(SELECT_TAG_BY_ID_QUERY, new TagDaoMapper(), id);
         } catch (EmptyResultDataAccessException exception) {
-            throw new DaoException("Resource not found (id = " + id + ")");
+            throw new ResourceNotFound("Tag not found (id = " + id + ")");
         }
     }
 
@@ -58,14 +59,14 @@ public class TagDaoImpl implements TagDao {
         try {
             return jdbcTemplate.queryForObject(SELECT_TAG_BY_NAME_QUERY, new TagDaoMapper(), name);
         } catch (EmptyResultDataAccessException exception) {
-            throw new DaoException("Resource not found (name = '" + name + "')");
+            throw new ResourceNotFound("Tag not found (name = '" + name + "')");
         }
     }
 
     public Tag selectOrSaveTag(Tag tag) {
         try {
             tag = selectTagByName(tag.getName());
-        } catch (DaoException e) {
+        } catch (ResourceNotFound e) {
             tag = saveTag(tag);
         }
         return tag;
