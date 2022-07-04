@@ -20,7 +20,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-// TODO: 04.07.2022 test
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {com.epam.esm.config.SpringJdbcConfig.class}, loader = AnnotationConfigContextLoader.class)
@@ -31,79 +30,126 @@ public class TagDaoIT {
     private TagDao tagDao;
 
     @Test
-    @Order(1)
-    public void testDaoTagSelectAll() {
+    void whenSelectAllTagsShouldReturnListTest() {
         //given
+        int expectedListSize = 3;
+
         //when
-        //then
         List<Tag> tagList = tagDao.selectAllTags();
 
-        assertTrue(tagList.size() > 1);
-        assertEquals(3, tagList.size());
+        //then
+        assertEquals(expectedListSize, tagList.size());
     }
 
     @Test
-    @Order(2)
-    public void testDaoTagSelectById() {
-        Tag tag = new Tag(BigInteger.ONE, "tag1");
+    void whenSelectTagByIdShouldReturnTagWithSameIdTest() {
+        //given
+        Tag tag = new Tag(BigInteger.valueOf(1), "tag1");
+
+        //when
         Tag dbTag = tagDao.selectTagById(tag.getId());
 
-        assertEquals(BigInteger.ONE, dbTag.getId());
-        assertEquals("tag1", dbTag.getName());
+        //then
         assertEquals(tag, dbTag);
-
-        ResourceNotFound thrown = assertThrows(
-                ResourceNotFound.class,
-                () -> tagDao.selectTagById(BigInteger.ZERO)
-        );
-        assertEquals("Tag not found (id = 0)", thrown.getMessage());
     }
 
     @Test
-    @Order(3)
-    public void testDaoTagSelectByName() {
-        Tag tag = new Tag(BigInteger.ONE, "tag1");
+    void whenSelectTagByIdIsNotExistShouldThrowResourceNotFoundException(){
+        //given
+        BigInteger resourceId = BigInteger.valueOf(0);
+        String expectedMessage = "Tag not found (id = 0)";
+
+        //when
+        ResourceNotFound thrown = assertThrows(
+                ResourceNotFound.class,
+                () -> tagDao.selectTagById(resourceId)
+        );
+
+        //then
+        assertEquals(expectedMessage, thrown.getMessage());
+    }
+
+
+    @Test
+    void whenSelectTagByNameShouldReturnTagWithSameNameTest() {
+        //given
+        Tag tag = new Tag(BigInteger.valueOf(1), "tag1");
+
+        //when
         Tag dbTag = tagDao.selectTagByName(tag.getName());
 
-        assertEquals(BigInteger.ONE, dbTag.getId());
-        assertEquals("tag1", dbTag.getName());
+        //then
         assertEquals(tag, dbTag);
-
-        ResourceNotFound thrown = assertThrows(
-                ResourceNotFound.class,
-                () -> tagDao.selectTagByName("")
-        );
-        assertEquals("Tag not found (name = '')", thrown.getMessage());
     }
 
     @Test
-    @Order(4)
-    public void testDaoTagInsert() {
-        List<Tag> tagListBefore = tagDao.selectAllTags();
+    void whenSelectTagByNameIsNotExistShouldThrowResourceNotFoundTest(){
+        //given
+        String resourceName = "";
+        String expectedMessage = "Tag not found (name = '')";
+
+        //when
+        ResourceNotFound thrown = assertThrows(
+                ResourceNotFound.class,
+                () -> tagDao.selectTagByName(resourceName)
+        );
+
+        //then
+        assertEquals(expectedMessage, thrown.getMessage());
+    }
+
+    @Test
+    public void whenInsertTagShouldReturnTagAndBeInDbTest() {
+        //given
         Tag tag = new Tag("testing");
+        int expectedListIncreased = 1;
+
+        //when
+        List<Tag> tagListBeforeInsert = tagDao.selectAllTags();
         Tag insertedTag = tagDao.saveTag(tag);
-        List<Tag> tagListAfter = tagDao.selectAllTags();
+        List<Tag> tagListAfterInsert = tagDao.selectAllTags();
 
-        assertNotEquals(tagListAfter, tagListBefore);
-        assertEquals(tagListBefore.size() + 1, tagListAfter.size());
-        assertEquals(tagListAfter.get(tagListAfter.size()-1), insertedTag);
+        //then
+        assertNotEquals(tagListBeforeInsert, tagListAfterInsert);
+        assertEquals(tagListBeforeInsert.size() + expectedListIncreased, tagListAfterInsert.size());
+        assertNotNull(insertedTag.getId());
+        assertEquals(tag.getName(), insertedTag.getName());
+    }
 
+    @Test
+    public void whenInsertTagWithDuplicatedNameShouldThrowResourceViolationTest() {
+        //given
+        Tag tag = new Tag("testing2");
+        String expectedMessage = "Tag name or primary key violation (name = 'testing')";
+
+        //when
+        tagDao.saveTag(tag);
         ResourceViolation thrown = assertThrows(
                 ResourceViolation.class,
                 () -> tagDao.saveTag(tag)
         );
-        assertEquals("Tag name or primary key violation (name = 'testing')", thrown.getMessage());
+
+        //then
+        assertEquals(expectedMessage, thrown.getMessage());
     }
 
     @Test
     @Order(5)
-    public void testDaoTagDelete() {
-        Tag dbTag = tagDao.selectTagById(BigInteger.ONE);
-        List<Tag> tagListBefore = tagDao.selectAllTags();
-        tagDao.deleteTag(dbTag.getId());
-        List<Tag> tagListAfter = tagDao.selectAllTags();
+    public void whenDeleteTagByIdShouldThatTagNotExistTest() {
+        //given
+        BigInteger resourceId = BigInteger.valueOf(1);
+        String expectedMessage = "Tag not found (id = 1)";
 
-        assertNotEquals(tagListBefore, tagListAfter);
-        assertEquals(tagListBefore.size()-1, tagListAfter.size());
+        //when
+        Tag dbTag = tagDao.selectTagById(resourceId);
+        tagDao.deleteTag(resourceId);
+        ResourceNotFound thrown = assertThrows(
+                ResourceNotFound.class,
+                () -> tagDao.selectTagById(resourceId)
+        );
+
+        //then
+        assertNotEquals(resourceId, dbTag.getId());
+        assertEquals(expectedMessage, thrown.getMessage());
     }
 }

@@ -34,8 +34,12 @@ public class GiftCertificateDaoIT {
     @Test
     @Order(1)
     public void testDaoGiftCertificateSelectAll() {
+        //given
+
+        //when
         List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(new Filter());
 
+        //then
         assertTrue(giftCertificateList.size() > 1);
         assertEquals(3, giftCertificateList.size());
     }
@@ -43,8 +47,12 @@ public class GiftCertificateDaoIT {
     @Test
     @Order(2)
     public void testDaoGiftCertificateSelectById() {
+        //given
+
+        //then
         GiftCertificate giftCertificate = giftCertificateDao.selectCertificateById(BigInteger.ONE);
 
+        //then
         assertEquals(BigInteger.ONE, giftCertificate.getId());
         assertEquals("Name1", giftCertificate.getName());
         assertEquals("Description1", giftCertificate.getDescription());
@@ -52,7 +60,6 @@ public class GiftCertificateDaoIT {
         assertEquals(5, giftCertificate.getDuration());
         assertEquals("2022-06-26T12:04:01.891", giftCertificate.getLastUpdateDate().toString());
         assertEquals("2022-06-26T12:04:01.891", giftCertificate.getCreateDate().toString());
-
         ResourceNotFound thrown = assertThrows(
                 ResourceNotFound.class,
                 () -> giftCertificateDao.selectCertificateById(BigInteger.ZERO)
@@ -63,6 +70,7 @@ public class GiftCertificateDaoIT {
     @Test
     @Order(3)
     public void testDaoGiftCertificateInsert() {
+        //given
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setName("TestingName");
         giftCertificate.setDescription("TestingDescription");
@@ -71,10 +79,13 @@ public class GiftCertificateDaoIT {
         giftCertificate.addTag(new Tag("tag1"));
         giftCertificate.addTag(new Tag("tag4"));
 
+        //when
         List<GiftCertificate> giftCertificatesBefore = giftCertificateDao.selectAllCertificates(new Filter());
         GiftCertificate giftCertificateDb = giftCertificateDao.saveCertificate(giftCertificate);
         List<GiftCertificate> giftCertificatesAfter = giftCertificateDao.selectAllCertificates(new Filter());
+        GiftCertificate giftCertificateSelect = giftCertificateDao.selectCertificateById(giftCertificateDb.getId());
 
+        //then
         assertEquals(giftCertificatesBefore.size() + 1, giftCertificatesAfter.size());
         assertEquals(giftCertificate.getName(), giftCertificateDb.getName());
         assertEquals(giftCertificate.getDescription(), giftCertificateDb.getDescription());
@@ -82,8 +93,6 @@ public class GiftCertificateDaoIT {
         assertEquals(giftCertificate.getDuration(), giftCertificateDb.getDuration());
         assertNotNull(giftCertificateDb.getId());
         assertEquals(giftCertificate.getTags().size(), giftCertificateDb.getTags().size());
-
-        GiftCertificate giftCertificateSelect = giftCertificateDao.selectCertificateById(giftCertificateDb.getId());
 
         assertEquals(giftCertificateDb.getId(), giftCertificateSelect.getId());
         assertEquals(giftCertificateDb.getName(), giftCertificateSelect.getName());
@@ -96,6 +105,7 @@ public class GiftCertificateDaoIT {
     @Test
     @Order(4)
     public void testDaoGiftCertificateUpdate() {
+        //given
         GiftCertificate giftCertificate = giftCertificateDao.selectCertificateById(BigInteger.ONE);
         giftCertificate.setName("changedName");
         giftCertificate.setDescription("changedDescription");
@@ -103,9 +113,11 @@ public class GiftCertificateDaoIT {
         giftCertificate.setDuration(2);
         giftCertificate.addTag(new Tag("tag5"));
 
+        //when
         giftCertificateDao.updateCertificate(giftCertificate);
         GiftCertificate giftCertificateChangedDb = giftCertificateDao.selectCertificateById(giftCertificate.getId());
 
+        //then
         assertEquals(giftCertificate.getId(), giftCertificateChangedDb.getId());
         assertEquals(giftCertificate.getName(), giftCertificateChangedDb.getName());
         assertEquals(giftCertificate.getDescription(), giftCertificateChangedDb.getDescription());
@@ -119,10 +131,14 @@ public class GiftCertificateDaoIT {
     @Test
     @Order(5)
     public void testDaoGiftCertificateDelete() {
+        //given
+
+        //when
         List<GiftCertificate> giftCertificateListBefore = giftCertificateDao.selectAllCertificates(new Filter());
         giftCertificateDao.deleteCertificateById(BigInteger.ONE);
         List<GiftCertificate> giftCertificateListAfter = giftCertificateDao.selectAllCertificates(new Filter());
 
+        //then
         assertNotEquals(giftCertificateListBefore, giftCertificateListAfter);
         assertEquals(giftCertificateListBefore.size() - 1, giftCertificateListAfter.size());
     }

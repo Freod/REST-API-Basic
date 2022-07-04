@@ -30,7 +30,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         GiftCertificate giftCertificate = convertGiftCertificateDtoToGiftCertificate(giftCertificateDto);
 
         giftCertificate.setTags(giftCertificate.getTags().stream().collect(Collectors.toSet()).stream().collect(Collectors.toList()));
-        ;
 
         return convertGiftCertificateToGiftCertificateDto(giftCertificateDao.saveCertificate(giftCertificate));
     }

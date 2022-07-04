@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-// TODO: 04.07.2022
 @NoArgsConstructor
 public class Filter {
     private String tag = "";
