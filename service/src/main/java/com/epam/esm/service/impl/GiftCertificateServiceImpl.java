@@ -113,8 +113,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 giftCertificate.getDescription(),
                 giftCertificate.getPrice(),
                 giftCertificate.getDuration(),
-                giftCertificate.getLastUpdateDate().toString(),
                 giftCertificate.getCreateDate().toString(),
+                giftCertificate.getLastUpdateDate().toString(),
                 giftCertificate.getTags()
                         .stream()
                         .map(TagServiceImpl::convertTagToTagDto)

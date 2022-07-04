@@ -27,8 +27,9 @@ import java.util.stream.Collectors;
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private static final String INSERT_CERTIFICATE_TAGS_QUERY = "INSERT INTO gift_certificates_tags (certificate_id, tag_id) VALUES (?, ?);";
-    private static final String SELECT_CERTIFICATE_BY_ID_QUERY = "SELECT g_c.*, t.id as tag_id, t.name as tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags as g_c_t on g_c.id = g_c_t.certificate_id LEFT JOIN tags as t on t.id = g_c_t.tag_id WHERE g_c.id = ?;";
-    private static final String SELECT_ALL_CERTIFICATES_QUERY = "SELECT g_c.*, t.id as tag_id, t.name as tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags as g_c_t on g_c.id = g_c_t.certificate_id LEFT JOIN tags as t on t.id = g_c_t.tag_id WHERE UPPER(g_c.name) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(g_c.description) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(t.name) LIKE CONCAT('%%', UPPER(?), '%%');";
+    private static final String SELECT_CERTIFICATE_BY_ID_QUERY = "SELECT g_c.*, t.id as tag_id, t.name AS tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags AS g_c_t ON g_c.id = g_c_t.certificate_id LEFT JOIN tags AS t ON t.id = g_c_t.tag_id WHERE g_c.id = ?;";
+    private static final String SELECT_ALL_CERTIFICATES_QUERY = "SELECT g_c.*, t.id as tag_id, t.name AS tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags AS g_c_t ON g_c.id = g_c_t.certificate_id LEFT JOIN tags AS t ON t.id = g_c_t.tag_id WHERE UPPER(g_c.name) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(g_c.description) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(t.name) LIKE CONCAT('%%', UPPER(?), '%%');";
+    private static final String COUNT_ALL_CERTIFICATE_TAGS_BY_CERTIFICATE_ID_AND_TAG_ID_QUERY = "SELECT COUNT(*) FROM gift_certificates_tags AS g_c_t WHERE g_c_t.certificate_id = ? AND g_c_t.tag_id = ?;";
     private static final String UPDATE_CERTIFICATE_QUERY = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_date = ? WHERE id = ?";
     private static final String DELETE_CERTIFICATE_BY_ID_QUERY = "DELETE FROM gift_certificates WHERE id = ?";
     private static final String DELETE_TAG_FROM_CERTIFICATE_QUERY = "DELETE FROM gift_certificates_tags where certificate_id = ? AND tag_id = ?;";
@@ -71,7 +72,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         try {
             GiftCertificate giftCertificate = jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID_QUERY, new GiftCertificateDaoMapper(), id);
             return giftCertificate;
-        }catch (EmptyResultDataAccessException exception){
+        } catch (EmptyResultDataAccessException exception) {
             throw new ResourceNotFound("Certificate not found (id = " + id + ")");
         }
     }
@@ -85,7 +86,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    // TODO: 04.07.2022 date create
     public void updateCertificate(GiftCertificate giftCertificate) {
         GiftCertificate dbGiftCertificate = selectCertificateById(giftCertificate.getId());
         dbGiftCertificate = replaceChangedFields(dbGiftCertificate, giftCertificate);
@@ -94,10 +94,12 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     @Transactional
-    // TODO: 04.07.2022 duplicates
     public void addTagToGiftCertificate(BigInteger giftCertificateId, Tag tag) {
         tag = tagDao.selectOrSaveTag(tag);
-        saveCertificateTags(giftCertificateId, tag.getId());
+        int numberOfTagInDB = jdbcTemplate.queryForObject(COUNT_ALL_CERTIFICATE_TAGS_BY_CERTIFICATE_ID_AND_TAG_ID_QUERY, Integer.class, giftCertificateId, tag.getId());
+        if (numberOfTagInDB < 1) {
+            saveCertificateTags(giftCertificateId, tag.getId());
+        }
     }
 
     @Override
@@ -118,16 +120,16 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     private GiftCertificate replaceChangedFields(GiftCertificate dbGiftCertificate, GiftCertificate changedGiftCertificate) {
         if (!dbGiftCertificate.equals(changedGiftCertificate)) {
-            if (changedGiftCertificate.getName()!=null) {
+            if (changedGiftCertificate.getName() != null) {
                 dbGiftCertificate.setName(changedGiftCertificate.getName());
             }
-            if (changedGiftCertificate.getDescription()!=null) {
+            if (changedGiftCertificate.getDescription() != null) {
                 dbGiftCertificate.setDescription(changedGiftCertificate.getDescription());
             }
-            if (changedGiftCertificate.getPrice()!=null) {
+            if (changedGiftCertificate.getPrice() != null) {
                 dbGiftCertificate.setPrice(changedGiftCertificate.getPrice());
             }
-            if (changedGiftCertificate.getDuration()!=null) {
+            if (changedGiftCertificate.getDuration() != null) {
                 dbGiftCertificate.setDuration(changedGiftCertificate.getDuration());
             }
 
