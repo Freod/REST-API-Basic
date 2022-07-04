@@ -1,6 +1,6 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.dto.FiltersDto;
+import com.epam.esm.dto.FilterDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Controller for processing REST-api requests for Gift Certificate resource.
@@ -33,7 +34,7 @@ public class GiftCertificateController {
      */
     @Autowired
     public GiftCertificateController(GiftCertificateService giftCertificateService) {
-        this.giftCertificateService = giftCertificateService;
+        this.giftCertificateService = Objects.requireNonNull(giftCertificateService);
     }
 
     /**
@@ -42,25 +43,26 @@ public class GiftCertificateController {
      * @param id to find Gift Certificate resource
      * @return Gift Certificate resource that was found
      */
-    @ResponseBody
-    @GetMapping("/show/{id}")
+    @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
     public GiftCertificateDto showGiftCertificate(@PathVariable BigInteger id) {
         return giftCertificateService.selectGiftCertificate(id);
     }
 
+    // TODO: 04.07.2022 JAVA DOC? filters
     /**
      * Gets list of Gift Certificate resources sorting by filters
      *
-     * @param filtersDto Resource to sorting and filters.
+     * @param filterDto Resource to sorting and filters.
      * @return list of all giftCertificates
      */
-    @PostMapping("/showList")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> showGiftCertificateList(@RequestBody FiltersDto filtersDto) {
-        return giftCertificateService.selectAllGiftCertificates(filtersDto);
+    public List<GiftCertificateDto> showGiftCertificateList(@RequestBody FilterDto filterDto) {
+        return giftCertificateService.selectAllGiftCertificates(filterDto);
     }
 
+    // TODO: 04.07.2022 POST
     /**
      * Creates new Gift Certificate resource
      * <p>Example JSON request:{
@@ -100,12 +102,13 @@ public class GiftCertificateController {
      * @param giftCertificateDto Gift Certificate resource to create
      * @return Gift Certificate resource that was created
      */
-    @PostMapping("/new")
+    @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public GiftCertificateDto addNewGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto) {
         return giftCertificateService.saveGiftCertificate(giftCertificateDto);
     }
 
+    // TODO: 03.07.2022 PUT OR PATCH
     /**
      * Updates Gift Certificate resource by id. Without giving same tags, they can be changed or deleted.
      * <p>Example JSON request:{
@@ -124,7 +127,7 @@ public class GiftCertificateController {
      * @param id to find Gift Certificate resource
      * @param giftCertificateDto Gift Certificate resource to update
      */
-    @PatchMapping("/update/{id}")
+    @PatchMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateGiftCertificate(@PathVariable BigInteger id, @RequestBody GiftCertificateDto giftCertificateDto) {
         giftCertificateService.updateGiftCertificate(id, giftCertificateDto);
@@ -135,8 +138,8 @@ public class GiftCertificateController {
      *
      * @param id to remove Gift Certificate resource
      */
-    @DeleteMapping("/delete/{id}")
-    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGiftCertificate(@PathVariable BigInteger id) {
         giftCertificateService.deleteGiftCertificate(id);
     }

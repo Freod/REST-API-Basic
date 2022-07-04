@@ -5,7 +5,7 @@ import com.epam.esm.dao.TagDao;
 import com.epam.esm.dao.extractor.GiftCertificateExtractor;
 import com.epam.esm.dao.mapper.GiftCertificateDaoMapper;
 import com.epam.esm.exception.ResourceNotFound;
-import com.epam.esm.model.Filters;
+import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +36,11 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Autowired
     public GiftCertificateDaoImpl(TagDao tagDao, JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsertGiftCertificates) {
-        this.tagDao = tagDao;
-        this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsertGiftCertificates = simpleJdbcInsertGiftCertificates;
+        this.tagDao = Objects.requireNonNull(tagDao);
+        this.jdbcTemplate = Objects.requireNonNull(jdbcTemplate);
+        this.simpleJdbcInsertGiftCertificates = Objects.requireNonNull(simpleJdbcInsertGiftCertificates);
     }
 
-
-    //todo transactions
     @Override
     @Transactional
     public GiftCertificate saveCertificate(GiftCertificate giftCertificate) {
@@ -79,11 +77,11 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
-    public List<GiftCertificate> selectAllCertificates(Filters filters) {
-        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ALL_CERTIFICATES_QUERY, new GiftCertificateExtractor(), filters.getName(), filters.getDescription(), filters.getTag());
+    public List<GiftCertificate> selectAllCertificates(Filter filter) {
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ALL_CERTIFICATES_QUERY, new GiftCertificateExtractor(), filter.getName(), filter.getDescription(), filter.getTag());
 
         Comparator comparator;
-        switch (filters.getOrderBy()) {
+        switch (filter.getOrderBy()) {
             case "last_update_date":
                 comparator = Comparator.comparing(GiftCertificate::getLastUpdateDate);
                 break;
@@ -94,7 +92,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
                 comparator = Comparator.comparing(GiftCertificate::getName);
         }
 
-        if (filters.getDirection().equals("desc")) {
+        if (filter.getDirection().equals("desc")) {
             comparator = comparator.reversed();
         }
 

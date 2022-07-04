@@ -49,7 +49,7 @@ public class SpringJdbcConfig {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
                 .addScript("database/init-ddl.sql")
-                .addScript("database/insert-ddl.sql")
+                .addScript("database/insert-dml.sql")
                 .build();
     }
 

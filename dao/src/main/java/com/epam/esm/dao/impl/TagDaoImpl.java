@@ -11,11 +11,13 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Repository
 public class TagDaoImpl implements TagDao {
@@ -29,11 +31,12 @@ public class TagDaoImpl implements TagDao {
 
     @Autowired
     public TagDaoImpl(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsertTags) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.simpleJdbcInsertTags = simpleJdbcInsertTags;
+        this.jdbcTemplate = Objects.requireNonNull(jdbcTemplate);
+        this.simpleJdbcInsertTags = Objects.requireNonNull(simpleJdbcInsertTags);
     }
 
     @Override
+    @Transactional
     public Tag saveTag(Tag tag) {
         Map<String, Object> tagParameters = new HashMap<>();
         tagParameters.put("name", tag.getName());

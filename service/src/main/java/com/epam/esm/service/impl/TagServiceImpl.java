@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,7 +19,7 @@ public class TagServiceImpl implements TagService {
 
     @Autowired
     public TagServiceImpl(TagDao tagDao) {
-        this.tagDao = tagDao;
+        this.tagDao = Objects.requireNonNull(tagDao);
     }
 
     @Override
@@ -31,13 +32,13 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
-    public TagDto selectTagByName(String name) {
-        return convertTagToTagDto(tagDao.selectTagByName(name));
-    }
-
-    @Override
-    public TagDto selectTagById(BigInteger id) {
-        return convertTagToTagDto(tagDao.selectTagById(id));
+    public TagDto selectTagByNameOrId(TagDto tagDto) {
+        if (tagDto.getId() != null) {
+            return convertTagToTagDto(tagDao.selectTagById(tagDto.getId()));
+        } else if (tagDto.getName() != null) {
+            return convertTagToTagDto(tagDao.selectTagByName(tagDto.getName()));
+        }
+        throw new NullPointerException("id or name can't be null");
     }
 
     @Override
@@ -50,12 +51,14 @@ public class TagServiceImpl implements TagService {
         tagDao.deleteTag(id);
     }
 
+    // TODO: 04.07.2022 encapsulation
     private Tag convertTagDtoToTag(TagDto tagDto) {
         Tag tag = new Tag();
         tag.setName(tagDto.getName());
         return tag;
     }
 
+    // TODO: 04.07.2022 encapsulation
     private TagDto convertTagToTagDto(Tag tag) {
         TagDto tagDto = new TagDto();
         tagDto.setId(tag.getId());

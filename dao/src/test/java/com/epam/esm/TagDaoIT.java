@@ -20,11 +20,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// TODO: 04.07.2022 test
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {com.epam.esm.config.SpringJdbcConfig.class}, loader = AnnotationConfigContextLoader.class)
 @TestMethodOrder(OrderAnnotation.class)
-public class TagDaoTestsIT {
+public class TagDaoIT {
 
     @Autowired
     private TagDao tagDao;

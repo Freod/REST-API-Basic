@@ -2,7 +2,7 @@ package com.epam.esm;
 
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.exception.ResourceNotFound;
-import com.epam.esm.model.Filters;
+import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.MethodOrderer;
@@ -21,11 +21,12 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+// TODO: 04.07.2022 test 
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {com.epam.esm.config.SpringJdbcConfig.class}, loader = AnnotationConfigContextLoader.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class GiftCertificateDaoTestIT {
+public class GiftCertificateDaoIT {
 
     @Autowired
     private GiftCertificateDao giftCertificateDao;
@@ -33,7 +34,7 @@ public class GiftCertificateDaoTestIT {
     @Test
     @Order(1)
     public void testDaoGiftCertificateSelectAll() {
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(new Filters());
+        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(new Filter());
 
         assertTrue(giftCertificateList.size() > 1);
         assertEquals(3, giftCertificateList.size());
@@ -70,9 +71,9 @@ public class GiftCertificateDaoTestIT {
         giftCertificate.addTag(new Tag("tag1"));
         giftCertificate.addTag(new Tag("tag4"));
 
-        List<GiftCertificate> giftCertificatesBefore = giftCertificateDao.selectAllCertificates(new Filters());
+        List<GiftCertificate> giftCertificatesBefore = giftCertificateDao.selectAllCertificates(new Filter());
         GiftCertificate giftCertificateDb = giftCertificateDao.saveCertificate(giftCertificate);
-        List<GiftCertificate> giftCertificatesAfter = giftCertificateDao.selectAllCertificates(new Filters());
+        List<GiftCertificate> giftCertificatesAfter = giftCertificateDao.selectAllCertificates(new Filter());
 
         assertEquals(giftCertificatesBefore.size() + 1, giftCertificatesAfter.size());
         assertEquals(giftCertificate.getName(), giftCertificateDb.getName());
@@ -118,9 +119,9 @@ public class GiftCertificateDaoTestIT {
     @Test
     @Order(5)
     public void testDaoGiftCertificateDelete() {
-        List<GiftCertificate> giftCertificateListBefore = giftCertificateDao.selectAllCertificates(new Filters());
+        List<GiftCertificate> giftCertificateListBefore = giftCertificateDao.selectAllCertificates(new Filter());
         giftCertificateDao.deleteCertificateById(BigInteger.ONE);
-        List<GiftCertificate> giftCertificateListAfter = giftCertificateDao.selectAllCertificates(new Filters());
+        List<GiftCertificate> giftCertificateListAfter = giftCertificateDao.selectAllCertificates(new Filter());
 
         assertNotEquals(giftCertificateListBefore, giftCertificateListAfter);
         assertEquals(giftCertificateListBefore.size() - 1, giftCertificateListAfter.size());

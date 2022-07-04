@@ -1,10 +1,10 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.dao.GiftCertificateDao;
-import com.epam.esm.dto.FiltersDto;
+import com.epam.esm.dto.FilterDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.model.Filters;
+import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,8 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+// TODO: 04.07.2022 test
 @ExtendWith(MockitoExtension.class)
-public class GiftCertificateServiceImplTests {
+public class GiftCertificateServiceImplTest {
 
     @Mock
     private GiftCertificateDao giftCertificateDao;
@@ -78,8 +79,8 @@ public class GiftCertificateServiceImplTests {
 
     @Test
     public void selectAllGiftCertificatesTest() {
-        when(giftCertificateDao.selectAllCertificates(new Filters())).thenReturn(Arrays.asList(giftCertificate));
-        List<GiftCertificateDto> giftCertificateDtoListReturnService= giftCertificateService.selectAllGiftCertificates(new FiltersDto());
+        when(giftCertificateDao.selectAllCertificates(new Filter())).thenReturn(Arrays.asList(giftCertificate));
+        List<GiftCertificateDto> giftCertificateDtoListReturnService= giftCertificateService.selectAllGiftCertificates(new FilterDto());
         assertEquals(Arrays.asList(giftCertificateDto), giftCertificateDtoListReturnService);
     }
 

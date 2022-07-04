@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: 04.07.2022 immutable 
 @Data
 public class GiftCertificate {
     private BigInteger id;

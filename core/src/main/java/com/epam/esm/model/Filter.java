@@ -1,9 +1,10 @@
-package com.epam.esm.dto;
+package com.epam.esm.model;
 
 import lombok.Data;
 
+//todo
 @Data
-public class FiltersDto {
+public class Filter {
     private String tag = "";
     private String name = "";
     private String description = "";

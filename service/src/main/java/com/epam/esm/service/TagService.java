@@ -8,9 +8,7 @@ import java.util.List;
 public interface TagService {
     TagDto saveTag(TagDto tagDto);
 
-    TagDto selectTagByName(String name);
-
-    TagDto selectTagById(BigInteger id);
+    TagDto selectTagByNameOrId(TagDto tagDto);
 
     List<TagDto> selectAllTags();
 

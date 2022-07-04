@@ -1,9 +1,10 @@
-package com.epam.esm.model;
+package com.epam.esm.dto;
 
 import lombok.Data;
 
+// TODO: 04.07.2022 javadoc? immutable
 @Data
-public class Filters {
+public class FilterDto {
     private String tag = "";
     private String name = "";
     private String description = "";

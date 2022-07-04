@@ -3,10 +3,12 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Controller for processing REST-api requests for Tag resource.
@@ -31,31 +33,21 @@ public class TagController {
      */
     @Autowired
     public TagController(TagService tagService) {
-        this.tagService = tagService;
+        this.tagService = Objects.requireNonNull(tagService);
     }
 
     /**
-     * Gets Tag resource with requested id.
+     * Gets Tag resource with requested name or id.
+     * <p>Example JSON request: {"name": "tag7"}</p>
      * <p>Example JSON response: { "id": 1, "name": "tag1"}</p>
      *
-     * @param id to find Tag resource
+     * @param tagDto to find Tag resource
      * @return Tag resource that was found
      */
-    @GetMapping("/show/id/{id}")
-    public TagDto showTag(@PathVariable BigInteger id) {
-        return tagService.selectTagById(id);
-    }
-
-    /**
-     * Gets Tag resource with requested name.
-     * <p>Example JSON response: { "id": 1, "name": "tag1"}</p>
-     *
-     * @param name to find Tag resource
-     * @return Tag resource that was found
-     */
-    @GetMapping("/show/name/{name}")
-    public TagDto showTag(@PathVariable String name) {
-        return tagService.selectTagByName(name);
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    public TagDto showTag(@RequestBody TagDto tagDto) {
+        return tagService.selectTagByNameOrId(tagDto);
     }
 
     /**
@@ -63,8 +55,9 @@ public class TagController {
      *
      * @return list of Tag resources that was found
      */
-    @GetMapping("/showList")
-    public List<TagDto> showTagList() {
+    @GetMapping("/list")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TagDto> showTag() {
         return tagService.selectAllTags();
     }
 
@@ -84,7 +77,8 @@ public class TagController {
      * @param tagDto Tag resource to create
      * @return Tag resource that was created
      */
-    @PostMapping("/new")
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
     public TagDto addNewTag(@RequestBody TagDto tagDto) {
         return tagService.saveTag(tagDto);
     }
@@ -94,10 +88,9 @@ public class TagController {
      *
      * @param id to remove Tag resource
      */
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTag(@PathVariable BigInteger id) {
         tagService.deleteTag(id);
     }
-
-
 }
