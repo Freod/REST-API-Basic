@@ -18,7 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Repository
@@ -73,7 +76,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         }
     }
 
-    // TODO: 04.07.2022  
+    // TODO: 04.07.2022 no tags
     @Override
     public List<GiftCertificate> selectAllCertificates(Filter filter) {
         List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ALL_CERTIFICATES_QUERY, new GiftCertificateExtractor(), filter.getName(), filter.getDescription(), filter.getTag());
@@ -82,6 +85,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
+    // TODO: 04.07.2022 date create
     public void updateCertificate(GiftCertificate giftCertificate) {
         GiftCertificate dbGiftCertificate = selectCertificateById(giftCertificate.getId());
         dbGiftCertificate = replaceChangedFields(dbGiftCertificate, giftCertificate);
@@ -90,6 +94,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     @Transactional
+    // TODO: 04.07.2022 duplicates
     public void addTagToGiftCertificate(BigInteger giftCertificateId, Tag tag) {
         tag = tagDao.selectOrSaveTag(tag);
         saveCertificateTags(giftCertificateId, tag.getId());

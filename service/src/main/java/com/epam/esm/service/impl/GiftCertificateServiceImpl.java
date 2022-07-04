@@ -27,16 +27,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDto saveGiftCertificate(GiftCertificateDto giftCertificateDto) {
-        giftCertificateDto.setTags(giftCertificateDto.getTags()
-                .stream().collect(Collectors.toSet())
-                .stream()
-                .collect(Collectors.toList()));
+        GiftCertificate giftCertificate = convertGiftCertificateDtoToGiftCertificate(giftCertificateDto);
 
-        return convertGiftCertificateToGiftCertificateDto(
-                giftCertificateDao.saveCertificate(
-                        convertGiftCertificateDtoToGiftCertificate(giftCertificateDto)
-                )
-        );
+        giftCertificate.setTags(giftCertificate.getTags().stream().collect(Collectors.toSet()).stream().collect(Collectors.toList()));
+        ;
+
+        return convertGiftCertificateToGiftCertificateDto(giftCertificateDao.saveCertificate(giftCertificate));
     }
 
     @Override
@@ -46,7 +42,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public List<GiftCertificateDto> selectAllGiftCertificates(FilterDto filterDto) {
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(convertFiltersDtoToFilters(filterDto));
+        List<GiftCertificate> giftCertificateList
+                = giftCertificateDao.selectAllCertificates(convertFiltersDtoToFilters(filterDto));
 
         Comparator comparator;
         switch (filterDto.getOrderBy()) {
@@ -67,7 +64,8 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificateList.sort(comparator);
 
         return giftCertificateList
-                .stream().map(this::convertGiftCertificateToGiftCertificateDto)
+                .stream()
+                .map(this::convertGiftCertificateToGiftCertificateDto)
                 .collect(Collectors.toList());
     }
 
@@ -99,31 +97,36 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificate.setDescription(giftCertificateDto.getDescription());
         giftCertificate.setPrice(giftCertificateDto.getPrice());
         giftCertificate.setDuration(giftCertificateDto.getDuration());
-        giftCertificate.setTags(giftCertificateDto.getTags().stream().map(TagServiceImpl::convertTagDtoToTag).collect(Collectors.toList()));
+        giftCertificate.setTags(
+                giftCertificateDto.getTags()
+                        .stream()
+                        .map(TagServiceImpl::convertTagDtoToTag)
+                        .collect(Collectors.toList()));
+
         return giftCertificate;
     }
 
     private GiftCertificateDto convertGiftCertificateToGiftCertificateDto(GiftCertificate giftCertificate) {
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
-        giftCertificateDto.setId(giftCertificate.getId());
-        giftCertificateDto.setName(giftCertificate.getName());
-        giftCertificateDto.setDescription(giftCertificate.getDescription());
-        giftCertificateDto.setPrice(giftCertificate.getPrice());
-        giftCertificateDto.setDuration(giftCertificate.getDuration());
-        giftCertificateDto.setLastUpdateDate(giftCertificate.getLastUpdateDate().toString());
-        giftCertificateDto.setCreateDate(giftCertificate.getCreateDate().toString());
-        giftCertificateDto.setTags(giftCertificate.getTags().stream().map(TagServiceImpl::convertTagToTagDto).collect(Collectors.toList()));
+        GiftCertificateDto giftCertificateDto = new GiftCertificateDto(
+                giftCertificate.getId(),
+                giftCertificate.getName(),
+                giftCertificate.getDescription(),
+                giftCertificate.getPrice(),
+                giftCertificate.getDuration(),
+                giftCertificate.getLastUpdateDate().toString(),
+                giftCertificate.getCreateDate().toString(),
+                giftCertificate.getTags()
+                        .stream()
+                        .map(TagServiceImpl::convertTagToTagDto)
+                        .collect(Collectors.toList()));
+
         return giftCertificateDto;
     }
 
     private Filter convertFiltersDtoToFilters(FilterDto filterDto) {
-        Filter filter = new Filter();
-        if (filterDto.getTag() != null)
-            filter.setTag(filterDto.getTag());
-        if (filterDto.getName() != null)
-            filter.setName(filterDto.getName());
-        if (filterDto.getDirection() != null)
-            filter.setDescription(filterDto.getDescription());
-        return filter;
+        return new Filter(
+                filterDto.getTag(),
+                filterDto.getName(),
+                filterDto.getDescription());
     }
 }

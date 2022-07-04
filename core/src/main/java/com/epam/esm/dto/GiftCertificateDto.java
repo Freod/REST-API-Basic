@@ -1,12 +1,15 @@
 package com.epam.esm.dto;
 
-import lombok.Data;
+import lombok.*;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 public class GiftCertificateDto {
     private BigInteger id;
     private String name;
@@ -16,4 +19,8 @@ public class GiftCertificateDto {
     private String createDate;
     private String lastUpdateDate;
     private List<TagDto> tags = new ArrayList<>();
+
+    public List<TagDto> getTags() {
+        return new ArrayList<>(tags);
+    }
 }

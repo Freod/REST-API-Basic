@@ -1,9 +1,11 @@
 package com.epam.esm.dto;
 
-import lombok.Data;
+import lombok.*;
 
-// TODO: 04.07.2022 javadoc? immutable
-@Data
+@Getter
+@EqualsAndHashCode
+@NoArgsConstructor
+@AllArgsConstructor
 public class FilterDto {
     private String tag = "";
     private String name = "";

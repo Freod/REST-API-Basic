@@ -1,10 +1,16 @@
 package com.epam.esm.dto;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.math.BigInteger;
 
-@Data
+@Getter
+@EqualsAndHashCode
+@AllArgsConstructor
+@NoArgsConstructor
 public class TagDto {
     private BigInteger id;
     private String name;
