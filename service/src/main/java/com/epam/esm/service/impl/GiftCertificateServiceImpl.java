@@ -27,13 +27,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDto saveGiftCertificate(GiftCertificateDto giftCertificateDto) {
-        System.out.println(giftCertificateDto);
-        // TODO: 04.07.2022  
-        System.out.println("dee");
-//        if (giftCertificateDto.getTags().size() > 0) {
-//            giftCertificateDto.setTags(giftCertificateDto.getTags().stream().collect(Collectors.toSet()).stream().sorted(Comparator.comparing(tagDto -> tagDto.getId())).collect(Collectors.toList()));
-//        }
-        System.out.println("dewww");
+        giftCertificateDto.setTags(giftCertificateDto.getTags()
+                .stream().collect(Collectors.toSet())
+                .stream()
+                .collect(Collectors.toList()));
+
         return convertGiftCertificateToGiftCertificateDto(
                 giftCertificateDao.saveCertificate(
                         convertGiftCertificateDtoToGiftCertificate(giftCertificateDto)
@@ -47,9 +45,30 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    // TODO: 04.07.2022
     public List<GiftCertificateDto> selectAllGiftCertificates(FilterDto filterDto) {
-        return giftCertificateDao.selectAllCertificates(convertFiltersDtoToFilters(filterDto)).stream().map(this::convertGiftCertificateToGiftCertificateDto).collect(Collectors.toList());
+        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(convertFiltersDtoToFilters(filterDto));
+
+        Comparator comparator;
+        switch (filterDto.getOrderBy()) {
+            case "lastUpdateDate":
+                comparator = Comparator.comparing(GiftCertificate::getLastUpdateDate);
+                break;
+            case "createDate":
+                comparator = Comparator.comparing(GiftCertificate::getCreateDate);
+                break;
+            default:
+                comparator = Comparator.comparing(GiftCertificate::getName);
+        }
+
+        if (filterDto.getDirection().equals("desc")) {
+            comparator = comparator.reversed();
+        }
+
+        giftCertificateList.sort(comparator);
+
+        return giftCertificateList
+                .stream().map(this::convertGiftCertificateToGiftCertificateDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -97,7 +116,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         return giftCertificateDto;
     }
 
-    // TODO: 04.07.2022
     private Filter convertFiltersDtoToFilters(FilterDto filterDto) {
         Filter filter = new Filter();
         if (filterDto.getTag() != null)
@@ -106,10 +124,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
             filter.setName(filterDto.getName());
         if (filterDto.getDirection() != null)
             filter.setDescription(filterDto.getDescription());
-        if (filterDto.getDirection() != null)
-            filter.setDirection(filterDto.getDirection());
-        if (filterDto.getOrderBy() != null)
-            filter.setOrderBy(filterDto.getOrderBy());
         return filter;
     }
 }

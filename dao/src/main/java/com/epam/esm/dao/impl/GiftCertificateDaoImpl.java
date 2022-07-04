@@ -25,8 +25,7 @@ import java.util.stream.Collectors;
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private static final String INSERT_CERTIFICATE_TAGS_QUERY = "INSERT INTO gift_certificates_tags (certificate_id, tag_id) VALUES (?, ?);";
     private static final String SELECT_CERTIFICATE_BY_ID_QUERY = "SELECT g_c.*, t.id as tag_id, t.name as tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags as g_c_t on g_c.id = g_c_t.certificate_id LEFT JOIN tags as t on t.id = g_c_t.tag_id WHERE g_c.id = ?;";
-//    private static final String SELECT_ALL_CERTIFICATES_QUERY = "SELECT g_c.*, t.id as tag_id, t.name as tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags as g_c_t on g_c.id = g_c_t.certificate_id LEFT JOIN tags as t on t.id = g_c_t.tag_id WHERE UPPER(g_c.name) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(g_c.description) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(t.name) LIKE CONCAT('%%', UPPER(?), '%%');";
-    private static final String SELECT_ALL_CERTIFICATES_QUERY = "SELECT g_c.*, t.id as tag_id, t.name as tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags as g_c_t on g_c.id = g_c_t.certificate_id LEFT JOIN tags as t on t.id = g_c_t.tag_id;";
+    private static final String SELECT_ALL_CERTIFICATES_QUERY = "SELECT g_c.*, t.id as tag_id, t.name as tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags as g_c_t on g_c.id = g_c_t.certificate_id LEFT JOIN tags as t on t.id = g_c_t.tag_id WHERE UPPER(g_c.name) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(g_c.description) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(t.name) LIKE CONCAT('%%', UPPER(?), '%%');";
     private static final String UPDATE_CERTIFICATE_QUERY = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_date = ? WHERE id = ?";
     private static final String DELETE_CERTIFICATE_BY_ID_QUERY = "DELETE FROM gift_certificates WHERE id = ?";
     private static final String DELETE_TAG_FROM_CERTIFICATE_QUERY = "DELETE FROM gift_certificates_tags where certificate_id = ? AND tag_id = ?;";
@@ -77,27 +76,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     // TODO: 04.07.2022  
     @Override
     public List<GiftCertificate> selectAllCertificates(Filter filter) {
-        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ALL_CERTIFICATES_QUERY, new GiftCertificateExtractor());
-        System.out.println(filter.getName().isEmpty());
-//        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ALL_CERTIFICATES_QUERY, new GiftCertificateExtractor(), filter.getName(), filter.getDescription(), filter.getTag());
-
-//        Comparator comparator;
-//        switch (filter.getOrderBy()) {
-//            case "last_update_date":
-//                comparator = Comparator.comparing(GiftCertificate::getLastUpdateDate);
-//                break;
-//            case "create_date":
-//                comparator = Comparator.comparing(GiftCertificate::getCreateDate);
-//                break;
-//            default:
-//                comparator = Comparator.comparing(GiftCertificate::getName);
-//        }
-//
-//        if (filter.getDirection().equals("desc")) {
-//            comparator = comparator.reversed();
-//        }
-//
-//        giftCertificates.sort(comparator);
+        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ALL_CERTIFICATES_QUERY, new GiftCertificateExtractor(), filter.getName(), filter.getDescription(), filter.getTag());
 
         return giftCertificates;
     }
@@ -110,12 +89,14 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     }
 
     @Override
+    @Transactional
     public void addTagToGiftCertificate(BigInteger giftCertificateId, Tag tag) {
         tag = tagDao.selectOrSaveTag(tag);
         saveCertificateTags(giftCertificateId, tag.getId());
     }
 
     @Override
+    @Transactional
     public void removeTagFromGiftCertificate(BigInteger giftCertificateId, Tag tag) {
         tag = tagDao.selectOrSaveTag(tag);
         jdbcTemplate.update(DELETE_TAG_FROM_CERTIFICATE_QUERY, giftCertificateId, tag.getId());

@@ -50,9 +50,8 @@ public class GiftCertificateController {
         return giftCertificateService.selectGiftCertificate(id);
     }
 
-    // TODO: 04.07.2022 JAVA DOC? filters
     /**
-     * Gets list of Gift Certificate resources sorting by filters
+     * Gets list of Gift Certificate resources sorting by filters. Order by name or lastUpdateDate or createDate. Direction by asc or desc.
      *
      * @param filterDto Resource to sorting and filters.
      * @return list of all giftCertificates
