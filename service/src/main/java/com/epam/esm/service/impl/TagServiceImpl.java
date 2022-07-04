@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public TagDto saveTag(TagDto tagDto) {
+        Objects.requireNonNull(tagDto.getName());
         return convertTagToTagDto(
                 tagDao.saveTag(
                         convertTagDtoToTag(tagDto)
@@ -43,7 +45,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public List<TagDto> selectAllTags() {
-        return tagDao.selectAllTags().stream().map(this::convertTagToTagDto).collect(Collectors.toList());
+        return tagDao.selectAllTags().stream().map(TagServiceImpl::convertTagToTagDto).collect(Collectors.toList());
     }
 
     @Override
@@ -51,18 +53,17 @@ public class TagServiceImpl implements TagService {
         tagDao.deleteTag(id);
     }
 
-    // TODO: 04.07.2022 encapsulation
-    private Tag convertTagDtoToTag(TagDto tagDto) {
-        Tag tag = new Tag();
-        tag.setName(tagDto.getName());
-        return tag;
-    }
-
-    // TODO: 04.07.2022 encapsulation
-    private TagDto convertTagToTagDto(Tag tag) {
+    static TagDto convertTagToTagDto(Tag tag) {
         TagDto tagDto = new TagDto();
         tagDto.setId(tag.getId());
         tagDto.setName(tag.getName());
         return tagDto;
+    }
+
+    static Tag convertTagDtoToTag(TagDto tagDto) {
+        Tag tag = new Tag();
+        tag.setId(tagDto.getId());
+        tag.setName(tagDto.getName().toLowerCase(Locale.ROOT));
+        return tag;
     }
 }

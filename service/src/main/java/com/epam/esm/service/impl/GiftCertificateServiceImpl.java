@@ -6,7 +6,6 @@ import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
-import com.epam.esm.model.Tag;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,33 +25,48 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         this.giftCertificateDao = Objects.requireNonNull(giftCertificateDao);
     }
 
-    // TODO: 04.07.2022 null tags
     @Override
     public GiftCertificateDto saveGiftCertificate(GiftCertificateDto giftCertificateDto) {
-        giftCertificateDto.setTags(giftCertificateDto.getTags().stream().collect(Collectors.toSet()).stream().sorted(Comparator.comparing(tagDto -> tagDto.getId())).collect(Collectors.toList()));
-        return convertModelToDto(
+        System.out.println(giftCertificateDto);
+        // TODO: 04.07.2022  
+        System.out.println("dee");
+//        if (giftCertificateDto.getTags().size() > 0) {
+//            giftCertificateDto.setTags(giftCertificateDto.getTags().stream().collect(Collectors.toSet()).stream().sorted(Comparator.comparing(tagDto -> tagDto.getId())).collect(Collectors.toList()));
+//        }
+        System.out.println("dewww");
+        return convertGiftCertificateToGiftCertificateDto(
                 giftCertificateDao.saveCertificate(
-                        convertDtoToModel(giftCertificateDto)
+                        convertGiftCertificateDtoToGiftCertificate(giftCertificateDto)
                 )
         );
     }
 
     @Override
     public GiftCertificateDto selectGiftCertificate(BigInteger id) {
-        return convertModelToDto(giftCertificateDao.selectCertificateById(id));
+        return convertGiftCertificateToGiftCertificateDto(giftCertificateDao.selectCertificateById(id));
     }
 
     @Override
+    // TODO: 04.07.2022
     public List<GiftCertificateDto> selectAllGiftCertificates(FilterDto filterDto) {
-        return giftCertificateDao.selectAllCertificates(convertFiltersDtoToFilters(filterDto)).stream().map(this::convertModelToDto).collect(Collectors.toList());
+        return giftCertificateDao.selectAllCertificates(convertFiltersDtoToFilters(filterDto)).stream().map(this::convertGiftCertificateToGiftCertificateDto).collect(Collectors.toList());
     }
 
-    // TODO: 04.07.2022 think
     @Override
     public void updateGiftCertificate(BigInteger id, GiftCertificateDto giftCertificateDto) {
-        GiftCertificate giftCertificate = convertDtoToModel(giftCertificateDto);
+        GiftCertificate giftCertificate = convertGiftCertificateDtoToGiftCertificate(giftCertificateDto);
         giftCertificate.setId(id);
         giftCertificateDao.updateCertificate(giftCertificate);
+    }
+
+    @Override
+    public void addTagToGiftCertificate(BigInteger GiftCertificateId, TagDto tagDto) {
+        giftCertificateDao.addTagToGiftCertificate(GiftCertificateId, TagServiceImpl.convertTagDtoToTag(tagDto));
+    }
+
+    @Override
+    public void removeTagFromGiftCertificate(BigInteger GiftCertificateId, TagDto tagDto) {
+        giftCertificateDao.removeTagFromGiftCertificate(GiftCertificateId, TagServiceImpl.convertTagDtoToTag(tagDto));
     }
 
     @Override
@@ -60,7 +74,17 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificateDao.deleteCertificateById(id);
     }
 
-    private GiftCertificateDto convertModelToDto(GiftCertificate giftCertificate) {
+    private GiftCertificate convertGiftCertificateDtoToGiftCertificate(GiftCertificateDto giftCertificateDto) {
+        GiftCertificate giftCertificate = new GiftCertificate();
+        giftCertificate.setName(giftCertificateDto.getName());
+        giftCertificate.setDescription(giftCertificateDto.getDescription());
+        giftCertificate.setPrice(giftCertificateDto.getPrice());
+        giftCertificate.setDuration(giftCertificateDto.getDuration());
+        giftCertificate.setTags(giftCertificateDto.getTags().stream().map(TagServiceImpl::convertTagDtoToTag).collect(Collectors.toList()));
+        return giftCertificate;
+    }
+
+    private GiftCertificateDto convertGiftCertificateToGiftCertificateDto(GiftCertificate giftCertificate) {
         GiftCertificateDto giftCertificateDto = new GiftCertificateDto();
         giftCertificateDto.setId(giftCertificate.getId());
         giftCertificateDto.setName(giftCertificate.getName());
@@ -69,33 +93,11 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         giftCertificateDto.setDuration(giftCertificate.getDuration());
         giftCertificateDto.setLastUpdateDate(giftCertificate.getLastUpdateDate().toString());
         giftCertificateDto.setCreateDate(giftCertificate.getCreateDate().toString());
-        giftCertificateDto.setTags(giftCertificate.getTags().stream().map(this::convertTagToTagDto).collect(Collectors.toList()));
+        giftCertificateDto.setTags(giftCertificate.getTags().stream().map(TagServiceImpl::convertTagToTagDto).collect(Collectors.toList()));
         return giftCertificateDto;
     }
 
-    private GiftCertificate convertDtoToModel(GiftCertificateDto giftCertificateDto) {
-        GiftCertificate giftCertificate = new GiftCertificate();
-        giftCertificate.setName(giftCertificateDto.getName());
-        giftCertificate.setDescription(giftCertificateDto.getDescription());
-        giftCertificate.setPrice(giftCertificateDto.getPrice());
-        giftCertificate.setDuration(giftCertificateDto.getDuration());
-        giftCertificate.setTags(giftCertificateDto.getTags().stream().map(this::convertTagDtoToTag).collect(Collectors.toList()));
-        return giftCertificate;
-    }
-
-    private Tag convertTagDtoToTag(TagDto tagDto) {
-        Tag tag = new Tag();
-        tag.setName(tagDto.getName());
-        return tag;
-    }
-
-    private TagDto convertTagToTagDto(Tag tag) {
-        TagDto tagDto = new TagDto();
-        tagDto.setId(tag.getId());
-        tagDto.setName(tag.getName());
-        return tagDto;
-    }
-
+    // TODO: 04.07.2022
     private Filter convertFiltersDtoToFilters(FilterDto filterDto) {
         Filter filter = new Filter();
         if (filterDto.getTag() != null)

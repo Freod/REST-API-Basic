@@ -99,7 +99,7 @@ public class GiftCertificateDaoIT {
         GiftCertificate giftCertificate = giftCertificateDao.selectCertificateById(BigInteger.ONE);
         giftCertificate.setName("changedName");
         giftCertificate.setDescription("changedDescription");
-        giftCertificate.setPrice(2);
+        giftCertificate.setPrice(2.0);
         giftCertificate.setDuration(2);
         giftCertificate.addTag(new Tag("tag5"));
 

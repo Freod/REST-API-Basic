@@ -21,12 +21,14 @@ public class GiftCertificateDaoMapper implements RowMapper<GiftCertificate> {
                 LocalDateTime.parse(resultSet.getString("last_update_date"))
         );
 
-        Tag tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
-        giftCertificate.addTag(tag);
-
-        while (resultSet.next()) {
-            tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
+        if (resultSet.getBigDecimal("tag_id") != null && resultSet.getString("tag_name") != null) {
+            Tag tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
             giftCertificate.addTag(tag);
+
+            while (resultSet.next()) {
+                tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
+                giftCertificate.addTag(tag);
+            }
         }
 
         return giftCertificate;

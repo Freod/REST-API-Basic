@@ -13,8 +13,8 @@ public class GiftCertificate {
     private BigInteger id;
     private String name;
     private String description;
-    private double price;
-    private int duration;
+    private Double price;
+    private Integer duration;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
     private List<Tag> tags = new ArrayList<>();
@@ -32,7 +32,7 @@ public class GiftCertificate {
         this.lastUpdateDate = LocalDateTime.now();
     }
 
-    public GiftCertificate(String name, String description, double price, int duration, List<Tag> tags) {
+    public GiftCertificate(String name, String description, Double price, Integer duration, List<Tag> tags) {
         this.name = name;
         this.description = description;
         this.price = price;
@@ -42,7 +42,7 @@ public class GiftCertificate {
         this.lastUpdateDate = LocalDateTime.now();
     }
 
-    public GiftCertificate(BigInteger id, String name, String description, double price, int duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+    public GiftCertificate(BigInteger id, String name, String description, Double price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -52,7 +52,7 @@ public class GiftCertificate {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public GiftCertificate(BigInteger id, String name, String description, double price, int duration) {
+    public GiftCertificate(BigInteger id, String name, String description, Double price, Integer duration) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -60,7 +60,7 @@ public class GiftCertificate {
         this.duration = duration;
     }
 
-    public GiftCertificate(BigInteger id, String name, String description, double price, int duration, List<Tag> tags) {
+    public GiftCertificate(BigInteger id, String name, String description, Double price, Integer duration, List<Tag> tags) {
         this.id = id;
         this.name = name;
         this.description = description;

@@ -3,6 +3,7 @@ package com.epam.esm.dto;
 import lombok.Data;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,5 +15,5 @@ public class GiftCertificateDto {
     private Integer duration;
     private String createDate;
     private String lastUpdateDate;
-    private List<TagDto> tags;
+    private List<TagDto> tags = new ArrayList<>();
 }

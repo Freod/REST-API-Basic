@@ -31,12 +31,15 @@ public class GiftCertificateExtractor implements ResultSetExtractor<List<GiftCer
                     LocalDateTime.parse(resultSet.getString("last_update_date"))
             );
 
-            Tag tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
-
             if (result.containsKey(id)) {
                 giftCertificate = result.get(id);
             }
-            giftCertificate.addTag(tag);
+
+            if (resultSet.getBigDecimal("tag_id") != null && resultSet.getString("tag_name") != null) {
+                Tag tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
+                giftCertificate.addTag(tag);
+            }
+
             result.put(id, giftCertificate);
         }
 

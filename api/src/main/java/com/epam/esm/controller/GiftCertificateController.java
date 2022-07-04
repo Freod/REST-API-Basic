@@ -2,6 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.FilterDto;
 import com.epam.esm.dto.GiftCertificateDto;
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,7 +63,6 @@ public class GiftCertificateController {
         return giftCertificateService.selectAllGiftCertificates(filterDto);
     }
 
-    // TODO: 04.07.2022 POST
     /**
      * Creates new Gift Certificate resource
      * <p>Example JSON request:{
@@ -108,20 +108,11 @@ public class GiftCertificateController {
         return giftCertificateService.saveGiftCertificate(giftCertificateDto);
     }
 
-    // TODO: 03.07.2022 PUT OR PATCH
     /**
-     * Updates Gift Certificate resource by id. Without giving same tags, they can be changed or deleted.
+     * Updates Gift Certificate resource by id.
      * <p>Example JSON request:{
      *     "name": "Na3me1",
-     *     "description": "Descript3ion",
-     *     "tags": [
-     *         {
-     *             "name": "tag3"
-     *         },
-     *         {
-     *             "name": "tag2"
-     *         }
-     *     ]
+     *     "description": "Descript3ion"
      * }</p>
      *
      * @param id to find Gift Certificate resource
@@ -131,6 +122,36 @@ public class GiftCertificateController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateGiftCertificate(@PathVariable BigInteger id, @RequestBody GiftCertificateDto giftCertificateDto) {
         giftCertificateService.updateGiftCertificate(id, giftCertificateDto);
+    }
+
+    /**
+     * Adds Tag resource to Gift Certificate by id.
+     * <p>Example JSON request:{
+     *     "name": "tag3"
+     * }</p>
+     *
+     * @param id to find Gift Certificate resource
+     * @param tagDto Tag resource to add
+     */
+    @PutMapping("/tag/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void addTagToGiftCertificate(@PathVariable BigInteger id, @RequestBody TagDto tagDto){
+        giftCertificateService.addTagToGiftCertificate(id, tagDto);
+    }
+
+    /**
+     * Removes Tag resource from Gift Certificate by id.
+     * <p>Example JSON request:{
+     *     "name": "tag3"
+     * }</p>
+     *
+     * @param id
+     * @param tagDto
+     */
+    @DeleteMapping("/tag/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void removeTagFromGiftCertificate(@PathVariable BigInteger id, @RequestBody TagDto tagDto){
+        giftCertificateService.removeTagFromGiftCertificate(id, tagDto);
     }
 
     /**

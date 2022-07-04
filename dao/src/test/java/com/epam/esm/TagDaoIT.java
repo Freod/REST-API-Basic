@@ -33,6 +33,9 @@ public class TagDaoIT {
     @Test
     @Order(1)
     public void testDaoTagSelectAll() {
+        //given
+        //when
+        //then
         List<Tag> tagList = tagDao.selectAllTags();
 
         assertTrue(tagList.size() > 1);
