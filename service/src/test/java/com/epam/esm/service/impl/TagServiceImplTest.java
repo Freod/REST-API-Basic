@@ -9,9 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -19,7 +17,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TagServiceImplTest {
@@ -30,37 +29,37 @@ public class TagServiceImplTest {
     @InjectMocks
     private TagServiceImpl tagService;
 
-    private static TagDto tagDto;
-    private static Tag tag;
+    private static TagDto expectedTagDto;
+    private static Tag insertedTag;
 
     @BeforeAll
     public static void init() {
-        tag = new Tag(BigInteger.valueOf(1), "tag1");
-        tagDto = new TagDto(BigInteger.valueOf(1), "tag1");
+        insertedTag = new Tag(BigInteger.valueOf(1), "tag1");
+        expectedTagDto = new TagDto(BigInteger.valueOf(1), "tag1");
     }
 
     @Test
-    void whenSaveNewTagShouldReturnCreatedTagTest() {
+    void whenSaveNewTagShouldReturnCreatedTag() {
         //given
-        TagDto tagDtoWithName = new TagDto(null, "tag1");
-        Tag expectedTag = new Tag(tag.getName());
+        TagDto tagDtoToSave = new TagDto(null, "tag1");
+        Tag tagToInsert = new Tag(insertedTag.getName());
 
         //when
-        when(tagDao.saveTag(expectedTag)).thenReturn(tag);
-        TagDto tagDtoServiceReturn = tagService.saveTag(tagDtoWithName);
+        when(tagDao.saveTag(tagToInsert)).thenReturn(insertedTag);
+        TagDto actualTagDto = tagService.saveTag(tagDtoToSave);
 
         //then
-        assertEquals(tagDto, tagDtoServiceReturn);
+        assertEquals(expectedTagDto, actualTagDto);
     }
 
     @Test
-    void whenSaveNewTagWithoutNameShouldThrowNullPointerExceptionTest() {
+    void whenSaveNewTagWithoutNameShouldThrowNullPointerException() {
         //given
-        TagDto tagDtoWithoutNameAndId = new TagDto();
+        TagDto tagDtoToSave = new TagDto();
 
         //when
         NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> {
-            tagService.saveTag(tagDtoWithoutNameAndId);
+            tagService.saveTag(tagDtoToSave);
         });
 
         //then
@@ -68,40 +67,40 @@ public class TagServiceImplTest {
     }
 
     @Test
-    void whenSelectTagByIdShouldReturnTagTest() {
+    void whenSelectTagByIdShouldReturnTag() {
         //given
-        TagDto tagDtoWithId = new TagDto(BigInteger.valueOf(1), null);
+        TagDto tagDtoToSave = new TagDto(BigInteger.valueOf(1), null);
 
         //when
-        when(tagDao.selectTagById(tagDtoWithId.getId())).thenReturn(tag);
-        TagDto actualTagDto = tagService.selectTagByNameOrId(tagDto);
+        when(tagDao.selectTagById(tagDtoToSave.getId())).thenReturn(insertedTag);
+        TagDto actualTagDto = tagService.selectTagByNameOrId(tagDtoToSave);
 
         //then
-        assertEquals(tagDto, actualTagDto);
+        assertEquals(expectedTagDto, actualTagDto);
     }
 
     @Test
-    void whenSelectTagByNameShouldReturnTagTest() {
+    void whenSelectTagByNameShouldReturnTag() {
         //given
-        TagDto tagDtoWithName = new TagDto(null, "tag1");
+        TagDto tagDtoToSave = new TagDto(null, "tag1");
 
         //when
-        when(tagDao.selectTagByName(tagDtoWithName.getName())).thenReturn(tag);
-        TagDto actualTagDto = tagService.selectTagByNameOrId(tagDtoWithName);
+        when(tagDao.selectTagByName(tagDtoToSave.getName())).thenReturn(insertedTag);
+        TagDto actualTagDto = tagService.selectTagByNameOrId(tagDtoToSave);
 
         //then
-        assertEquals(tagDto, actualTagDto);
+        assertEquals(expectedTagDto, actualTagDto);
     }
 
     @Test
-    void whenSelectTagWithoutNameAndIdShouldThrowNullPointerExceptionTest(){
+    void whenSelectTagWithoutNameAndIdShouldThrowNullPointerException(){
         //given
-        TagDto nullTagDto = new TagDto();
+        TagDto tagDtoToSave = new TagDto();
         String expectedExceptionMessage = "id or name can't be null";
 
         //when
         NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> {
-            tagService.selectTagByNameOrId(nullTagDto);
+            tagService.selectTagByNameOrId(tagDtoToSave);
         });
 
         //then
@@ -110,9 +109,9 @@ public class TagServiceImplTest {
 
 
     @Test
-    void whenSelectAllTagsShouldReturnTagListTest() {
+    void whenSelectAllTagsShouldReturnTagList() {
         //given
-        List<Tag> tagList = Arrays.asList(
+        List<Tag> returnedTagList = Arrays.asList(
                 new Tag(BigInteger.valueOf(1), "tag1"),
                 new Tag(BigInteger.valueOf(2), "tag2")
         );
@@ -122,7 +121,7 @@ public class TagServiceImplTest {
         );
 
         //when
-        when(tagDao.selectAllTags()).thenReturn(tagList);
+        when(tagDao.selectAllTags()).thenReturn(returnedTagList);
         List<TagDto> actualTagDtoList = tagService.selectAllTags();
 
         //then
@@ -130,7 +129,7 @@ public class TagServiceImplTest {
     }
 
     @Test
-    void whenDeleteTagShouldReturnNothingTest() {
+    void whenDeleteTagShouldReturnNothing() {
         //given
         BigInteger idToRemove = BigInteger.valueOf(1);
 

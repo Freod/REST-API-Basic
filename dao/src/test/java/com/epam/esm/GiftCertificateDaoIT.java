@@ -26,14 +26,13 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {com.epam.esm.config.SpringJdbcConfig.class}, loader = AnnotationConfigContextLoader.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class GiftCertificateDaoIT {
+class GiftCertificateDaoIT {
 
     @Autowired
     private GiftCertificateDao giftCertificateDao;
 
     @Test
-    @Order(1)
-    public void testDaoGiftCertificateSelectAll() {
+    void when() {
         //given
 
         //when
@@ -45,8 +44,7 @@ public class GiftCertificateDaoIT {
     }
 
     @Test
-    @Order(2)
-    public void testDaoGiftCertificateSelectById() {
+    void testDaoGiftCertificateSelectById() {
         //given
 
         //then
@@ -68,8 +66,7 @@ public class GiftCertificateDaoIT {
     }
 
     @Test
-    @Order(3)
-    public void testDaoGiftCertificateInsert() {
+    void testDaoGiftCertificateInsert() {
         //given
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setName("TestingName");
@@ -103,8 +100,7 @@ public class GiftCertificateDaoIT {
     }
 
     @Test
-    @Order(4)
-    public void testDaoGiftCertificateUpdate() {
+    void testDaoGiftCertificateUpdate() {
         //given
         GiftCertificate giftCertificate = giftCertificateDao.selectCertificateById(BigInteger.ONE);
         giftCertificate.setName("changedName");
@@ -129,8 +125,7 @@ public class GiftCertificateDaoIT {
     }
 
     @Test
-    @Order(5)
-    public void testDaoGiftCertificateDelete() {
+    void testDaoGiftCertificateDelete() {
         //given
 
         //when

@@ -5,7 +5,6 @@ import com.epam.esm.exception.ResourceNotFound;
 import com.epam.esm.exception.ResourceViolation;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -134,7 +133,6 @@ public class TagDaoIT {
     }
 
     @Test
-    @Order(5)
     public void whenDeleteTagByIdShouldThatTagNotExistTest() {
         //given
         BigInteger resourceId = BigInteger.valueOf(1);

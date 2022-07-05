@@ -56,8 +56,6 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         certificateParameters.put("create_date", giftCertificate.getCreateDate());
         certificateParameters.put("last_update_date", giftCertificate.getLastUpdateDate());
 
-        System.out.println(giftCertificate);
-
         giftCertificate.setId(BigInteger.valueOf(simpleJdbcInsertGiftCertificates.executeAndReturnKey(certificateParameters).longValue()));
 
         giftCertificate.setTags(giftCertificate.getTags().stream().map(tag -> tag = tagDao.selectOrSaveTag(tag)).collect(Collectors.toList()));
