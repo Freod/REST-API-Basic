@@ -7,6 +7,7 @@ import com.epam.esm.dto.TagDto;
 import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,8 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class GiftCertificateServiceImplTest {
@@ -73,24 +74,23 @@ public class GiftCertificateServiceImplTest {
                         "description1",
                         3.5,
                         5,
-                        LocalDateTime.now(),
-                        LocalDateTime.now()),
+                        LocalDateTime.of(2022, 07, 05, 16, 20, 20),
+                        LocalDateTime.of(2022, 07, 05, 16, 20, 20)),
                 new GiftCertificate(
                         BigInteger.valueOf(2),
                         "name2",
                         "description2",
                         3.5,
                         5,
-                        LocalDateTime.now(),
-                        LocalDateTime.now())
+                        LocalDateTime.of(2022, 07, 05, 16, 21, 30),
+                        LocalDateTime.of(2022, 07, 05, 16, 21, 30))
         );
 
         filterToPass = new Filter("", "", "");
     }
 
-    // TODO: 04.07.2022
     @Test
-    void whenSaveNewGiftCertificateShouldReturnGiftCertificateTest() {
+    void whenSaveNewGiftCertificateShouldReturnGiftCertificate() {
         //given
         GiftCertificateDto giftCertificateDtoToSave = new GiftCertificateDto(
                 null,
@@ -105,29 +105,17 @@ public class GiftCertificateServiceImplTest {
                         new TagDto(null, "tag2")
                 )
         );
-        GiftCertificate giftCertificateToSave = returnedGiftCertificate = new GiftCertificate(
-                null,
-                returnedGiftCertificate.getName(),
-                returnedGiftCertificate.getDescription(),
-                returnedGiftCertificate.getPrice(),
-                returnedGiftCertificate.getDuration(),
-                returnedGiftCertificate.getLastUpdateDate(),
-                returnedGiftCertificate.getCreateDate()
-        );
-        returnedGiftCertificate.addTag(new Tag("tag1"));
-        returnedGiftCertificate.addTag(new Tag("tag2"));
 
         //when
-        when(giftCertificateDao.saveCertificate(giftCertificateToSave)).thenReturn(returnedGiftCertificate);
+        when(giftCertificateDao.saveCertificate(any(GiftCertificate.class))).thenReturn(returnedGiftCertificate);
         GiftCertificateDto actualGiftCertificateDto = giftCertificateService.saveGiftCertificate(giftCertificateDtoToSave);
 
         //then
         assertEquals(expectedGiftCertificateDto, actualGiftCertificateDto);
     }
 
-    // TODO: 04.07.2022
     @Test
-    void whenSaveNewGiftCertificateWithDuplicateTagDtoShouldReturnWithoutDuplicatesTest() {
+    void whenSaveNewGiftCertificateWithDuplicateTagDtoShouldReturnWithoutDuplicates() {
         //given
         GiftCertificateDto giftCertificateDtoToSave = new GiftCertificateDto(
                 null,
@@ -143,41 +131,32 @@ public class GiftCertificateServiceImplTest {
                         new TagDto(null, "tag2")
                 )
         );
-        GiftCertificate giftCertificateToSave = returnedGiftCertificate = new GiftCertificate(
-                null,
-                returnedGiftCertificate.getName(),
-                returnedGiftCertificate.getDescription(),
-                returnedGiftCertificate.getPrice(),
-                returnedGiftCertificate.getDuration(),
-                returnedGiftCertificate.getLastUpdateDate(),
-                returnedGiftCertificate.getCreateDate()
-        );
-        returnedGiftCertificate.addTag(new Tag("tag1"));
-        returnedGiftCertificate.addTag(new Tag("tag2"));
 
         //when
-        when(giftCertificateDao.saveCertificate(giftCertificateToSave)).thenReturn(returnedGiftCertificate);
+        when(giftCertificateDao.saveCertificate(any(GiftCertificate.class))).thenReturn(returnedGiftCertificate);
         GiftCertificateDto actualGiftCertificateDto = giftCertificateService.saveGiftCertificate(giftCertificateDtoToSave);
 
         //then
         assertEquals(expectedGiftCertificateDto, actualGiftCertificateDto);
     }
 
-    // TODO: 04.07.2022
     @Test
-    void whenSaveNewGiftCertificateWithNullsShouldThrowNullPointerExceptionTest() {
+    void whenSaveNewGiftCertificateWithNullValuesShouldThrowNullPointerException() {
         //given
         GiftCertificateDto giftCertificateWithNulls = new GiftCertificateDto();
+        String expectedExceptionMessage = "cannot save giftCertificate with null values";
 
         //when
-        giftCertificateService.saveGiftCertificate(giftCertificateWithNulls);
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> {
+            giftCertificateService.saveGiftCertificate(giftCertificateWithNulls);
+        });
 
         //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
     }
 
-    // TODO: 04.07.2022
     @Test
-    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByNameAscTest() {
+    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByNameAsc() {
         //given
         FilterDto filterDtoToPass = new FilterDto("", "", "", "name", "asc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
@@ -187,8 +166,8 @@ public class GiftCertificateServiceImplTest {
                         "description1",
                         3.5,
                         5,
-                        LocalDateTime.now().toString(),
-                        LocalDateTime.now().toString(),
+                        LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
+                        LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
                         new ArrayList<>()),
                 new GiftCertificateDto(
                         BigInteger.valueOf(2),
@@ -196,8 +175,8 @@ public class GiftCertificateServiceImplTest {
                         "description2",
                         3.5,
                         5,
-                        LocalDateTime.now().toString(),
-                        LocalDateTime.now().toString(),
+                        LocalDateTime.of(2022, 07, 05, 16, 21, 30).toString(),
+                        LocalDateTime.of(2022, 07, 05, 16, 21, 30).toString(),
                         new ArrayList<>())
         );
 
@@ -210,7 +189,7 @@ public class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByNameDescTest() {
+    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByNameDesc() {
         //given
         FilterDto filterDtoToPass = new FilterDto("", "", "", "name", "desc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
@@ -243,7 +222,7 @@ public class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByCreateDateAscTest() {
+    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByCreateDateAsc() {
         //given
         FilterDto filterDtoToPass = new FilterDto("", "", "", "createDate", "asc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
@@ -276,7 +255,7 @@ public class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByCreateDateDescTest() {
+    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByCreateDateDesc() {
         //given
         FilterDto filterDtoToPass = new FilterDto("", "", "", "createDate", "desc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
@@ -310,7 +289,7 @@ public class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByLastUpdateDateAscTest() {
+    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByLastUpdateDateAsc() {
         //given
         FilterDto filterDtoToPass = new FilterDto("", "", "", "lastUpdateDate", "asc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
@@ -343,7 +322,7 @@ public class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByLastUpdateDateDescTest() {
+    void whenSelectAllGiftCertificatesShouldReturnListGiftCertificateDtoOrderByLastUpdateDateDesc() {
         //given
         FilterDto filterDtoToPass = new FilterDto("", "", "", "lastUpdateDate", "desc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
@@ -377,42 +356,163 @@ public class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void whenUpdateGiftCertificateShouldBeUpdatedTest() {
+    void whenSelectGiftCertificateByIdShouldReturnGiftCertificateWithThatId() {
         //given
-
+        BigInteger idToSelect = BigInteger.valueOf(1);
 
         //when
-//        when(giftCertificateDao.updateCertificate()).thenReturn();
+        when(giftCertificateDao.selectCertificateById(idToSelect)).thenReturn(returnedGiftCertificate);
+        GiftCertificateDto actualGiftCertificateDto = giftCertificateService.selectGiftCertificate(idToSelect);
+
+        //then
+        assertEquals(expectedGiftCertificateDto, actualGiftCertificateDto);
+    }
+
+    @Test
+    void whenUpdateGiftCertificateShouldBeUpdated() {
+        //given
+        BigInteger idToUpdate = BigInteger.valueOf(1);
+        GiftCertificateDto giftCertificateDtoToUpdate =
+                new GiftCertificateDto(
+                        null,
+                        "nameChange",
+                        "descriptionChange",
+                        33.5,
+                        5,
+                        null,
+                        null,
+                        new ArrayList<>());
+        GiftCertificate expectedGiftCertificate =
+                new GiftCertificate(
+                        idToUpdate,
+                        giftCertificateDtoToUpdate.getName(),
+                        giftCertificateDtoToUpdate.getDescription(),
+                        giftCertificateDtoToUpdate.getPrice(),
+                        giftCertificateDtoToUpdate.getDuration(),
+                        LocalDateTime.now(),
+                        LocalDateTime.now()
+                );
+
+        //when
+        doAnswer(invocationOnMock -> {
+            GiftCertificate actualGiftCertificate = invocationOnMock.getArgument(0, GiftCertificate.class);
+
+            assertEquals(expectedGiftCertificate.getId(), actualGiftCertificate.getId());
+            assertEquals(expectedGiftCertificate.getName(), actualGiftCertificate.getName());
+            assertEquals(expectedGiftCertificate.getDescription(), actualGiftCertificate.getDescription());
+            assertEquals(expectedGiftCertificate.getPrice(), actualGiftCertificate.getPrice());
+            assertEquals(expectedGiftCertificate.getDuration(), actualGiftCertificate.getDuration());
+
+            return actualGiftCertificate;
+        }).when(giftCertificateDao).updateCertificate(any(GiftCertificate.class));
+        giftCertificateService.updateGiftCertificate(idToUpdate, giftCertificateDtoToUpdate);
 
         //then
     }
 
     @Test
-    void whenAddTagToGiftCertificateShouldBeAddedTest() {
+    void whenUpdateGiftCertificateWithNullValuesShouldThrowNullPointerException() {
         //given
+        BigInteger idToUpdate = BigInteger.valueOf(1);
+        GiftCertificateDto giftCertificateDtoWithNullValues = new GiftCertificateDto();
+        String expectedExceptionMessage = "cannot save giftCertificate with null values";
 
         //when
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> {
+            giftCertificateService.updateGiftCertificate(idToUpdate, giftCertificateDtoWithNullValues);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenAddTagToGiftCertificateShouldBeAdded() {
+        //given
+        BigInteger giftCertificateIdToAddTag = BigInteger.valueOf(1);
+        TagDto tagDtoToAdd = new TagDto(null, "tag1");
+        Tag tagToAdd = new Tag("tag1");
+
+        //when
+        doAnswer(invocationOnMock -> {
+            assertEquals(giftCertificateIdToAddTag, invocationOnMock.getArgument(0));
+
+            Tag actualTag = invocationOnMock.getArgument(1);
+            assertEquals(tagToAdd, actualTag);
+
+            return invocationOnMock.getArguments();
+        }).when(giftCertificateDao).addTagToGiftCertificate(giftCertificateIdToAddTag, tagToAdd);
+
+        giftCertificateService.addTagToGiftCertificate(giftCertificateIdToAddTag, tagDtoToAdd);
 
         //then
     }
 
     @Test
-    void whenRemovedTagFromGiftCertificateShouldBeRemoveTest() {
+    void whenAddNullTagToGiftCertificateShouldThrowNullPointerException(){
         //given
+        BigInteger giftCertificateIdToAddTag = BigInteger.valueOf(1);
+        TagDto tagDtoWithNullValues = new TagDto();
+        String expectedExceptionMessage = "cannot add tag with null values";
 
         //when
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> {
+            giftCertificateService.addTagToGiftCertificate(giftCertificateIdToAddTag, tagDtoWithNullValues);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenRemovedTagFromGiftCertificateShouldBeRemove() {
+        //given
+        BigInteger giftCertificateIdToRemoveTag = BigInteger.valueOf(1);
+        TagDto tagDtoToRemove = new TagDto(null, "tag1");
+        Tag tagToRemove = new Tag("tag1");
+
+        //when
+        doAnswer(invocationOnMock -> {
+            assertEquals(giftCertificateIdToRemoveTag, invocationOnMock.getArgument(0));
+
+            Tag actualTag = invocationOnMock.getArgument(1);
+            assertEquals(tagToRemove, actualTag);
+
+            return invocationOnMock.getArguments();
+        }).when(giftCertificateDao).removeTagFromGiftCertificate(giftCertificateIdToRemoveTag, tagToRemove);
+
+        giftCertificateService.removeTagFromGiftCertificate(giftCertificateIdToRemoveTag, tagDtoToRemove);
 
         //then
     }
 
-    // TODO: 04.07.2022 deleteTest
     @Test
-    void deleteGiftCertificateTest() {
+    void whenRemoveNullTagFromGiftCertificateShouldThrowNullPointerException(){
+        //given
+        BigInteger giftCertificateIdToRemoveTag = BigInteger.valueOf(1);
+        TagDto tagDtoWithNullValues = new TagDto();
+        String expectedExceptionMessage = "cannot remove tag with null values";
+
+        //when
+        NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> {
+            giftCertificateService.removeTagFromGiftCertificate(giftCertificateIdToRemoveTag, tagDtoWithNullValues);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenDeleteGiftCertificateByIdShouldBeRemove() {
         //given
         BigInteger idToRemove = BigInteger.valueOf(1);
 
         //when
-        doNothing().when(giftCertificateDao).deleteCertificateById(idToRemove);
+        doAnswer(invocationOnMock -> {
+            assertEquals(idToRemove, invocationOnMock.getArgument(0));
+            return idToRemove;
+        }).when(giftCertificateDao).deleteCertificateById(idToRemove);
+
         giftCertificateService.deleteGiftCertificate(idToRemove);
 
         //then

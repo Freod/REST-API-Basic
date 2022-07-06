@@ -129,7 +129,7 @@ public class TagServiceImplTest {
     }
 
     @Test
-    void whenDeleteTagShouldReturnNothing() {
+    void whenDeleteTagShouldBeRemoved() {
         //given
         BigInteger idToRemove = BigInteger.valueOf(1);
 
