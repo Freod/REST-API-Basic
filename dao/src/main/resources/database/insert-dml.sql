@@ -8,5 +8,4 @@ INSERT INTO gift_certificates(name, description, price, duration, create_date, l
 
 INSERT INTO gift_certificates_tags(certificate_id, tag_id) VALUES (1, 1);
 INSERT INTO gift_certificates_tags(certificate_id, tag_id) VALUES (1, 2);
-INSERT INTO gift_certificates_tags(certificate_id, tag_id) VALUES (2, 2);
-INSERT INTO gift_certificates_tags(certificate_id, tag_id) VALUES (3, 3);
+INSERT INTO gift_certificates_tags(certificate_id, tag_id) VALUES (2, 3);

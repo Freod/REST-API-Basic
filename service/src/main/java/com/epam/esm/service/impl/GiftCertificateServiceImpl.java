@@ -27,9 +27,16 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public GiftCertificateDto saveGiftCertificate(GiftCertificateDto giftCertificateDto) {
+        checkNullValuesGiftCertificate(giftCertificateDto, "save");
+
         GiftCertificate giftCertificate = convertGiftCertificateDtoToGiftCertificate(giftCertificateDto);
 
-        giftCertificate.setTags(giftCertificate.getTags().stream().collect(Collectors.toSet()).stream().collect(Collectors.toList()));
+        giftCertificate.setTags(
+                giftCertificate.getTags()
+                        .stream()
+                        .collect(Collectors.toSet())
+                        .stream()
+                        .collect(Collectors.toList()));
 
         return convertGiftCertificateToGiftCertificateDto(giftCertificateDao.saveCertificate(giftCertificate));
     }
@@ -70,6 +77,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void updateGiftCertificate(BigInteger id, GiftCertificateDto giftCertificateDto) {
+        checkNullValuesGiftCertificate(giftCertificateDto, "update");
         GiftCertificate giftCertificate = convertGiftCertificateDtoToGiftCertificate(giftCertificateDto);
         giftCertificate.setId(id);
         giftCertificateDao.updateCertificate(giftCertificate);
@@ -77,11 +85,13 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     public void addTagToGiftCertificate(BigInteger GiftCertificateId, TagDto tagDto) {
+        checkTagNullNameValue(tagDto, "add");
         giftCertificateDao.addTagToGiftCertificate(GiftCertificateId, TagServiceImpl.convertTagDtoToTag(tagDto));
     }
 
     @Override
     public void removeTagFromGiftCertificate(BigInteger GiftCertificateId, TagDto tagDto) {
+        checkTagNullNameValue(tagDto, "remove");
         giftCertificateDao.removeTagFromGiftCertificate(GiftCertificateId, TagServiceImpl.convertTagDtoToTag(tagDto));
     }
 
@@ -127,5 +137,26 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                 filterDto.getTag(),
                 filterDto.getName(),
                 filterDto.getDescription());
+    }
+
+    private void checkNullValuesGiftCertificate(GiftCertificateDto giftCertificateDto, String methodName) {
+        if (giftCertificateDto.getName() == null
+                || giftCertificateDto.getDescription() == null
+                || giftCertificateDto.getDuration() == null
+                || giftCertificateDto.getPrice() == null) {
+            if (methodName.equals("save")) {
+                throw new NullPointerException("cannot save giftCertificate with null values");
+            }
+            throw new NullPointerException("cannot update giftCertificate with null values");
+        }
+    }
+
+    private void checkTagNullNameValue(TagDto tagDto, String methodName) {
+        if (tagDto.getName() == null) {
+            if (methodName.equals("add")) {
+                throw new NullPointerException("cannot add tag with null values");
+            }
+            throw new NullPointerException("cannot remove tag with null values");
+        }
     }
 }

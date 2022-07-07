@@ -23,7 +23,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class GiftCertificateServiceImplTest {
@@ -415,7 +416,7 @@ public class GiftCertificateServiceImplTest {
         //given
         BigInteger idToUpdate = BigInteger.valueOf(1);
         GiftCertificateDto giftCertificateDtoWithNullValues = new GiftCertificateDto();
-        String expectedExceptionMessage = "cannot save giftCertificate with null values";
+        String expectedExceptionMessage = "cannot update giftCertificate with null values";
 
         //when
         NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> {
