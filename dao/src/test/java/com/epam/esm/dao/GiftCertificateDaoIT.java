@@ -4,10 +4,10 @@ import com.epam.esm.exception.ResourceNotFound;
 import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
+import org.h2.tools.RunScript;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -16,7 +16,11 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import javax.sql.DataSource;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,6 +34,22 @@ class GiftCertificateDaoIT {
     @Autowired
     private GiftCertificateDao giftCertificateDao;
 
+    @BeforeEach
+    void initDatabaseAndInsertToDatabase(@Autowired DataSource dataSource) throws SQLException, FileNotFoundException {
+        Reader initReader = new FileReader("src/test/resources/database/init-ddl.sql");
+        Reader insertReader = new FileReader("src/test/resources/database/insert-dml.sql");
+
+        RunScript.execute(dataSource.getConnection(), initReader);
+        RunScript.execute(dataSource.getConnection(), insertReader);
+    }
+
+    @AfterEach
+    void dropDatabase(@Autowired DataSource dataSource) throws FileNotFoundException, SQLException {
+        Reader dropReader = new FileReader("src/test/resources/database/drop-ddl.sql");
+
+        RunScript.execute(dataSource.getConnection(), dropReader);
+    }
+
     @Test
     void whenSelectAllGiftCertificateShouldReturnGiftCertificateList() {
         //given
@@ -40,6 +60,102 @@ class GiftCertificateDaoIT {
 
         //then
         assertEquals(3, giftCertificateList.size());
+    }
+
+    @Test
+    void whenSelectAllGiftCertificateWithFilterOnlyForNameShouldReturnGiftCertificateWithThisNameList(){
+        //given
+        Filter filterToSelect = new Filter();
+        filterToSelect.setName("Name1");
+
+        //when
+        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+
+        //then
+        assertEquals(1, giftCertificateList.size());
+    }
+
+    @Test
+    void whenSelectAllGiftCertificateWithFilterOnlyForDescriptionShouldReturnGiftCertificateWithThisDescriptionList(){
+        //given
+        Filter filterToSelect = new Filter();
+        filterToSelect.setDescription("Description1");
+
+        //when
+        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+
+        //then
+        assertEquals(1, giftCertificateList.size());
+    }
+
+    @Test
+    void whenSelectAllGiftCertificateWithFilterOnlyForTagNameShouldReturnGiftCertificateWithThisTagNameList(){
+        //given
+        Filter filterToSelect = new Filter();
+        filterToSelect.setTag("tag3");
+
+        //when
+        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+
+        //then
+        assertEquals(1, giftCertificateList.size());
+    }
+
+    @Test
+    void whenSelectAllGiftCertificateWithFilterOnlyForNameAndDescriptionShouldReturnGiftCertificateWithThisNameAndDescriptionList(){
+        //given
+        Filter filterToSelect = new Filter();
+        filterToSelect.setName("Name1");
+        filterToSelect.setDescription("Description1");
+
+        //when
+        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+
+        //then
+        assertEquals(1, giftCertificateList.size());
+    }
+
+    @Test
+    void whenSelectAllGiftCertificateWithFilterOnlyForNameAndTagNameShouldReturnGiftCertificateWithThisNameAndTagNameList(){
+        //given
+        Filter filterToSelect = new Filter();
+        filterToSelect.setName("Name1");
+        filterToSelect.setTag("tag2");
+
+        //when
+        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+
+        //then
+        assertEquals(1, giftCertificateList.size());
+    }
+
+    @Test
+    void whenSelectAllGiftCertificateWithFilterOnlyForDescriptionAndTagNameShouldReturnGiftCertificateWithThisDescriptionAndTagNameList(){
+        //given
+        Filter filterToSelect = new Filter();
+        filterToSelect.setDescription("Description1");
+        filterToSelect.setTag("tag2");
+
+        //when
+        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+
+        //then
+        assertEquals(1, giftCertificateList.size());
+    }
+
+    @Test
+    void whenSelectAllGiftCertificateFiltersShouldReturnGiftCertificateWithFiltersList(){
+        //given
+        Filter filterToSelect = new Filter();
+        filterToSelect.setName("Name2");
+        filterToSelect.setDescription("Description2");
+        filterToSelect.setTag("tag3");
+
+        //when
+        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+
+        //then
+        assertEquals(1, giftCertificateList.size());
     }
 
     @Test

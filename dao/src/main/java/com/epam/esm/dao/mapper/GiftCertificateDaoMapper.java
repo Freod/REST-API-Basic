@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class GiftCertificateDaoMapper implements RowMapper<GiftCertificate> {
+    String tagId = "tag_id";
+    String tagName = "tag_name";
+
     @Override
     public GiftCertificate mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         GiftCertificate giftCertificate = new GiftCertificate(
@@ -21,12 +24,12 @@ public class GiftCertificateDaoMapper implements RowMapper<GiftCertificate> {
                 LocalDateTime.parse(resultSet.getString("last_update_date"))
         );
 
-        if (resultSet.getBigDecimal("tag_id") != null && resultSet.getString("tag_name") != null) {
-            Tag tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
+        if (resultSet.getBigDecimal(tagId) != null && resultSet.getString(tagName) != null) {
+            Tag tag = new Tag(resultSet.getBigDecimal(tagId).toBigInteger(), resultSet.getString(tagName));
             giftCertificate.addTag(tag);
 
             while (resultSet.next()) {
-                tag = new Tag(resultSet.getBigDecimal("tag_id").toBigInteger(), resultSet.getString("tag_name"));
+                tag = new Tag(resultSet.getBigDecimal(tagId).toBigInteger(), resultSet.getString(tagName));
                 giftCertificate.addTag(tag);
             }
         }

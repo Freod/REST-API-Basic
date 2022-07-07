@@ -18,21 +18,29 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
 public class GiftCertificateDaoImpl implements GiftCertificateDao {
-    private static final String INSERT_CERTIFICATE_TAGS_QUERY = "INSERT INTO gift_certificates_tags (certificate_id, tag_id) VALUES (?, ?);";
-    private static final String SELECT_CERTIFICATE_BY_ID_QUERY = "SELECT g_c.*, t.id as tag_id, t.name AS tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags AS g_c_t ON g_c.id = g_c_t.certificate_id LEFT JOIN tags AS t ON t.id = g_c_t.tag_id WHERE g_c.id = ?;";
-    private static final String SELECT_ALL_CERTIFICATES_QUERY = "SELECT g_c.*, t.id as tag_id, t.name AS tag_name FROM gift_certificates AS g_c LEFT JOIN gift_certificates_tags AS g_c_t ON g_c.id = g_c_t.certificate_id LEFT JOIN tags AS t ON t.id = g_c_t.tag_id WHERE UPPER(g_c.name) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(g_c.description) LIKE CONCAT('%%', UPPER(?), '%%') AND UPPER(t.name) LIKE CONCAT('%%', UPPER(?), '%%');";
-    private static final String COUNT_ALL_CERTIFICATE_TAGS_BY_CERTIFICATE_ID_AND_TAG_ID_QUERY = "SELECT COUNT(*) FROM gift_certificates_tags AS g_c_t WHERE g_c_t.certificate_id = ? AND g_c_t.tag_id = ?;";
-    private static final String UPDATE_CERTIFICATE_QUERY = "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_date = ? WHERE id = ?";
-    private static final String DELETE_CERTIFICATE_BY_ID_QUERY = "DELETE FROM gift_certificates WHERE id = ?";
-    private static final String DELETE_TAG_FROM_CERTIFICATE_QUERY = "DELETE FROM gift_certificates_tags where certificate_id = ? AND tag_id = ?;";
+    private static final String INSERT_CERTIFICATE_TAGS_QUERY =
+            "INSERT INTO gift_certificates_tags (certificate_id, tag_id) VALUES (?, ?);";
+    private static final String SELECT_CERTIFICATE_BY_ID_QUERY =
+            "SELECT g_c.*, t.id as tag_id, t.name AS tag_name FROM gift_certificates AS g_c" +
+                    " LEFT JOIN gift_certificates_tags AS g_c_t ON g_c.id = g_c_t.certificate_id" +
+                    " LEFT JOIN tags AS t ON t.id = g_c_t.tag_id WHERE g_c.id = ?;";
+    private static final String SELECT_ALL_CERTIFICATES_QUERY =
+            "SELECT g_c.*, t.id as tag_id, t.name AS tag_name FROM gift_certificates AS g_c" +
+                    " LEFT JOIN gift_certificates_tags AS g_c_t ON g_c.id = g_c_t.certificate_id" +
+                    " LEFT JOIN tags AS t ON t.id = g_c_t.tag_id";
+    private static final String COUNT_ALL_CERTIFICATE_TAGS_BY_CERTIFICATE_ID_AND_TAG_ID_QUERY =
+            "SELECT COUNT(*) FROM gift_certificates_tags AS g_c_t WHERE g_c_t.certificate_id = ? AND g_c_t.tag_id = ?;";
+    private static final String UPDATE_CERTIFICATE_QUERY =
+            "UPDATE gift_certificates SET name = ?, description = ?, price = ?, duration = ?, last_update_date = ? WHERE id = ?";
+    private static final String DELETE_CERTIFICATE_BY_ID_QUERY =
+            "DELETE FROM gift_certificates WHERE id = ?";
+    private static final String DELETE_TAG_FROM_CERTIFICATE_QUERY =
+            "DELETE FROM gift_certificates_tags where certificate_id = ? AND tag_id = ?;";
 
     private final TagDao tagDao;
     private final JdbcTemplate jdbcTemplate;
@@ -68,25 +76,48 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public GiftCertificate selectCertificateById(BigInteger id) {
         try {
-            GiftCertificate giftCertificate = jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID_QUERY, new GiftCertificateDaoMapper(), id);
-            return giftCertificate;
+            return jdbcTemplate.queryForObject(SELECT_CERTIFICATE_BY_ID_QUERY, new GiftCertificateDaoMapper(), id);
         } catch (EmptyResultDataAccessException exception) {
             throw new ResourceNotFound("Certificate not found (id = " + id + ")");
         }
     }
 
-    // TODO: 04.07.2022 no tags
     @Override
     public List<GiftCertificate> selectAllCertificates(Filter filter) {
-        List<GiftCertificate> giftCertificates = jdbcTemplate.query(SELECT_ALL_CERTIFICATES_QUERY, new GiftCertificateExtractor(), filter.getName(), filter.getDescription(), filter.getTag());
+        List<Object> parameters = new ArrayList<>();
+        StringBuilder queryBuilder = new StringBuilder(SELECT_ALL_CERTIFICATES_QUERY);
 
-        return giftCertificates;
+        if (!filter.getName().isEmpty() || !filter.getDescription().isEmpty() || !filter.getTag().isEmpty()) {
+            queryBuilder.append(" WHERE");
+            if (!filter.getName().isEmpty()) {
+                parameters.add(filter.getName());
+                queryBuilder.append(" UPPER(g_c.name) LIKE CONCAT('%%', UPPER(?), '%%')");
+                if (!filter.getDescription().isEmpty() || !filter.getTag().isEmpty()) {
+                    queryBuilder.append(" AND");
+                }
+            }
+            if (!filter.getDescription().isEmpty()) {
+                parameters.add(filter.getDescription());
+                queryBuilder.append(" UPPER(g_c.description) LIKE CONCAT('%%', UPPER(?), '%%')");
+                if (!filter.getTag().isEmpty()) {
+                    queryBuilder.append(" AND");
+                }
+            }
+            if (!filter.getTag().isEmpty()) {
+                parameters.add(filter.getTag());
+                queryBuilder.append(" UPPER(t.name) LIKE CONCAT('%%', UPPER(?), '%%')");
+            }
+        }
+
+        queryBuilder.append(";");
+
+        return jdbcTemplate.query(queryBuilder.toString(), parameters.toArray(), new GiftCertificateExtractor());
     }
 
     @Override
     public void updateCertificate(GiftCertificate giftCertificate) {
         GiftCertificate dbGiftCertificate = selectCertificateById(giftCertificate.getId());
-        dbGiftCertificate = replaceChangedFields(dbGiftCertificate, giftCertificate);
+        replaceChangedFields(dbGiftCertificate, giftCertificate);
         jdbcTemplate.update(UPDATE_CERTIFICATE_QUERY, dbGiftCertificate.getName(), dbGiftCertificate.getDescription(), dbGiftCertificate.getPrice(), dbGiftCertificate.getDuration(), dbGiftCertificate.getLastUpdateDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), dbGiftCertificate.getId());
     }
 

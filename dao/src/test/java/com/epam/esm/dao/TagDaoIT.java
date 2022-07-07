@@ -3,10 +3,10 @@ package com.epam.esm.dao;
 import com.epam.esm.exception.ResourceNotFound;
 import com.epam.esm.exception.ResourceViolation;
 import com.epam.esm.model.Tag;
-import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
-import org.junit.jupiter.api.Order;
+import org.h2.tools.RunScript;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
@@ -14,7 +14,12 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
+import javax.sql.DataSource;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.Reader;
 import java.math.BigInteger;
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,16 +27,28 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {com.epam.esm.config.SpringJdbcConfig.class}, loader = AnnotationConfigContextLoader.class)
-@TestMethodOrder(OrderAnnotation.class)
-public class TagDaoIT {
+class TagDaoIT {
 
     @Autowired
     private TagDao tagDao;
 
-    // TODO: 06.07.2022 REMOVE ORDERING
+    @BeforeEach
+    void initDatabaseAndInsertToDatabase(@Autowired DataSource dataSource) throws SQLException, FileNotFoundException {
+        Reader initReader = new FileReader("src/test/resources/database/init-ddl.sql");
+        Reader insertReader = new FileReader("src/test/resources/database/insert-dml.sql");
+
+        RunScript.execute(dataSource.getConnection(), initReader);
+        RunScript.execute(dataSource.getConnection(), insertReader);
+    }
+
+    @AfterEach
+    void dropDatabase(@Autowired DataSource dataSource) throws FileNotFoundException, SQLException {
+        Reader dropReader = new FileReader("src/test/resources/database/drop-ddl.sql");
+
+        RunScript.execute(dataSource.getConnection(), dropReader);
+    }
 
     @Test
-    @Order(1)
     void whenSelectAllTagsShouldReturnListTest() {
         //given
         int expectedListSize = 3;
@@ -44,7 +61,6 @@ public class TagDaoIT {
     }
 
     @Test
-    @Order(2)
     void whenSelectTagByIdShouldReturnTagWithSameIdTest() {
         //given
         BigInteger resourceId = BigInteger.valueOf(1);
@@ -58,7 +74,6 @@ public class TagDaoIT {
     }
 
     @Test
-    @Order(3)
     void whenSelectTagByIdIsNotExistShouldThrowResourceNotFoundException(){
         //given
         BigInteger resourceId = BigInteger.valueOf(0);
@@ -76,7 +91,6 @@ public class TagDaoIT {
 
 
     @Test
-    @Order(4)
     void whenSelectTagByNameShouldReturnTagWithSameNameTest() {
         //given
         String resourceName = "tag1";
@@ -90,7 +104,6 @@ public class TagDaoIT {
     }
 
     @Test
-    @Order(5)
     void whenSelectTagByNameIsNotExistShouldThrowResourceNotFoundTest(){
         //given
         String resourceName = "tag444";
@@ -107,8 +120,7 @@ public class TagDaoIT {
     }
 
     @Test
-    @Order(6)
-    public void whenInsertTagShouldReturnTagAndBeInDbTest() {
+    void whenInsertTagShouldReturnTagAndBeInDbTest() {
         //given
         Tag tagToInsert = new Tag("testing");
         int expectedListIncreased = 1;
@@ -124,8 +136,7 @@ public class TagDaoIT {
     }
 
     @Test
-    @Order(7)
-    public void whenInsertTagWithDuplicatedNameShouldThrowResourceViolationTest() {
+    void whenInsertTagWithDuplicatedNameShouldThrowResourceViolationTest() {
         //given
         Tag tagToInsert = new Tag("testing2");
         String expectedMessage = "Tag name or primary key violation (name = 'testing2')";
@@ -142,8 +153,7 @@ public class TagDaoIT {
     }
 
     @Test
-    @Order(8)
-    public void whenDeleteTagByIdShouldThatTagNotExistTest() {
+    void whenDeleteTagByIdShouldThatTagNotExistTest() {
         //given
         BigInteger resourceId = BigInteger.valueOf(1);
         String expectedMessage = "Tag not found (id = 1)";

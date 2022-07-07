@@ -16,9 +16,9 @@ public interface GiftCertificateService {
 
     void updateGiftCertificate(BigInteger id, GiftCertificateDto giftCertificateDto);
 
-    void addTagToGiftCertificate(BigInteger GiftCertificateId, TagDto tagDto);
+    void addTagToGiftCertificate(BigInteger giftCertificateId, TagDto tagDto);
 
-    void removeTagFromGiftCertificate(BigInteger GiftCertificateId, TagDto tagDto);
+    void removeTagFromGiftCertificate(BigInteger giftCertificateId, TagDto tagDto);
 
     void deleteGiftCertificate(BigInteger id);
 }

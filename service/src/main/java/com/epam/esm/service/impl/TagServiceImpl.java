@@ -54,11 +54,10 @@ public class TagServiceImpl implements TagService {
     }
 
     static TagDto convertTagToTagDto(Tag tag) {
-        TagDto tagDto = new TagDto(
+        return new TagDto(
                 tag.getId(),
                 tag.getName()
         );
-        return tagDto;
     }
 
     static Tag convertTagDtoToTag(TagDto tagDto) {

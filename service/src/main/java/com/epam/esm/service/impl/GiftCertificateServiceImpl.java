@@ -84,15 +84,15 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     @Override
-    public void addTagToGiftCertificate(BigInteger GiftCertificateId, TagDto tagDto) {
+    public void addTagToGiftCertificate(BigInteger giftCertificateId, TagDto tagDto) {
         checkTagNullNameValue(tagDto, "add");
-        giftCertificateDao.addTagToGiftCertificate(GiftCertificateId, TagServiceImpl.convertTagDtoToTag(tagDto));
+        giftCertificateDao.addTagToGiftCertificate(giftCertificateId, TagServiceImpl.convertTagDtoToTag(tagDto));
     }
 
     @Override
-    public void removeTagFromGiftCertificate(BigInteger GiftCertificateId, TagDto tagDto) {
+    public void removeTagFromGiftCertificate(BigInteger giftCertificateId, TagDto tagDto) {
         checkTagNullNameValue(tagDto, "remove");
-        giftCertificateDao.removeTagFromGiftCertificate(GiftCertificateId, TagServiceImpl.convertTagDtoToTag(tagDto));
+        giftCertificateDao.removeTagFromGiftCertificate(giftCertificateId, TagServiceImpl.convertTagDtoToTag(tagDto));
     }
 
     @Override
@@ -116,7 +116,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     }
 
     private GiftCertificateDto convertGiftCertificateToGiftCertificateDto(GiftCertificate giftCertificate) {
-        GiftCertificateDto giftCertificateDto = new GiftCertificateDto(
+        return new GiftCertificateDto(
                 giftCertificate.getId(),
                 giftCertificate.getName(),
                 giftCertificate.getDescription(),
@@ -128,8 +128,6 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
                         .stream()
                         .map(TagServiceImpl::convertTagToTagDto)
                         .collect(Collectors.toList()));
-
-        return giftCertificateDto;
     }
 
     private Filter convertFiltersDtoToFilters(FilterDto filterDto) {

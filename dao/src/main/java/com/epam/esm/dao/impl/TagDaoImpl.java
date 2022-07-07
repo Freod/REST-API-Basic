@@ -58,6 +58,7 @@ public class TagDaoImpl implements TagDao {
     }
 
     @Override
+    @Transactional
     public Tag selectTagByName(String name) {
         try {
             return jdbcTemplate.queryForObject(SELECT_TAG_BY_NAME_QUERY, new TagDaoMapper(), name);
@@ -66,6 +67,7 @@ public class TagDaoImpl implements TagDao {
         }
     }
 
+    @Transactional
     public Tag selectOrSaveTag(Tag tag) {
         try {
             tag = selectTagByName(tag.getName());

@@ -48,8 +48,6 @@ public class SpringJdbcConfig {
     public DataSource h2DataSource() {
         return new EmbeddedDatabaseBuilder()
                 .setType(EmbeddedDatabaseType.H2)
-                .addScript("database/init-ddl.sql")
-                .addScript("database/insert-dml.sql")
                 .build();
     }
 
