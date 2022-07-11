@@ -1,18 +1,29 @@
 package com.epam.esm.dto;
 
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Getter
 @EqualsAndHashCode
-@NoArgsConstructor
-@AllArgsConstructor
 public class FilterDto {
-    private String tag = "";
-    private String name = "";
-    private String description = "";
-    private String orderBy = "name";
-    private String direction = "asc";
+    private final String tag;
+    private final String name;
+    private final String description;
+    private final String orderBy;
+    private final String direction;
+
+    @JsonCreator(mode = JsonCreator.Mode.PROPERTIES)
+    public FilterDto(@JsonProperty("tag") String tag,
+                     @JsonProperty("name") String name,
+                     @JsonProperty("description") String description,
+                     @JsonProperty("orderBy") String orderBy,
+                     @JsonProperty("direction") String direction) {
+        this.tag = tag;
+        this.name = name;
+        this.description = description;
+        this.orderBy = orderBy;
+        this.direction = direction;
+    }
 }

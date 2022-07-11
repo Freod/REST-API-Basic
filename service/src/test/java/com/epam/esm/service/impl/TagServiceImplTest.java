@@ -55,7 +55,7 @@ public class TagServiceImplTest {
     @Test
     void whenSaveNewTagWithoutNameShouldThrowNullPointerException() {
         //given
-        TagDto tagDtoToSave = new TagDto();
+        TagDto tagDtoToSave = new TagDto(null, null);
 
         //when
         NullPointerException thrown = Assertions.assertThrows(NullPointerException.class, () -> {
@@ -95,7 +95,7 @@ public class TagServiceImplTest {
     @Test
     void whenSelectTagWithoutNameAndIdShouldThrowNullPointerException(){
         //given
-        TagDto tagDtoToSave = new TagDto();
+        TagDto tagDtoToSave = new TagDto(null, null);
         String expectedExceptionMessage = "id or name can't be null";
 
         //when

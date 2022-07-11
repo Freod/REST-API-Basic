@@ -124,6 +124,17 @@ public class GiftCertificateController {
     }
 
     /**
+     * Removes Gift Certificate resource with requested id.
+     *
+     * @param id to remove Gift Certificate resource
+     */
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteGiftCertificate(@PathVariable BigInteger id) {
+        giftCertificateService.deleteGiftCertificate(id);
+    }
+
+    /**
      * Adds Tag resource to Gift Certificate by id.
      * <p>Example JSON request:{
      *     "name": "tag3"
@@ -151,16 +162,5 @@ public class GiftCertificateController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void removeTagFromGiftCertificate(@PathVariable BigInteger id, @RequestBody TagDto tagDto){
         giftCertificateService.removeTagFromGiftCertificate(id, tagDto);
-    }
-
-    /**
-     * Removes Gift Certificate resource with requested id.
-     *
-     * @param id to remove Gift Certificate resource
-     */
-    @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteGiftCertificate(@PathVariable BigInteger id) {
-        giftCertificateService.deleteGiftCertificate(id);
     }
 }

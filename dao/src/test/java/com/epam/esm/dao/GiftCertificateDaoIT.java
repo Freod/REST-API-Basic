@@ -54,12 +54,13 @@ class GiftCertificateDaoIT {
     void whenSelectAllGiftCertificateShouldReturnGiftCertificateList() {
         //given
         Filter filterToSelect = new Filter();
+        int expectedListSize = 3;
 
         //when
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
 
         //then
-        assertEquals(3, giftCertificateList.size());
+        assertEquals(expectedListSize, actualGiftCertificateList.size());
     }
 
     @Test
@@ -67,12 +68,13 @@ class GiftCertificateDaoIT {
         //given
         Filter filterToSelect = new Filter();
         filterToSelect.setName("Name1");
+        int expectedListSize = 1;
 
         //when
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
 
         //then
-        assertEquals(1, giftCertificateList.size());
+        assertEquals(expectedListSize, actualGiftCertificateList.size());
     }
 
     @Test
@@ -80,12 +82,13 @@ class GiftCertificateDaoIT {
         //given
         Filter filterToSelect = new Filter();
         filterToSelect.setDescription("Description1");
+        int expectedListSize = 1;
 
         //when
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
 
         //then
-        assertEquals(1, giftCertificateList.size());
+        assertEquals(expectedListSize, actualGiftCertificateList.size());
     }
 
     @Test
@@ -93,12 +96,13 @@ class GiftCertificateDaoIT {
         //given
         Filter filterToSelect = new Filter();
         filterToSelect.setTag("tag3");
+        int expectedListSize = 1;
 
         //when
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
 
         //then
-        assertEquals(1, giftCertificateList.size());
+        assertEquals(expectedListSize, actualGiftCertificateList.size());
     }
 
     @Test
@@ -107,12 +111,13 @@ class GiftCertificateDaoIT {
         Filter filterToSelect = new Filter();
         filterToSelect.setName("Name1");
         filterToSelect.setDescription("Description1");
+        int expectedListSize = 1;
 
         //when
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
 
         //then
-        assertEquals(1, giftCertificateList.size());
+        assertEquals(expectedListSize, actualGiftCertificateList.size());
     }
 
     @Test
@@ -121,12 +126,13 @@ class GiftCertificateDaoIT {
         Filter filterToSelect = new Filter();
         filterToSelect.setName("Name1");
         filterToSelect.setTag("tag2");
+        int expectedListSize = 1;
 
         //when
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
 
         //then
-        assertEquals(1, giftCertificateList.size());
+        assertEquals(expectedListSize, actualGiftCertificateList.size());
     }
 
     @Test
@@ -135,12 +141,13 @@ class GiftCertificateDaoIT {
         Filter filterToSelect = new Filter();
         filterToSelect.setDescription("Description1");
         filterToSelect.setTag("tag2");
+        int expectedListSize = 1;
 
         //when
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
 
         //then
-        assertEquals(1, giftCertificateList.size());
+        assertEquals(expectedListSize, actualGiftCertificateList.size());
     }
 
     @Test
@@ -150,12 +157,13 @@ class GiftCertificateDaoIT {
         filterToSelect.setName("Name2");
         filterToSelect.setDescription("Description2");
         filterToSelect.setTag("tag3");
+        int expectedListSize = 1;
 
         //when
-        List<GiftCertificate> giftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
+        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.selectAllCertificates(filterToSelect);
 
         //then
-        assertEquals(1, giftCertificateList.size());
+        assertEquals(expectedListSize, actualGiftCertificateList.size());
     }
 
     @Test

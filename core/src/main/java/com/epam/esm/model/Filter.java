@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Filter {
-    private String tag = "";
-    private String name = "";
-    private String description = "";
+    private String tag;
+    private String name;
+    private String description;
 }

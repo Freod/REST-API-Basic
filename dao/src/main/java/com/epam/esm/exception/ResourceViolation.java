@@ -5,4 +5,3 @@ public class ResourceViolation extends RuntimeException {
         super(message);
     }
 }
-

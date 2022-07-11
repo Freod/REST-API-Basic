@@ -31,12 +31,7 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
         GiftCertificate giftCertificate = convertGiftCertificateDtoToGiftCertificate(giftCertificateDto);
 
-        giftCertificate.setTags(
-                giftCertificate.getTags()
-                        .stream()
-                        .collect(Collectors.toSet())
-                        .stream()
-                        .collect(Collectors.toList()));
+        giftCertificate.setTags(giftCertificate.getTags().stream().distinct().collect(Collectors.toList()));
 
         return convertGiftCertificateToGiftCertificateDto(giftCertificateDao.saveCertificate(giftCertificate));
     }
@@ -51,23 +46,25 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
         List<GiftCertificate> giftCertificateList
                 = giftCertificateDao.selectAllCertificates(convertFiltersDtoToFilters(filterDto));
 
-        Comparator comparator;
-        switch (filterDto.getOrderBy()) {
-            case "lastUpdateDate":
-                comparator = Comparator.comparing(GiftCertificate::getLastUpdateDate);
-                break;
-            case "createDate":
-                comparator = Comparator.comparing(GiftCertificate::getCreateDate);
-                break;
-            default:
-                comparator = Comparator.comparing(GiftCertificate::getName);
-        }
+        if (filterDto.getOrderBy() != null) {
+            Comparator comparator;
+            switch (filterDto.getOrderBy()) {
+                case "lastUpdateDate":
+                    comparator = Comparator.comparing(GiftCertificate::getLastUpdateDate);
+                    break;
+                case "createDate":
+                    comparator = Comparator.comparing(GiftCertificate::getCreateDate);
+                    break;
+                default:
+                    comparator = Comparator.comparing(GiftCertificate::getName);
+            }
 
-        if (filterDto.getDirection().equals("desc")) {
-            comparator = comparator.reversed();
-        }
+            if (filterDto.getDirection() != null && filterDto.getDirection().equals("desc")) {
+                comparator = comparator.reversed();
+            }
 
-        giftCertificateList.sort(comparator);
+            giftCertificateList.sort(comparator);
+        }
 
         return giftCertificateList
                 .stream()

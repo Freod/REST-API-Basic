@@ -144,7 +144,7 @@ public class GiftCertificateServiceImplTest {
     @Test
     void whenSaveNewGiftCertificateWithNullValuesShouldThrowNullPointerException() {
         //given
-        GiftCertificateDto giftCertificateWithNulls = new GiftCertificateDto();
+        GiftCertificateDto giftCertificateWithNulls = new GiftCertificateDto(null, null, null, null, null, null, null, null);
         String expectedExceptionMessage = "cannot save giftCertificate with null values";
 
         //when
@@ -415,7 +415,7 @@ public class GiftCertificateServiceImplTest {
     void whenUpdateGiftCertificateWithNullValuesShouldThrowNullPointerException() {
         //given
         BigInteger idToUpdate = BigInteger.valueOf(1);
-        GiftCertificateDto giftCertificateDtoWithNullValues = new GiftCertificateDto();
+        GiftCertificateDto giftCertificateDtoWithNullValues = new GiftCertificateDto(null, null, null, null, null, null, null, null);
         String expectedExceptionMessage = "cannot update giftCertificate with null values";
 
         //when
@@ -450,10 +450,10 @@ public class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void whenAddNullTagToGiftCertificateShouldThrowNullPointerException(){
+    void whenAddNullTagToGiftCertificateShouldThrowNullPointerException() {
         //given
         BigInteger giftCertificateIdToAddTag = BigInteger.valueOf(1);
-        TagDto tagDtoWithNullValues = new TagDto();
+        TagDto tagDtoWithNullValues = new TagDto(null, null);
         String expectedExceptionMessage = "cannot add tag with null values";
 
         //when
@@ -488,10 +488,10 @@ public class GiftCertificateServiceImplTest {
     }
 
     @Test
-    void whenRemoveNullTagFromGiftCertificateShouldThrowNullPointerException(){
+    void whenRemoveNullTagFromGiftCertificateShouldThrowNullPointerException() {
         //given
         BigInteger giftCertificateIdToRemoveTag = BigInteger.valueOf(1);
-        TagDto tagDtoWithNullValues = new TagDto();
+        TagDto tagDtoWithNullValues = new TagDto(null, null);
         String expectedExceptionMessage = "cannot remove tag with null values";
 
         //when

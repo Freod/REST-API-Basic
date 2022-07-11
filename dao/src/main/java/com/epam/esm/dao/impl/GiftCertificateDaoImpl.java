@@ -64,11 +64,20 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
         certificateParameters.put("create_date", giftCertificate.getCreateDate());
         certificateParameters.put("last_update_date", giftCertificate.getLastUpdateDate());
 
-        giftCertificate.setId(BigInteger.valueOf(simpleJdbcInsertGiftCertificates.executeAndReturnKey(certificateParameters).longValue()));
+        giftCertificate.setId(
+                BigInteger.valueOf(
+                        simpleJdbcInsertGiftCertificates.executeAndReturnKey(certificateParameters)
+                                .longValue()));
 
-        giftCertificate.setTags(giftCertificate.getTags().stream().map(tag -> tag = tagDao.selectOrSaveTag(tag)).collect(Collectors.toList()));
+        giftCertificate.setTags(
+                giftCertificate.getTags()
+                        .stream()
+                        .map(tag -> tag = tagDao.selectOrSaveTag(tag))
+                        .collect(Collectors.toList()));
 
-        giftCertificate.getTags().stream().forEach(tag -> saveCertificateTags(giftCertificate.getId(), tag.getId()));
+        giftCertificate.getTags()
+                .stream()
+                .forEach(tag -> saveCertificateTags(giftCertificate.getId(), tag.getId()));
 
         return giftCertificate;
     }
@@ -85,47 +94,36 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     @Override
     public List<GiftCertificate> selectAllCertificates(Filter filter) {
         List<Object> parameters = new ArrayList<>();
-        StringBuilder queryBuilder = new StringBuilder(SELECT_ALL_CERTIFICATES_QUERY);
-
-        if (!filter.getName().isEmpty() || !filter.getDescription().isEmpty() || !filter.getTag().isEmpty()) {
-            queryBuilder.append(" WHERE");
-            if (!filter.getName().isEmpty()) {
-                parameters.add(filter.getName());
-                queryBuilder.append(" UPPER(g_c.name) LIKE CONCAT('%%', UPPER(?), '%%')");
-                if (!filter.getDescription().isEmpty() || !filter.getTag().isEmpty()) {
-                    queryBuilder.append(" AND");
-                }
-            }
-            if (!filter.getDescription().isEmpty()) {
-                parameters.add(filter.getDescription());
-                queryBuilder.append(" UPPER(g_c.description) LIKE CONCAT('%%', UPPER(?), '%%')");
-                if (!filter.getTag().isEmpty()) {
-                    queryBuilder.append(" AND");
-                }
-            }
-            if (!filter.getTag().isEmpty()) {
-                parameters.add(filter.getTag());
-                queryBuilder.append(" UPPER(t.name) LIKE CONCAT('%%', UPPER(?), '%%')");
-            }
-        }
-
-        queryBuilder.append(";");
-
-        return jdbcTemplate.query(queryBuilder.toString(), parameters.toArray(), new GiftCertificateExtractor());
+        return jdbcTemplate.query(
+                prepareSelectQueryBasedOnFilter(filter, parameters),
+                parameters.toArray(),
+                new GiftCertificateExtractor());
     }
 
     @Override
     public void updateCertificate(GiftCertificate giftCertificate) {
         GiftCertificate dbGiftCertificate = selectCertificateById(giftCertificate.getId());
         replaceChangedFields(dbGiftCertificate, giftCertificate);
-        jdbcTemplate.update(UPDATE_CERTIFICATE_QUERY, dbGiftCertificate.getName(), dbGiftCertificate.getDescription(), dbGiftCertificate.getPrice(), dbGiftCertificate.getDuration(), dbGiftCertificate.getLastUpdateDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME), dbGiftCertificate.getId());
+        jdbcTemplate.update(
+                UPDATE_CERTIFICATE_QUERY,
+                dbGiftCertificate.getName(),
+                dbGiftCertificate.getDescription(),
+                dbGiftCertificate.getPrice(),
+                dbGiftCertificate.getDuration(),
+                dbGiftCertificate.getLastUpdateDate()
+                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                dbGiftCertificate.getId());
     }
 
     @Override
     @Transactional
     public void addTagToGiftCertificate(BigInteger giftCertificateId, Tag tag) {
         tag = tagDao.selectOrSaveTag(tag);
-        int numberOfTagInDB = jdbcTemplate.queryForObject(COUNT_ALL_CERTIFICATE_TAGS_BY_CERTIFICATE_ID_AND_TAG_ID_QUERY, Integer.class, giftCertificateId, tag.getId());
+        int numberOfTagInDB = jdbcTemplate.queryForObject(
+                COUNT_ALL_CERTIFICATE_TAGS_BY_CERTIFICATE_ID_AND_TAG_ID_QUERY,
+                Integer.class,
+                giftCertificateId,
+                tag.getId());
         if (numberOfTagInDB < 1) {
             saveCertificateTags(giftCertificateId, tag.getId());
         }
@@ -167,5 +165,35 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
             return dbGiftCertificate;
         }
         return dbGiftCertificate;
+    }
+
+    private String prepareSelectQueryBasedOnFilter(Filter filter, List<Object> parameters) {
+        StringBuilder queryBuilder = new StringBuilder(SELECT_ALL_CERTIFICATES_QUERY);
+
+        if (filter.getName() != null || filter.getDescription() != null || filter.getTag() != null) {
+            queryBuilder.append(" WHERE");
+            if (filter.getName() != null) {
+                parameters.add(filter.getName());
+                queryBuilder.append(" UPPER(g_c.name) LIKE CONCAT('%%', UPPER(?), '%%')");
+                if (filter.getDescription() != null || filter.getTag() != null) {
+                    queryBuilder.append(" AND");
+                }
+            }
+            if (filter.getDescription() != null) {
+                parameters.add(filter.getDescription());
+                queryBuilder.append(" UPPER(g_c.description) LIKE CONCAT('%%', UPPER(?), '%%')");
+                if (filter.getTag() != null) {
+                    queryBuilder.append(" AND");
+                }
+            }
+            if (filter.getTag() != null) {
+                parameters.add(filter.getTag());
+                queryBuilder.append(" UPPER(t.name) LIKE CONCAT('%%', UPPER(?), '%%')");
+            }
+        }
+
+        queryBuilder.append(";");
+
+        return queryBuilder.toString();
     }
 }
