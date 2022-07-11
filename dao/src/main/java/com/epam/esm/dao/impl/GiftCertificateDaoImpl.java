@@ -102,17 +102,17 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
 
     @Override
     public void updateCertificate(GiftCertificate giftCertificate) {
-        GiftCertificate dbGiftCertificate = selectCertificateById(giftCertificate.getId());
-        replaceChangedFields(dbGiftCertificate, giftCertificate);
+        GiftCertificate onRecordGiftCertificate = selectCertificateById(giftCertificate.getId());
+        replaceChangedFields(onRecordGiftCertificate, giftCertificate);
         jdbcTemplate.update(
                 UPDATE_CERTIFICATE_QUERY,
-                dbGiftCertificate.getName(),
-                dbGiftCertificate.getDescription(),
-                dbGiftCertificate.getPrice(),
-                dbGiftCertificate.getDuration(),
-                dbGiftCertificate.getLastUpdateDate()
+                onRecordGiftCertificate.getName(),
+                onRecordGiftCertificate.getDescription(),
+                onRecordGiftCertificate.getPrice(),
+                onRecordGiftCertificate.getDuration(),
+                onRecordGiftCertificate.getLastUpdateDate()
                         .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                dbGiftCertificate.getId());
+                onRecordGiftCertificate.getId());
     }
 
     @Override
