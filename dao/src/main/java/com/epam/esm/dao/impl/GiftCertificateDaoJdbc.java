@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
-public class GiftCertificateDaoImpl implements GiftCertificateDao {
+public class GiftCertificateDaoJdbc implements GiftCertificateDao {
     private static final String INSERT_CERTIFICATE_TAGS_QUERY =
             "INSERT INTO gift_certificates_tags (certificate_id, tag_id) VALUES (?, ?);";
     private static final String SELECT_CERTIFICATE_BY_ID_QUERY =
@@ -47,7 +47,7 @@ public class GiftCertificateDaoImpl implements GiftCertificateDao {
     private final SimpleJdbcInsert simpleJdbcInsertGiftCertificates;
 
     @Autowired
-    public GiftCertificateDaoImpl(TagDao tagDao, JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsertGiftCertificates) {
+    public GiftCertificateDaoJdbc(TagDao tagDao, JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsertGiftCertificates) {
         this.tagDao = Objects.requireNonNull(tagDao);
         this.jdbcTemplate = Objects.requireNonNull(jdbcTemplate);
         this.simpleJdbcInsertGiftCertificates = Objects.requireNonNull(simpleJdbcInsertGiftCertificates);

@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Repository
-public class TagDaoImpl implements TagDao {
+public class TagDaoJdbc implements TagDao {
     private static final String SELECT_TAG_BY_ID_QUERY = "SELECT * FROM tags WHERE id = ?;";
     private static final String SELECT_TAG_BY_NAME_QUERY = "SELECT * FROM tags WHERE name = ?;";
     private static final String SELECT_ALL_TAGS_QUERY = "SELECT * FROM tags;";
@@ -30,7 +30,7 @@ public class TagDaoImpl implements TagDao {
     private final SimpleJdbcInsert simpleJdbcInsertTags;
 
     @Autowired
-    public TagDaoImpl(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsertTags) {
+    public TagDaoJdbc(JdbcTemplate jdbcTemplate, SimpleJdbcInsert simpleJdbcInsertTags) {
         this.jdbcTemplate = Objects.requireNonNull(jdbcTemplate);
         this.simpleJdbcInsertTags = Objects.requireNonNull(simpleJdbcInsertTags);
     }
