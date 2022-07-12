@@ -1,4 +1,4 @@
-package com.epam.esm.service.impl;
+package com.epam.esm.service;
 
 import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dto.FilterDto;
@@ -26,13 +26,13 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class GiftCertificateServiceImplTest {
+public class GiftCertificateServiceTest {
 
     @Mock
     private GiftCertificateDao giftCertificateDao;
 
     @InjectMocks
-    private GiftCertificateServiceImpl giftCertificateService;
+    private GiftCertificateService giftCertificateService;
 
     @Test
     void whenSaveNewGiftCertificateShouldReturnGiftCertificate() {

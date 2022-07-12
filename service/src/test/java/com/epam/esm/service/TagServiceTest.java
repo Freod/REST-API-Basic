@@ -1,4 +1,4 @@
-package com.epam.esm.service.impl;
+package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dto.TagDto;
@@ -21,13 +21,13 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TagServiceImplTest {
+public class TagServiceTest {
 
     @Mock
     private TagDao tagDao;
 
     @InjectMocks
-    private TagServiceImpl tagService;
+    private TagService tagService;
 
     private static TagDto expectedTagDto;
     private static Tag insertedTag;
