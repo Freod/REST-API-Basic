@@ -1,7 +1,6 @@
 package com.epam.esm.errors;
 
 public enum ErrorCode {
-    UNKNOWN(40400),
     RESOURCE_NOT_FOUND(40401),
     RESOURCE_VIOLATION(40402),
     NULL_POINTER(40403),

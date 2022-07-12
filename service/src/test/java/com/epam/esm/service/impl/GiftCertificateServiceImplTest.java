@@ -8,7 +8,6 @@ import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +22,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
