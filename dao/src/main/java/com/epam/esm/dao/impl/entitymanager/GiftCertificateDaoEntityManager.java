@@ -10,13 +10,15 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
 
     private final EntityManager em;
-//    fixme is need?
+    //    fixme is need?
     private final TagDaoEntityManager tagDao;
 
     @Autowired
@@ -28,6 +30,19 @@ public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
     @Override
     public void save(GiftCertificate giftCertificate) {
         em.getTransaction().begin();
+        Set<Tag> tagSet = new HashSet<>();
+        for (Tag tag : giftCertificate.getTags()) {
+            try {
+                tag = (Tag) em.createQuery("select t from Tag t where t.name like :name").setParameter("name", tag.getName()).getSingleResult();
+                tagSet.add(tag);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+                em.persist(tag);
+                tagSet.add(tag);
+            }
+        }
+        giftCertificate.setTags(tagSet);
         em.persist(giftCertificate);
         em.getTransaction().commit();
     }
