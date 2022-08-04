@@ -1,11 +1,9 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.config.Config;
 import com.epam.esm.exception.ResourceNotFound;
 import com.epam.esm.exception.ResourceViolation;
 import com.epam.esm.model.Tag;
-import org.h2.tools.RunScript;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,39 +12,54 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import javax.sql.DataSource;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.Reader;
-import java.math.BigInteger;
-import java.sql.SQLException;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {com.epam.esm.config.SpringJdbcConfig.class}, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = {Config.class}, loader = AnnotationConfigContextLoader.class)
+//@ContextConfiguration(value = {"classpath:/it-test.xml"})
 class TagDaoIT {
+//
+//    @Autowired
+//    private EntityManager em;
 
     @Autowired
     private TagDao tagDao;
 
-    @BeforeEach
-    void initDatabaseAndInsertToDatabase(@Autowired DataSource dataSource) throws SQLException, FileNotFoundException {
-        Reader initReader = new FileReader("src/test/resources/database/init-ddl.sql");
-        Reader insertReader = new FileReader("src/test/resources/database/insert-dml.sql");
+//    @BeforeEach
+//    void initDatabaseAndInsertToDatabase(@Autowired DataSource dataSource) throws SQLException, FileNotFoundException {
+//        Reader initReader = new FileReader("src/test/resources/database/init-ddl.sql");
+//        Reader insertReader = new FileReader("src/test/resources/database/insert-dml.sql");
+//
+//        RunScript.execute(dataSource.getConnection(), initReader);
+//        RunScript.execute(dataSource.getConnection(), insertReader);
+//    }
+//
+//    @AfterEach
+//    void dropDatabase(@Autowired DataSource dataSource) throws FileNotFoundException, SQLException {
+//        Reader dropReader = new FileReader("src/test/resources/database/drop-ddl.sql");
+//
+//        RunScript.execute(dataSource.getConnection(), dropReader);
+//    }
+//     void init() {
+//        em.getTransaction().begin();
+//        em.createNativeQuery("INSERT INTO tags(name) VALUES('tag1');\n" +
+//                "INSERT INTO tags(name) VALUES('tag2');\n" +
+//                "INSERT INTO tags(name) VALUES('tag3');").executeUpdate();
+//        em.getTransaction().commit();
+//    }
 
-        RunScript.execute(dataSource.getConnection(), initReader);
-        RunScript.execute(dataSource.getConnection(), insertReader);
-    }
-
-    @AfterEach
-    void dropDatabase(@Autowired DataSource dataSource) throws FileNotFoundException, SQLException {
-        Reader dropReader = new FileReader("src/test/resources/database/drop-ddl.sql");
-
-        RunScript.execute(dataSource.getConnection(), dropReader);
-    }
+//    @AfterEach
+//    void drop(){
+//        em.getTransaction().begin();
+//        em.createNativeQuery("DROP TABLE gift_certificates CASCADE;\n" +
+//                "DROP TABLE gift_certificates_tags CASCADE;\n" +
+//                "DROP TABLE tags CASCADE;").executeUpdate();
+//        em.getTransaction().commit();
+//    }
 
     @Test
     void whenSelectAllTagsShouldReturnListTest() {
@@ -54,7 +67,7 @@ class TagDaoIT {
         int expectedListSize = 3;
 
         //when
-        List<Tag> actualTagList = tagDao.selectAllTags();
+        List<Tag> actualTagList = tagDao.findAll();
 
         //then
         assertEquals(expectedListSize, actualTagList.size());
@@ -63,26 +76,26 @@ class TagDaoIT {
     @Test
     void whenSelectTagByIdShouldReturnTagWithSameIdTest() {
         //given
-        BigInteger resourceId = BigInteger.valueOf(1);
+        Long resourceId = 1L;
         Tag expectedTag = new Tag(resourceId, "tag1");
 
         //when
-        Tag actualTag = tagDao.selectTagById(resourceId);
+        Tag actualTag = tagDao.findById(resourceId);
 
         //then
         assertEquals(expectedTag, actualTag);
     }
 
     @Test
-    void whenSelectTagByIdIsNotExistShouldThrowResourceNotFoundException(){
+    void whenSelectTagByIdIsNotExistShouldThrowResourceNotFoundException() {
         //given
-        BigInteger resourceId = BigInteger.valueOf(0);
+        Long resourceId = 0L;
         String expectedMessage = "Tag not found (id = 0)";
 
         //when
         ResourceNotFound thrown = assertThrows(
                 ResourceNotFound.class,
-                () -> tagDao.selectTagById(resourceId)
+                () -> tagDao.findById(resourceId)
         );
 
         //then
@@ -94,17 +107,17 @@ class TagDaoIT {
     void whenSelectTagByNameShouldReturnTagWithSameNameTest() {
         //given
         String resourceName = "tag1";
-        Tag expectedTag = new Tag(BigInteger.valueOf(1), resourceName);
+        Tag expectedTag = new Tag(1L, resourceName);
 
         //when
-        Tag actualTag = tagDao.selectTagByName(resourceName);
+        Tag actualTag = tagDao.findByName(resourceName);
 
         //then
         assertEquals(expectedTag, actualTag);
     }
 
     @Test
-    void whenSelectTagByNameIsNotExistShouldThrowResourceNotFoundTest(){
+    void whenSelectTagByNameIsNotExistShouldThrowResourceNotFoundTest() {
         //given
         String resourceName = "tag444";
         String expectedMessage = "Tag not found (name = 'tag444')";
@@ -112,7 +125,7 @@ class TagDaoIT {
         //when
         ResourceNotFound thrown = assertThrows(
                 ResourceNotFound.class,
-                () -> tagDao.selectTagByName(resourceName)
+                () -> tagDao.findByName(resourceName)
         );
 
         //then
@@ -126,13 +139,15 @@ class TagDaoIT {
         int expectedListIncreased = 1;
 
         //when
-        List<Tag> tagListBeforeInsert = tagDao.selectAllTags();
-        Tag insertedTag = tagDao.saveTag(tagToInsert);
-        List<Tag> tagListAfterInsert = tagDao.selectAllTags();
+        List<Tag> tagListBeforeInsert = tagDao.findAll();
+        // TODO: 29.07.2022
+//        Tag insertedTag =
+        tagDao.save(tagToInsert);
+        List<Tag> tagListAfterInsert = tagDao.findAll();
 
         //then
         assertEquals(tagListBeforeInsert.size() + expectedListIncreased, tagListAfterInsert.size());
-        assertNotNull(insertedTag.getId());
+//        assertNotNull(insertedTag.getId());
     }
 
     @Test
@@ -142,10 +157,10 @@ class TagDaoIT {
         String expectedMessage = "Tag name or primary key violation (name = 'testing2')";
 
         //when
-        tagDao.saveTag(tagToInsert);
+        tagDao.save(tagToInsert);
         ResourceViolation thrown = assertThrows(
                 ResourceViolation.class,
-                () -> tagDao.saveTag(tagToInsert)
+                () -> tagDao.save(tagToInsert)
         );
 
         //then
@@ -155,17 +170,17 @@ class TagDaoIT {
     @Test
     void whenDeleteTagByIdShouldThatTagNotExistTest() {
         //given
-        BigInteger resourceId = BigInteger.valueOf(1);
+        Long resourceId = 1L;
         String expectedMessage = "Tag not found (id = 1)";
         int expectedListDecreased = 1;
 
         //when
-        List<Tag> tagListBeforeRemove = tagDao.selectAllTags();
-        tagDao.deleteTag(resourceId);
-        List<Tag> tagListAfterRemove = tagDao.selectAllTags();
+        List<Tag> tagListBeforeRemove = tagDao.findAll();
+        tagDao.removeById(resourceId);
+        List<Tag> tagListAfterRemove = tagDao.findAll();
         ResourceNotFound thrown = assertThrows(
                 ResourceNotFound.class,
-                () -> tagDao.selectTagById(resourceId)
+                () -> tagDao.findById(resourceId)
         );
 
         //then

@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Controller for processing REST-api requests for Tag resource.
@@ -57,7 +56,7 @@ public class TagController {
      */
     @GetMapping("/list")
     @ResponseStatus(HttpStatus.OK)
-    public List<TagDto> showTag() {
+    public Set<TagDto> showAllTags() {
         return tagService.selectAllTags();
     }
 
@@ -79,8 +78,8 @@ public class TagController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDto addNewTag(@RequestBody TagDto tagDto) {
-        return tagService.saveTag(tagDto);
+    public void addNewTag(@RequestBody TagDto tagDto) {
+        tagService.saveTag(tagDto);
     }
 
     /**
@@ -90,7 +89,7 @@ public class TagController {
      */
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteTag(@PathVariable BigInteger id) {
+    public void deleteTag(@PathVariable Long id) {
         tagService.deleteTag(id);
     }
 }

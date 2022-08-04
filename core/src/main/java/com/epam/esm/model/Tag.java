@@ -1,15 +1,30 @@
 package com.epam.esm.model;
 
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
-import java.math.BigInteger;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Data
-@AllArgsConstructor
-@RequiredArgsConstructor
 @NoArgsConstructor
-public class Tag {
-    private BigInteger id;
+@Entity
+@Table(name = "tags")
+public class Tag implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     @NonNull
+    @Column(unique = true)
     private String name;
+
+    public Tag(@NonNull String name) {
+        this.name = name;
+    }
+
+    public Tag(Long id, @NonNull String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
+//fixme
 @ExtendWith(MockitoExtension.class)
 public class TagServiceTest {
 
@@ -35,7 +36,7 @@ public class TagServiceTest {
     @BeforeAll
     public static void init() {
         insertedTag = new Tag(BigInteger.valueOf(1), "tag1");
-        expectedTagDto = new TagDto(BigInteger.valueOf(1), "tag1");
+        expectedTagDto = new TagDto(Long.valueOf(1), "tag1");
     }
 
     @Test
@@ -69,7 +70,7 @@ public class TagServiceTest {
     @Test
     void whenSelectTagByIdShouldReturnTag() {
         //given
-        TagDto tagDtoToSave = new TagDto(BigInteger.valueOf(1), null);
+        TagDto tagDtoToSave = new TagDto(Long.valueOf(1), null);
 
         //when
         when(tagDao.selectTagById(tagDtoToSave.getId())).thenReturn(insertedTag);
@@ -116,8 +117,8 @@ public class TagServiceTest {
                 new Tag(BigInteger.valueOf(2), "tag2")
         );
         List<TagDto> expectedTagDtoList = Arrays.asList(
-                new TagDto(BigInteger.valueOf(1), "tag1"),
-                new TagDto(BigInteger.valueOf(2), "tag2")
+                new TagDto(Long.valueOf(1), "tag1"),
+                new TagDto(Long.valueOf(2), "tag2")
         );
 
         //when

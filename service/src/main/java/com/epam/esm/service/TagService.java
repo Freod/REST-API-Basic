@@ -6,10 +6,9 @@ import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
-import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,30 +21,31 @@ public class TagService {
         this.tagDao = Objects.requireNonNull(tagDao);
     }
 
-    public TagDto saveTag(TagDto tagDto) {
+    public void saveTag(TagDto tagDto) {
         Objects.requireNonNull(tagDto.getName());
-        return convertTagToTagDto(
-                tagDao.saveTag(
+//        return
+//                convertTagToTagDto(
+                tagDao.save(
                         convertTagDtoToTag(tagDto)
-                )
-        );
+                );
+//        );
     }
 
     public TagDto selectTagByNameOrId(TagDto tagDto) {
         if (tagDto.getId() != null) {
-            return convertTagToTagDto(tagDao.selectTagById(tagDto.getId()));
+            return convertTagToTagDto(tagDao.findById(tagDto.getId()));
         } else if (tagDto.getName() != null) {
-            return convertTagToTagDto(tagDao.selectTagByName(tagDto.getName()));
+            return convertTagToTagDto(tagDao.findByName(tagDto.getName().toLowerCase(Locale.ROOT)));
         }
         throw new NullPointerException("id or name can't be null");
     }
 
-    public List<TagDto> selectAllTags() {
-        return tagDao.selectAllTags().stream().map(TagService::convertTagToTagDto).collect(Collectors.toList());
+    public Set<TagDto> selectAllTags() {
+        return tagDao.findAll().stream().map(TagService::convertTagToTagDto).collect(Collectors.toSet());
     }
 
-    public void deleteTag(BigInteger id) {
-        tagDao.deleteTag(id);
+    public void deleteTag(Long id) {
+        tagDao.removeById(id);
     }
 
     static TagDto convertTagToTagDto(Tag tag) {

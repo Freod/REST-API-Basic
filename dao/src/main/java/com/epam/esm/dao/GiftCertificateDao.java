@@ -4,21 +4,20 @@ import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Tag;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public interface GiftCertificateDao {
-    GiftCertificate saveCertificate(GiftCertificate giftCertificate);
+    void save(GiftCertificate giftCertificate);
 
-    GiftCertificate selectCertificateById(BigInteger id);
+    GiftCertificate findById(Long id);
 
-    List<GiftCertificate> selectAllCertificates(Filter filter);
+    List<GiftCertificate> findAllUsingFilter(Filter filter);
 
-    void updateCertificate(GiftCertificate giftCertificate);
+    void update(GiftCertificate giftCertificate);
 
-    void addTagToGiftCertificate(BigInteger giftCertificateId, Tag tag);
+    void removeById(Long id);
 
-    void removeTagFromGiftCertificate(BigInteger giftCertificateId, Tag tag);
+    void addTagToGiftCertificate(Long giftCertificateId, Tag tag);
 
-    void deleteCertificateById(BigInteger id);
+    void removeTagFromGiftCertificate(Long giftCertificateId, Tag tag);
 }

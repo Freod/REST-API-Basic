@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Objects;
 
@@ -46,7 +45,7 @@ public class GiftCertificateController {
      */
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public GiftCertificateDto showGiftCertificate(@PathVariable BigInteger id) {
+    public GiftCertificateDto showGiftCertificate(@PathVariable Long id) {
         return giftCertificateService.selectGiftCertificate(id);
     }
 
@@ -63,39 +62,40 @@ public class GiftCertificateController {
     }
 
     /**
+     * todo
      * Creates new Gift Certificate resource
      * <p>Example JSON request:{
-     *     "name": "Name1",
-     *     "description": "Description",
-     *     "price": 30.4,
-     *     "duration": 5,
-     *     "tags": [
-     *         {
-     *             "name": "tag1"
-     *         },
-     *         {
-     *             "name": "tag2"
-     *         }
-     *     ]
+     * "name": "Name1",
+     * "description": "Description",
+     * "price": 30.4,
+     * "duration": 5,
+     * "tags": [
+     * {
+     * "name": "tag1"
+     * },
+     * {
+     * "name": "tag2"
+     * }
+     * ]
      * }</p>
      * <p>Example JSON response:{
-     *     "id": 6,
-     *     "name": "Name1",
-     *     "description": "Description",
-     *     "price": 30.4,
-     *     "duration": 5,
-     *     "createDate": "2022-06-27T21:05:34.618",
-     *     "lastUpdateDate": "2022-06-27T21:05:34.619",
-     *     "tags": [
-     *         {
-     *             "id": 12,
-     *             "name": "tag2"
-     *         },
-     *         {
-     *             "id": 6,
-     *             "name": "tag1"
-     *         }
-     *     ]
+     * "id": 6,
+     * "name": "Name1",
+     * "description": "Description",
+     * "price": 30.4,
+     * "duration": 5,
+     * "createDate": "2022-06-27T21:05:34.618",
+     * "lastUpdateDate": "2022-06-27T21:05:34.619",
+     * "tags": [
+     * {
+     * "id": 12,
+     * "name": "tag2"
+     * },
+     * {
+     * "id": 6,
+     * "name": "tag1"
+     * }
+     * ]
      * }</p>
      *
      * @param giftCertificateDto Gift Certificate resource to create
@@ -103,23 +103,23 @@ public class GiftCertificateController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateDto addNewGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto) {
-        return giftCertificateService.saveGiftCertificate(giftCertificateDto);
+    public void addNewGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto) {
+        giftCertificateService.saveGiftCertificate(giftCertificateDto);
     }
 
     /**
      * Updates Gift Certificate resource by id.
      * <p>Example JSON request:{
-     *     "name": "Na3me1",
-     *     "description": "Descript3ion"
+     * "name": "Na3me1",
+     * "description": "Descript3ion"
      * }</p>
      *
-     * @param id to find Gift Certificate resource
+     * @param id                 to find Gift Certificate resource
      * @param giftCertificateDto Gift Certificate resource to update
      */
     @PatchMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateGiftCertificate(@PathVariable BigInteger id, @RequestBody GiftCertificateDto giftCertificateDto) {
+    public void updateGiftCertificate(@PathVariable Long id, @RequestBody GiftCertificateDto giftCertificateDto) {
         giftCertificateService.updateGiftCertificate(id, giftCertificateDto);
     }
 
@@ -130,29 +130,29 @@ public class GiftCertificateController {
      */
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteGiftCertificate(@PathVariable BigInteger id) {
+    public void deleteGiftCertificate(@PathVariable Long id) {
         giftCertificateService.deleteGiftCertificate(id);
     }
 
     /**
      * Adds Tag resource to Gift Certificate by id.
      * <p>Example JSON request:{
-     *     "name": "tag3"
+     * "name": "tag3"
      * }</p>
      *
-     * @param id to find Gift Certificate resource
+     * @param id     to find Gift Certificate resource
      * @param tagDto Tag resource to add
      */
     @PutMapping("/tag/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addTagToGiftCertificate(@PathVariable BigInteger id, @RequestBody TagDto tagDto){
+    public void addTagToGiftCertificate(@PathVariable Long id, @RequestBody TagDto tagDto) {
         giftCertificateService.addTagToGiftCertificate(id, tagDto);
     }
 
     /**
      * Removes Tag resource from Gift Certificate by id.
      * <p>Example JSON request:{
-     *     "name": "tag3"
+     * "name": "tag3"
      * }</p>
      *
      * @param id
@@ -160,7 +160,7 @@ public class GiftCertificateController {
      */
     @DeleteMapping("/tag/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeTagFromGiftCertificate(@PathVariable BigInteger id, @RequestBody TagDto tagDto){
+    public void removeTagFromGiftCertificate(@PathVariable Long id, @RequestBody TagDto tagDto) {
         giftCertificateService.removeTagFromGiftCertificate(id, tagDto);
     }
 }

@@ -2,26 +2,33 @@ package com.epam.esm.model;
 
 import lombok.Data;
 
-import java.math.BigInteger;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-public class GiftCertificate {
-    private BigInteger id;
+@Entity
+@Table(name = "gift_certificates")
+public class GiftCertificate implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
     private String name;
     private String description;
     private Double price;
     private Integer duration;
     private LocalDateTime createDate;
     private LocalDateTime lastUpdateDate;
-    private List<Tag> tags = new ArrayList<>();
+    @ManyToMany(cascade = {CascadeType.PERSIST})
+    private Set<Tag> tags = new HashSet<>();
 
     public void addTag(Tag tag) {
         this.tags.add(tag);
     }
 
+//    fixme never used
     public void removeTag(Tag tag) {
         this.tags.remove(tag);
     }
@@ -31,7 +38,7 @@ public class GiftCertificate {
         this.lastUpdateDate = LocalDateTime.now();
     }
 
-    public GiftCertificate(BigInteger id, String name, String description, Double price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+    public GiftCertificate(Long id, String name, String description, Double price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -41,7 +48,7 @@ public class GiftCertificate {
         this.lastUpdateDate = lastUpdateDate;
     }
 
-    public List<Tag> getTags() {
-        return new ArrayList<>(tags);
+    public Set<Tag> getTags() {
+        return new HashSet<>(tags);
     }
 }

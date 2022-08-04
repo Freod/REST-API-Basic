@@ -3,19 +3,16 @@ package com.epam.esm.dao;
 import com.epam.esm.exception.ResourceNotFound;
 import com.epam.esm.model.Tag;
 
-import java.math.BigInteger;
 import java.util.List;
 
 public interface TagDao {
-    Tag saveTag(Tag tag);
+    void save(Tag tag);
 
-    Tag selectTagById(BigInteger id) throws ResourceNotFound;
+    Tag findById(Long id) throws ResourceNotFound;
 
-    Tag selectTagByName(String name);
+    Tag findByName(String name);
 
-    Tag selectOrSaveTag(Tag tag);
+    List<Tag> findAll();
 
-    List<Tag> selectAllTags();
-
-    void deleteTag(BigInteger id);
+    void removeById(Long id);
 }

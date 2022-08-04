@@ -9,7 +9,6 @@ import com.epam.esm.model.GiftCertificate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -24,23 +23,25 @@ public class GiftCertificateService {
         this.giftCertificateDao = Objects.requireNonNull(giftCertificateDao);
     }
 
-    public GiftCertificateDto saveGiftCertificate(GiftCertificateDto giftCertificateDto) {
+    public void saveGiftCertificate(GiftCertificateDto giftCertificateDto) {
         checkNullValuesGiftCertificate(giftCertificateDto, "save");
 
         GiftCertificate giftCertificate = convertGiftCertificateDtoToGiftCertificate(giftCertificateDto);
 
-        giftCertificate.setTags(giftCertificate.getTags().stream().distinct().collect(Collectors.toList()));
+//        giftCertificate.setTags(giftCertificate.getTags().stream().distinct().collect(Collectors.toList()));
 
-        return convertGiftCertificateToGiftCertificateDto(giftCertificateDao.saveCertificate(giftCertificate));
+//        return convertGiftCertificateToGiftCertificateDto(
+                giftCertificateDao.save(giftCertificate);
+//        );
     }
 
-    public GiftCertificateDto selectGiftCertificate(BigInteger id) {
-        return convertGiftCertificateToGiftCertificateDto(giftCertificateDao.selectCertificateById(id));
+    public GiftCertificateDto selectGiftCertificate(Long id) {
+        return convertGiftCertificateToGiftCertificateDto(giftCertificateDao.findById(id));
     }
 
     public List<GiftCertificateDto> selectAllGiftCertificates(FilterDto filterDto) {
         List<GiftCertificate> giftCertificateList
-                = giftCertificateDao.selectAllCertificates(convertFiltersDtoToFilters(filterDto));
+                = giftCertificateDao.findAllUsingFilter(convertFiltersDtoToFilters(filterDto));
 
         if (filterDto.getOrderBy() != null) {
             Comparator comparator;
@@ -68,25 +69,25 @@ public class GiftCertificateService {
                 .collect(Collectors.toList());
     }
 
-    public void updateGiftCertificate(BigInteger id, GiftCertificateDto giftCertificateDto) {
+    public void updateGiftCertificate(Long id, GiftCertificateDto giftCertificateDto) {
         checkNullValuesGiftCertificate(giftCertificateDto, "update");
         GiftCertificate giftCertificate = convertGiftCertificateDtoToGiftCertificate(giftCertificateDto);
         giftCertificate.setId(id);
-        giftCertificateDao.updateCertificate(giftCertificate);
+        giftCertificateDao.update(giftCertificate);
     }
 
-    public void addTagToGiftCertificate(BigInteger giftCertificateId, TagDto tagDto) {
+    public void addTagToGiftCertificate(Long giftCertificateId, TagDto tagDto) {
         checkTagNullNameValue(tagDto, "add");
         giftCertificateDao.addTagToGiftCertificate(giftCertificateId, TagService.convertTagDtoToTag(tagDto));
     }
 
-    public void removeTagFromGiftCertificate(BigInteger giftCertificateId, TagDto tagDto) {
+    public void removeTagFromGiftCertificate(Long giftCertificateId, TagDto tagDto) {
         checkTagNullNameValue(tagDto, "remove");
         giftCertificateDao.removeTagFromGiftCertificate(giftCertificateId, TagService.convertTagDtoToTag(tagDto));
     }
 
-    public void deleteGiftCertificate(BigInteger id) {
-        giftCertificateDao.deleteCertificateById(id);
+    public void deleteGiftCertificate(Long id) {
+        giftCertificateDao.removeById(id);
     }
 
     private GiftCertificate convertGiftCertificateDtoToGiftCertificate(GiftCertificateDto giftCertificateDto) {
@@ -99,7 +100,7 @@ public class GiftCertificateService {
                 giftCertificateDto.getTags()
                         .stream()
                         .map(TagService::convertTagDtoToTag)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toSet()));
 
         return giftCertificate;
     }
@@ -116,7 +117,7 @@ public class GiftCertificateService {
                 giftCertificate.getTags()
                         .stream()
                         .map(TagService::convertTagToTagDto)
-                        .collect(Collectors.toList()));
+                        .collect(Collectors.toSet()));
     }
 
     private Filter convertFiltersDtoToFilters(FilterDto filterDto) {

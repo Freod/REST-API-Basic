@@ -18,6 +18,7 @@ import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,8 +26,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
+//fixme
 @ExtendWith(MockitoExtension.class)
-public class GiftCertificateServiceTest {
+class GiftCertificateServiceTest {
 
     @Mock
     private GiftCertificateDao giftCertificateDao;
@@ -118,7 +120,7 @@ public class GiftCertificateServiceTest {
         FilterDto filterDtoToPass = new FilterDto("", "", "", "name", "asc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
                 new GiftCertificateDto(
-                        BigInteger.valueOf(1),
+                        Long.valueOf(1),
                         "name1",
                         "description1",
                         3.5,
@@ -127,7 +129,7 @@ public class GiftCertificateServiceTest {
                         LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
                         new ArrayList<>()),
                 new GiftCertificateDto(
-                        BigInteger.valueOf(2),
+                        Long.valueOf(2),
                         "name2",
                         "description2",
                         3.5,
@@ -151,7 +153,7 @@ public class GiftCertificateServiceTest {
         FilterDto filterDtoToPass = new FilterDto("", "", "", "name", "desc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
                 new GiftCertificateDto(
-                        BigInteger.valueOf(2),
+                        Long.valueOf(2),
                         "name2",
                         "description2",
                         3.5,
@@ -160,7 +162,7 @@ public class GiftCertificateServiceTest {
                         LocalDateTime.of(2022, 07, 05, 16, 21, 30).toString(),
                         new ArrayList<>()),
                 new GiftCertificateDto(
-                        BigInteger.valueOf(1),
+                        Long.valueOf(1),
                         "name1",
                         "description1",
                         3.5,
@@ -184,7 +186,7 @@ public class GiftCertificateServiceTest {
         FilterDto filterDtoToPass = new FilterDto("", "", "", "createDate", "asc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
                 new GiftCertificateDto(
-                        BigInteger.valueOf(1),
+                        Long.valueOf(1),
                         "name1",
                         "description1",
                         3.5,
@@ -193,7 +195,7 @@ public class GiftCertificateServiceTest {
                         LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
                         new ArrayList<>()),
                 new GiftCertificateDto(
-                        BigInteger.valueOf(2),
+                        Long.valueOf(2),
                         "name2",
                         "description2",
                         3.5,
@@ -217,23 +219,23 @@ public class GiftCertificateServiceTest {
         FilterDto filterDtoToPass = new FilterDto("", "", "", "createDate", "desc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
                 new GiftCertificateDto(
-                        BigInteger.valueOf(2),
+                        Long.valueOf(2),
                         "name2",
                         "description2",
                         3.5,
                         5,
                         LocalDateTime.of(2022, 07, 05, 16, 21, 30).toString(),
                         LocalDateTime.of(2022, 07, 05, 16, 21, 30).toString(),
-                        new ArrayList<>()),
+                        new HashSet<>()),
                 new GiftCertificateDto(
-                        BigInteger.valueOf(1),
+                        Long.valueOf(1),
                         "name1",
                         "description1",
                         3.5,
                         5,
                         LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
                         LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
-                        new ArrayList<>())
+                        new HashSet<>())
 
         );
 
@@ -251,23 +253,23 @@ public class GiftCertificateServiceTest {
         FilterDto filterDtoToPass = new FilterDto("", "", "", "lastUpdateDate", "asc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
                 new GiftCertificateDto(
-                        BigInteger.valueOf(1),
+                        Long.valueOf(1),
                         "name1",
                         "description1",
                         3.5,
                         5,
                         LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
                         LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
-                        new ArrayList<>()),
+                        new HashSet<>()),
                 new GiftCertificateDto(
-                        BigInteger.valueOf(2),
+                        Long.valueOf(2),
                         "name2",
                         "description2",
                         3.5,
                         5,
                         LocalDateTime.of(2022, 07, 05, 16, 21, 30).toString(),
                         LocalDateTime.of(2022, 07, 05, 16, 21, 30).toString(),
-                        new ArrayList<>())
+                        new HashSet<>())
         );
 
         //when
@@ -284,23 +286,23 @@ public class GiftCertificateServiceTest {
         FilterDto filterDtoToPass = new FilterDto("", "", "", "lastUpdateDate", "desc");
         List<GiftCertificateDto> expectedGiftCertificateDtoList = Arrays.asList(
                 new GiftCertificateDto(
-                        BigInteger.valueOf(2),
+                        Long.valueOf(2),
                         "name2",
                         "description2",
                         3.5,
                         5,
                         LocalDateTime.of(2022, 07, 05, 16, 21, 30).toString(),
                         LocalDateTime.of(2022, 07, 05, 16, 21, 30).toString(),
-                        new ArrayList<>()),
+                        new HashSet<>()),
                 new GiftCertificateDto(
-                        BigInteger.valueOf(1),
+                        Long.valueOf(1),
                         "name1",
                         "description1",
                         3.5,
                         5,
                         LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
                         LocalDateTime.of(2022, 07, 05, 16, 20, 20).toString(),
-                        new ArrayList<>())
+                        new HashSet<>())
 
         );
 
@@ -340,7 +342,7 @@ public class GiftCertificateServiceTest {
                         5,
                         null,
                         null,
-                        new ArrayList<>());
+                        new HashSet<>());
         GiftCertificate expectedGiftCertificate =
                 new GiftCertificate(
                         idToUpdate,
@@ -512,8 +514,8 @@ public class GiftCertificateServiceTest {
                 returnGiftCertificate.getCreateDate().toString(),
                 returnGiftCertificate.getLastUpdateDate().toString(),
                 Arrays.asList(
-                        new TagDto(BigInteger.valueOf(1), "tag1"),
-                        new TagDto(BigInteger.valueOf(2), "tag2")
+                        new TagDto(Long.valueOf(1), "tag1"),
+                        new TagDto(Long.valueOf(2), "tag2")
                 ));
         return expectedGiftCertificateDto;
     }
