@@ -36,7 +36,12 @@ public class GiftCertificateDto {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
-        this.tags = tags;
+        if(tags!=null) {
+            this.tags = tags;
+        }
+        else {
+            this.tags = new HashSet<>();
+        }
     }
 
     public Set<TagDto> getTags() {

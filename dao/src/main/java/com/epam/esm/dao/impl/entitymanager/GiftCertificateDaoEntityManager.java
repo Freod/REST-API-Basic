@@ -10,15 +10,14 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import java.util.HashSet;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Repository
 public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
 
     private final EntityManager em;
-    //    fixme is need?
     private final TagDaoEntityManager tagDao;
 
     @Autowired
@@ -30,19 +29,24 @@ public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
     @Override
     public void save(GiftCertificate giftCertificate) {
         em.getTransaction().begin();
-        Set<Tag> tagSet = new HashSet<>();
-        for (Tag tag : giftCertificate.getTags()) {
-            try {
-                tag = (Tag) em.createQuery("select t from Tag t where t.name like :name").setParameter("name", tag.getName()).getSingleResult();
-                tagSet.add(tag);
-            }
-            catch (Exception e){
-                e.printStackTrace();
-                em.persist(tag);
-                tagSet.add(tag);
-            }
-        }
-        giftCertificate.setTags(tagSet);
+        giftCertificate
+                .setTags(
+                        giftCertificate
+                                .getTags()
+                                .stream()
+                                .map(tag -> {
+                                            try {
+                                                tag = tagDao.findByName(tag.getName());
+                                                tag = em.merge(tag);
+                                                return tag;
+                                            } catch (ResourceNotFound e) {
+                                                return tag;
+                                            }
+                                        }
+                                )
+                                .collect(Collectors.toSet()));
+        giftCertificate.setCreateDate(LocalDateTime.now());
+        giftCertificate.setLastUpdateDate(LocalDateTime.now());
         em.persist(giftCertificate);
         em.getTransaction().commit();
     }
@@ -56,6 +60,7 @@ public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
         return giftCertificate;
     }
 
+    // TODO: 09.08.2022 filters
     @Override
     public List<GiftCertificate> findAllUsingFilter(Filter filter) {
         List<GiftCertificate> giftCertificates = em.createQuery("select gc from GiftCertificate gc").getResultList();
@@ -64,9 +69,20 @@ public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
 
     @Override
     public void update(GiftCertificate giftCertificate) {
-
+        em.getTransaction().begin();
+        GiftCertificate actualGiftCertificate;
+        try {
+            actualGiftCertificate = findById(giftCertificate.getId());
+        } catch (ResourceNotFound e) {
+            em.getTransaction().rollback();
+            throw new ResourceNotFound(e.getMessage());
+        }
+        actualGiftCertificate = updateFields(actualGiftCertificate, giftCertificate);
+        em.merge(actualGiftCertificate);
+        em.getTransaction().commit();
     }
 
+    //todo cascade
     @Override
     public void removeById(Long id) {
         em.getTransaction().begin();
@@ -79,13 +95,32 @@ public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
         em.getTransaction().commit();
     }
 
+    // TODO: 09.08.2022  
     @Override
     public void addTagToGiftCertificate(Long giftCertificateId, Tag tag) {
 
     }
 
+    // TODO: 09.08.2022
     @Override
     public void removeTagFromGiftCertificate(Long giftCertificateId, Tag tag) {
 
+    }
+    
+    private GiftCertificate updateFields(GiftCertificate actualGiftCertificate, GiftCertificate giftCertificate){
+        if (giftCertificate.getName() != null) {
+            actualGiftCertificate.setName(giftCertificate.getName());
+        }
+        if (giftCertificate.getDescription() != null) {
+            actualGiftCertificate.setDescription(giftCertificate.getDescription());
+        }
+        if (giftCertificate.getPrice() != null) {
+            actualGiftCertificate.setPrice(giftCertificate.getPrice());
+        }
+        if (giftCertificate.getDuration() != null) {
+            actualGiftCertificate.setDuration(giftCertificate.getDuration());
+        }
+        actualGiftCertificate.setLastUpdateDate(LocalDateTime.now());
+        return actualGiftCertificate;
     }
 }
