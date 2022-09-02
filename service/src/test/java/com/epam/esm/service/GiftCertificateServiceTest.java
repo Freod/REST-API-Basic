@@ -1,6 +1,5 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.GiftCertificateDao;
 import com.epam.esm.dto.FilterDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;

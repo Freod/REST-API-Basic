@@ -3,10 +3,11 @@ package com.epam.esm.dao;
 import com.epam.esm.exception.ResourceNotFound;
 import com.epam.esm.model.Tag;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 
 public interface TagDao {
-    void save(Tag tag);
+    Tag save(Tag tag);
 
     Tag findById(Long id) throws ResourceNotFound;
 
@@ -15,4 +16,7 @@ public interface TagDao {
     List<Tag> findAll();
 
     void removeById(Long id);
+
+    // TODO: 31.08.2022
+    EntityManager getEm();
 }

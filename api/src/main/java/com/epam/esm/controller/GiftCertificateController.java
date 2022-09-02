@@ -49,58 +49,12 @@ public class GiftCertificateController {
         return giftCertificateService.selectGiftCertificate(id);
     }
 
-    /**
-     * Gets list of Gift Certificate resources sorting by filters. Order by name or lastUpdateDate or createDate. Direction by asc or desc.
-     *
-     * @param filterDto Resource to sorting and filters.
-     * @return list of all giftCertificates
-     */
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public List<GiftCertificateDto> showGiftCertificateList(@RequestBody FilterDto filterDto) {
         return giftCertificateService.selectAllGiftCertificates(filterDto);
     }
 
-    /**
-     * todo
-     * Creates new Gift Certificate resource
-     * <p>Example JSON request:{
-     * "name": "Name1",
-     * "description": "Description",
-     * "price": 30.4,
-     * "duration": 5,
-     * "tags": [
-     * {
-     * "name": "tag1"
-     * },
-     * {
-     * "name": "tag2"
-     * }
-     * ]
-     * }</p>
-     * <p>Example JSON response:{
-     * "id": 6,
-     * "name": "Name1",
-     * "description": "Description",
-     * "price": 30.4,
-     * "duration": 5,
-     * "createDate": "2022-06-27T21:05:34.618",
-     * "lastUpdateDate": "2022-06-27T21:05:34.619",
-     * "tags": [
-     * {
-     * "id": 12,
-     * "name": "tag2"
-     * },
-     * {
-     * "id": 6,
-     * "name": "tag1"
-     * }
-     * ]
-     * }</p>
-     *
-     * @param giftCertificateDto Gift Certificate resource to create
-     * @return Gift Certificate resource that was created
-     */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public void addNewGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto) {

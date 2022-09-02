@@ -2,7 +2,6 @@ package com.epam.esm.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.NonNull;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -10,20 +9,20 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @Entity
-@Table(name = "tags")
+@Table(name = "tags", indexes = {@Index(name = "tags_name_index", columnList = "name", unique = true)})
 public class Tag implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    @NonNull
     @Column(unique = true)
     private String name;
 
-    public Tag(@NonNull String name) {
+    public Tag(String name) {
         this.name = name;
     }
 
-    public Tag(Long id, @NonNull String name) {
+    public Tag(Long id, String name) {
         this.id = id;
         this.name = name;
     }

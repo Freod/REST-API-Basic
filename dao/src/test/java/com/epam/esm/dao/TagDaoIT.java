@@ -3,10 +3,13 @@ package com.epam.esm.dao;
 import com.epam.esm.config.Config;
 import com.epam.esm.exception.ResourceNotFound;
 import com.epam.esm.exception.ResourceViolation;
+import com.epam.esm.generation.Generate;
 import com.epam.esm.model.Tag;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -14,57 +17,33 @@ import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {Config.class}, loader = AnnotationConfigContextLoader.class)
-//@ContextConfiguration(value = {"classpath:/it-test.xml"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class TagDaoIT {
-//
-//    @Autowired
-//    private EntityManager em;
 
     @Autowired
     private TagDao tagDao;
 
-//    @BeforeEach
-//    void initDatabaseAndInsertToDatabase(@Autowired DataSource dataSource) throws SQLException, FileNotFoundException {
-//        Reader initReader = new FileReader("src/test/resources/database/init-ddl.sql");
-//        Reader insertReader = new FileReader("src/test/resources/database/insert-dml.sql");
-//
-//        RunScript.execute(dataSource.getConnection(), initReader);
-//        RunScript.execute(dataSource.getConnection(), insertReader);
-//    }
-//
-//    @AfterEach
-//    void dropDatabase(@Autowired DataSource dataSource) throws FileNotFoundException, SQLException {
-//        Reader dropReader = new FileReader("src/test/resources/database/drop-ddl.sql");
-//
-//        RunScript.execute(dataSource.getConnection(), dropReader);
-//    }
-//     void init() {
-//        em.getTransaction().begin();
-//        em.createNativeQuery("INSERT INTO tags(name) VALUES('tag1');\n" +
-//                "INSERT INTO tags(name) VALUES('tag2');\n" +
-//                "INSERT INTO tags(name) VALUES('tag3');").executeUpdate();
-//        em.getTransaction().commit();
-//    }
+    @Autowired
+    private Generate generate;
 
-//    @AfterEach
-//    void drop(){
-//        em.getTransaction().begin();
-//        em.createNativeQuery("DROP TABLE gift_certificates CASCADE;\n" +
-//                "DROP TABLE gift_certificates_tags CASCADE;\n" +
-//                "DROP TABLE tags CASCADE;").executeUpdate();
-//        em.getTransaction().commit();
-//    }
+    private int generatedSize = 20;
 
+    // TODO: 31.08.2022 fix it, work too long
+    @BeforeEach
+    void beforeTests(){
+        generate.insertTagsToDb(generatedSize);
+    }
+
+    // TODO: 31.08.2022 pagination
     @Test
     void whenSelectAllTagsShouldReturnListTest() {
         //given
-        int expectedListSize = 3;
+        int expectedListSize = generatedSize;
 
         //when
         List<Tag> actualTagList = tagDao.findAll();
@@ -77,20 +56,20 @@ class TagDaoIT {
     void whenSelectTagByIdShouldReturnTagWithSameIdTest() {
         //given
         Long resourceId = 1L;
-        Tag expectedTag = new Tag(resourceId, "tag1");
 
         //when
         Tag actualTag = tagDao.findById(resourceId);
 
         //then
-        assertEquals(expectedTag, actualTag);
+        assertEquals(resourceId, actualTag.getId());
+        assertNotNull(actualTag.getName());
     }
 
     @Test
     void whenSelectTagByIdIsNotExistShouldThrowResourceNotFoundException() {
         //given
         Long resourceId = 0L;
-        String expectedMessage = "Tag not found (id = 0)";
+        String expectedMessage = "Tag with id = (0) isn't exists.";
 
         //when
         ResourceNotFound thrown = assertThrows(
@@ -106,8 +85,9 @@ class TagDaoIT {
     @Test
     void whenSelectTagByNameShouldReturnTagWithSameNameTest() {
         //given
-        String resourceName = "tag1";
-        Tag expectedTag = new Tag(1L, resourceName);
+        Long resourceId = 1L;
+        Tag expectedTag = tagDao.findById(resourceId);
+        String resourceName = expectedTag.getName();
 
         //when
         Tag actualTag = tagDao.findByName(resourceName);
@@ -119,8 +99,8 @@ class TagDaoIT {
     @Test
     void whenSelectTagByNameIsNotExistShouldThrowResourceNotFoundTest() {
         //given
-        String resourceName = "tag444";
-        String expectedMessage = "Tag not found (name = 'tag444')";
+        String resourceName = "tag404";
+        String expectedMessage = "Tag with name = (tag404) isn't exists.";
 
         //when
         ResourceNotFound thrown = assertThrows(
@@ -140,27 +120,26 @@ class TagDaoIT {
 
         //when
         List<Tag> tagListBeforeInsert = tagDao.findAll();
-        // TODO: 29.07.2022
-//        Tag insertedTag =
-        tagDao.save(tagToInsert);
+        Tag insertedTag = tagDao.save(tagToInsert);
         List<Tag> tagListAfterInsert = tagDao.findAll();
 
         //then
         assertEquals(tagListBeforeInsert.size() + expectedListIncreased, tagListAfterInsert.size());
-//        assertNotNull(insertedTag.getId());
+        assertNotNull(insertedTag.getId());
     }
 
     @Test
     void whenInsertTagWithDuplicatedNameShouldThrowResourceViolationTest() {
         //given
-        Tag tagToInsert = new Tag("testing2");
-        String expectedMessage = "Tag name or primary key violation (name = 'testing2')";
+        Tag tagToInsert = new Tag("tag");
+        Tag tagToRepeatedInsert = new Tag("tag");
+        String expectedMessage = "Tag with name=(tag) already exists.";
 
         //when
         tagDao.save(tagToInsert);
         ResourceViolation thrown = assertThrows(
                 ResourceViolation.class,
-                () -> tagDao.save(tagToInsert)
+                () -> tagDao.save(tagToRepeatedInsert)
         );
 
         //then
@@ -171,7 +150,7 @@ class TagDaoIT {
     void whenDeleteTagByIdShouldThatTagNotExistTest() {
         //given
         Long resourceId = 1L;
-        String expectedMessage = "Tag not found (id = 1)";
+        String expectedMessage = "Tag with id = (1) isn't exists.";
         int expectedListDecreased = 1;
 
         //when

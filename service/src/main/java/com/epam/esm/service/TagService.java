@@ -21,14 +21,14 @@ public class TagService {
         this.tagDao = Objects.requireNonNull(tagDao);
     }
 
-    public void saveTag(TagDto tagDto) {
+    public TagDto saveTag(TagDto tagDto) {
         Objects.requireNonNull(tagDto.getName());
-//        return
-//                convertTagToTagDto(
-                tagDao.save(
-                        convertTagDtoToTag(tagDto)
+        return
+                convertTagToTagDto(
+                        tagDao.save(
+                                convertTagDtoToTag(tagDto)
+                        )
                 );
-//        );
     }
 
     public TagDto selectTagByNameOrId(TagDto tagDto) {

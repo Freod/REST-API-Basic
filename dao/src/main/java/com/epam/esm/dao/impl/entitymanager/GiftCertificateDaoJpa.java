@@ -15,19 +15,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
+public class GiftCertificateDaoJpa implements GiftCertificateDao {
 
     private final EntityManager em;
-    private final TagDaoEntityManager tagDao;
+    private final TagDaoJpa tagDao;
 
     @Autowired
-    public GiftCertificateDaoEntityManager(EntityManagerFactory entityManagerFactory, TagDaoEntityManager tagDao) {
+    public GiftCertificateDaoJpa(EntityManagerFactory entityManagerFactory, TagDaoJpa tagDao) {
         this.em = entityManagerFactory.createEntityManager();
         this.tagDao = tagDao;
     }
 
     @Override
-    public void save(GiftCertificate giftCertificate) {
+    public GiftCertificate save(GiftCertificate giftCertificate) {
         em.getTransaction().begin();
         giftCertificate
                 .setTags(
@@ -49,6 +49,7 @@ public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
         giftCertificate.setLastUpdateDate(LocalDateTime.now());
         em.persist(giftCertificate);
         em.getTransaction().commit();
+        return giftCertificate;
     }
 
     @Override
@@ -68,7 +69,7 @@ public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
     }
 
     @Override
-    public void update(GiftCertificate giftCertificate) {
+    public GiftCertificate update(GiftCertificate giftCertificate) {
         em.getTransaction().begin();
         GiftCertificate actualGiftCertificate;
         try {
@@ -80,6 +81,7 @@ public class GiftCertificateDaoEntityManager implements GiftCertificateDao {
         actualGiftCertificate = updateFields(actualGiftCertificate, giftCertificate);
         em.merge(actualGiftCertificate);
         em.getTransaction().commit();
+        return giftCertificate;
     }
 
     //todo cascade

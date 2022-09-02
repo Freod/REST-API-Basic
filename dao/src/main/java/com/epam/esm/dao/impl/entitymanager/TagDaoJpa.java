@@ -7,30 +7,30 @@ import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
+import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Repository
-public class TagDaoEntityManager implements TagDao {
+public class TagDaoJpa implements TagDao {
 
     private final EntityManager em;
 
     @Autowired
-    public TagDaoEntityManager(EntityManagerFactory entityManagerFactory) {
+    public TagDaoJpa(EntityManagerFactory entityManagerFactory) {
         this.em = entityManagerFactory.createEntityManager();
     }
 
     @Override
     @Transactional
-    public void save(Tag tag) {
+    public Tag save(Tag tag) {
         em.getTransaction().begin();
         try {
             em.persist(tag);
             em.getTransaction().commit();
-        } catch (Exception e) {
+            return tag;
+        } catch (PersistenceException e) {
+            e.printStackTrace();
             em.getTransaction().rollback();
             throw new ResourceViolation("Tag with name=(" + tag.getName() + ") already exists.");
         }
@@ -48,19 +48,21 @@ public class TagDaoEntityManager implements TagDao {
     @Override
     public Tag findByName(String name) {
         try {
-            return (Tag) em.createQuery("select t from Tag t where t.name like :name").setParameter("name", name).getSingleResult();
+            return (Tag) em.createQuery("select t from Tag t where t.name like :name")
+                    .setParameter("name", name)
+                    .getSingleResult();
         } catch (NoResultException e) {
             throw new ResourceNotFound("Tag with name = (" + name + ") isn't exists.");
         }
     }
 
+//   todo pagination
     @Override
     public List<Tag> findAll() {
         List<Tag> tags = em.createQuery("select t from Tag t").getResultList();
         return tags;
     }
 
-    // TODO: 28.07.2022 cascade giftCertificate
     @Override
     public void removeById(Long id) {
         em.getTransaction().begin();
@@ -69,7 +71,15 @@ public class TagDaoEntityManager implements TagDao {
             em.getTransaction().rollback();
             throw new ResourceNotFound("Tag with id = (" + id + ") isn't exists.");
         }
-        em.remove(tag);
-        em.getTransaction().commit();
+        try {
+            em.remove(tag);
+            em.getTransaction().commit();
+        } catch (RollbackException e) {
+            throw new ResourceViolation("Tag cannot be removed. Tag is connected with at least of one certificate.");
+        }
+    }
+
+    public EntityManager getEm() {
+        return em;
     }
 }

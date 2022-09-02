@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.generation.Generate;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,10 @@ public class TagController {
      * Service for working with Tag resource.
      */
     private final TagService tagService;
+
+    // FIXME: 31.08.2022
+    @Autowired
+    private Generate generate;
 
     /**
      * Construct controller with injected Tag service.
@@ -78,8 +83,8 @@ public class TagController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addNewTag(@RequestBody TagDto tagDto) {
-        tagService.saveTag(tagDto);
+    public TagDto addNewTag(@RequestBody TagDto tagDto) {
+        return tagService.saveTag(tagDto);
     }
 
     /**
@@ -91,5 +96,12 @@ public class TagController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTag(@PathVariable Long id) {
         tagService.deleteTag(id);
+    }
+
+    // FIXME: 31.08.2022
+    @GetMapping("/generate")
+    public void generateAndInsert(){
+        generate.insertTagsToDb(100);
+        generate.insertGiftCertificatesToDb(1000);
     }
 }

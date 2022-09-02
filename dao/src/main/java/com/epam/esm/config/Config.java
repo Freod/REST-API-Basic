@@ -17,4 +17,11 @@ public class Config {
         return Persistence
                 .createEntityManagerFactory("rest-api-advanced");
     }
+
+    @Bean
+    @Profile("dev")
+    public EntityManagerFactory h2ConfigEntityManager(){
+        return Persistence
+                .createEntityManagerFactory("h2config");
+    }
 }

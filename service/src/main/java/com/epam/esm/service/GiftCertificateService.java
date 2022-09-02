@@ -31,7 +31,7 @@ public class GiftCertificateService {
 //        giftCertificate.setTags(giftCertificate.getTags().stream().distinct().collect(Collectors.toList()));
 
 //        return convertGiftCertificateToGiftCertificateDto(
-                giftCertificateDao.save(giftCertificate);
+        giftCertificateDao.save(giftCertificate);
 //        );
     }
 
@@ -65,7 +65,7 @@ public class GiftCertificateService {
 
         return giftCertificateList
                 .stream()
-                .map(this::convertGiftCertificateToGiftCertificateDto)
+                .map(GiftCertificateService::convertGiftCertificateToGiftCertificateDto)
                 .collect(Collectors.toList());
     }
 
@@ -90,8 +90,9 @@ public class GiftCertificateService {
         giftCertificateDao.removeById(id);
     }
 
-    private GiftCertificate convertGiftCertificateDtoToGiftCertificate(GiftCertificateDto giftCertificateDto) {
+    static GiftCertificate convertGiftCertificateDtoToGiftCertificate(GiftCertificateDto giftCertificateDto) {
         GiftCertificate giftCertificate = new GiftCertificate();
+        giftCertificate.setId(giftCertificateDto.getId());
         giftCertificate.setName(giftCertificateDto.getName());
         giftCertificate.setDescription(giftCertificateDto.getDescription());
         giftCertificate.setPrice(giftCertificateDto.getPrice());
@@ -105,7 +106,7 @@ public class GiftCertificateService {
         return giftCertificate;
     }
 
-    private GiftCertificateDto convertGiftCertificateToGiftCertificateDto(GiftCertificate giftCertificate) {
+    static GiftCertificateDto convertGiftCertificateToGiftCertificateDto(GiftCertificate giftCertificate) {
         return new GiftCertificateDto(
                 giftCertificate.getId(),
                 giftCertificate.getName(),
@@ -122,7 +123,10 @@ public class GiftCertificateService {
 
     private Filter convertFiltersDtoToFilters(FilterDto filterDto) {
         return new Filter(
-                filterDto.getTag(),
+                filterDto.getTags()
+                        .stream()
+                        .map(TagService::convertTagDtoToTag)
+                        .collect(Collectors.toSet()),
                 filterDto.getName(),
                 filterDto.getDescription());
     }
