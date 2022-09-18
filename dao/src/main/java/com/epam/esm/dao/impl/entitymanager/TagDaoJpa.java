@@ -1,24 +1,38 @@
 package com.epam.esm.dao.impl.entitymanager;
 
 import com.epam.esm.dao.TagDao;
-import com.epam.esm.exception.ResourceNotFound;
-import com.epam.esm.exception.ResourceViolation;
+import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.exception.ResourceViolationException;
+import com.epam.esm.model.Page;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 
 @Repository
 public class TagDaoJpa implements TagDao {
 
     private final EntityManager em;
+    private final int pageSize;
+
+    // TODO: 13.09.2022
+    @PostConstruct
+    private void initTags() {
+        for (int i = 0; i < 50; i++) {
+            this.save(new Tag("tag" + i));
+        }
+    }
+
 
     @Autowired
-    public TagDaoJpa(EntityManagerFactory entityManagerFactory) {
-        this.em = entityManagerFactory.createEntityManager();
+    public TagDaoJpa(EntityManagerFactory entityManagerFactory, int pageSize) {
+        this.em = Objects.requireNonNull(entityManagerFactory.createEntityManager());
+        this.pageSize = pageSize;
     }
 
     @Override
@@ -32,7 +46,7 @@ public class TagDaoJpa implements TagDao {
         } catch (PersistenceException e) {
             e.printStackTrace();
             em.getTransaction().rollback();
-            throw new ResourceViolation("Tag with name=(" + tag.getName() + ") already exists.");
+            throw new ResourceViolationException("Tag with name=(" + tag.getName() + ") already exists.");
         }
     }
 
@@ -40,7 +54,7 @@ public class TagDaoJpa implements TagDao {
     public Tag findById(Long id) {
         Tag tag = em.find(Tag.class, id);
         if (tag == null) {
-            throw new ResourceNotFound("Tag with id = (" + id + ") isn't exists.");
+            throw new ResourceNotFoundException("Tag with id = (" + id + ") isn't exists.");
         }
         return tag;
     }
@@ -52,15 +66,25 @@ public class TagDaoJpa implements TagDao {
                     .setParameter("name", name)
                     .getSingleResult();
         } catch (NoResultException e) {
-            throw new ResourceNotFound("Tag with name = (" + name + ") isn't exists.");
+            throw new ResourceNotFoundException("Tag with name = (" + name + ") isn't exists.");
         }
     }
 
-//   todo pagination
     @Override
-    public List<Tag> findAll() {
-        List<Tag> tags = em.createQuery("select t from Tag t").getResultList();
-        return tags;
+    public Page<Tag> findPage(Integer page) {
+        em.getTransaction().begin();
+        int totalPages = (int) (((long) em.createQuery("select count (t.id) from Tag t").getSingleResult() - 1) / pageSize) + 1;
+        Query query = em.createQuery("select t from Tag t order by t.id");
+        List<Tag> tagList = query
+                .setFirstResult(((page - 1) * pageSize))
+                .setMaxResults(pageSize)
+                .getResultList();
+        em.getTransaction().commit();
+        return new Page<>(
+                page,
+                pageSize,
+                totalPages,
+                tagList);
     }
 
     @Override
@@ -69,17 +93,14 @@ public class TagDaoJpa implements TagDao {
         Tag tag = em.find(Tag.class, id);
         if (tag == null) {
             em.getTransaction().rollback();
-            throw new ResourceNotFound("Tag with id = (" + id + ") isn't exists.");
+            throw new ResourceNotFoundException("Tag with id = (" + id + ") isn't exists.");
         }
         try {
             em.remove(tag);
             em.getTransaction().commit();
         } catch (RollbackException e) {
-            throw new ResourceViolation("Tag cannot be removed. Tag is connected with at least of one certificate.");
+            em.getTransaction().rollback();
+            throw new ResourceViolationException("Tag cannot be removed. Tag is connected with at least one certificate.");
         }
-    }
-
-    public EntityManager getEm() {
-        return em;
     }
 }

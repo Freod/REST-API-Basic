@@ -3,13 +3,19 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.FilterDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.model.Page;
 import com.epam.esm.service.GiftCertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * Controller for processing REST-api requests for Gift Certificate resource.
@@ -19,7 +25,7 @@ import java.util.Objects;
  * Maps GET, POST, PATCH, DELETE requests.
  */
 @RestController
-@RequestMapping("/giftCertificate")
+@RequestMapping("/giftCertificates")
 public class GiftCertificateController {
 
     /**
@@ -45,20 +51,120 @@ public class GiftCertificateController {
      */
     @GetMapping("{id}")
     @ResponseStatus(HttpStatus.OK)
-    public GiftCertificateDto showGiftCertificate(@PathVariable Long id) {
-        return giftCertificateService.selectGiftCertificate(id);
+    public EntityModel<GiftCertificateDto> showGiftCertificate(@PathVariable Long id) {
+        GiftCertificateDto giftCertificateDto = giftCertificateService.selectGiftCertificate(id);
+        addSelectGiftCertificateLink(giftCertificateDto);
+        return EntityModel.of(giftCertificateDto);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<GiftCertificateDto> showGiftCertificateList(@RequestBody FilterDto filterDto) {
-        return giftCertificateService.selectAllGiftCertificates(filterDto);
+    public CollectionModel<GiftCertificateDto> showPageOfGiftCertificates(
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "name") String orderBy,
+            @RequestParam(defaultValue = "asc") String direction,
+            @RequestParam(defaultValue = "") String name,
+            @RequestParam(defaultValue = "") String description,
+            @RequestParam(defaultValue = "") Set<String> tags) {
+        FilterDto filterDto = new FilterDto(
+                tags.stream().map(s -> new TagDto(null, s)).collect(Collectors.toSet()),
+                name, description, orderBy, direction);
+        Page<GiftCertificateDto> giftCertificateDtoPage = giftCertificateService.selectPageOfGiftCertificates(page, filterDto);
+        Collection<GiftCertificateDto> giftCertificateDtoCollection =
+                giftCertificateDtoPage.getCollection()
+                        .stream()
+                        .map(GiftCertificateController::addSelectGiftCertificateLink)
+                        .collect(Collectors.toList());
+
+        List<Link> linkList = new LinkedList<>();
+        try {
+            if (page > 1 && giftCertificateDtoPage.getTotalPages() > 0) {
+                linkList.add(linkTo(
+                        GiftCertificateController.class
+                                .getMethod("showPageOfGiftCertificates",
+                                        Integer.class, String.class, String.class,
+                                        String.class, String.class, Set.class),
+                        1,
+                        filterDto.getOrderBy(),
+                        filterDto.getDirection(),
+                        filterDto.getName(),
+                        filterDto.getDescription(),
+                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        .withRel("firstPage"));
+            }
+
+            if (page > 2 && page <= giftCertificateDtoPage.getTotalPages()) {
+                linkList.add(linkTo(
+                        GiftCertificateController.class
+                                .getMethod("showPageOfGiftCertificates",
+                                        Integer.class, String.class, String.class,
+                                        String.class, String.class, Set.class),
+                        page - 1,
+                        filterDto.getOrderBy(),
+                        filterDto.getDirection(),
+                        filterDto.getName(),
+                        filterDto.getDescription(),
+                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        .withRel("previousPage"));
+            }
+
+            if (page <= giftCertificateDtoPage.getTotalPages()) {
+                linkList.add(linkTo(
+                        GiftCertificateController.class
+                                .getMethod("showPageOfGiftCertificates",
+                                        Integer.class, String.class, String.class,
+                                        String.class, String.class, Set.class),
+                        page,
+                        filterDto.getOrderBy(),
+                        filterDto.getDirection(),
+                        filterDto.getName(),
+                        filterDto.getDescription(),
+                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        .withSelfRel());
+            }
+
+            if (page + 1 < giftCertificateDtoPage.getTotalPages()) {
+                linkList.add(linkTo(
+                        GiftCertificateController.class
+                                .getMethod("showPageOfGiftCertificates",
+                                        Integer.class, String.class, String.class,
+                                        String.class, String.class, Set.class),
+                        page + 1,
+                        filterDto.getOrderBy(),
+                        filterDto.getDirection(),
+                        filterDto.getName(),
+                        filterDto.getDescription(),
+                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        .withRel("nextPage"));
+            }
+
+            if (giftCertificateDtoPage.getTotalPages() > 0 && page != giftCertificateDtoPage.getTotalPages()) {
+                linkList.add(linkTo(
+                        GiftCertificateController.class
+                                .getMethod("showPageOfGiftCertificates",
+                                        Integer.class, String.class, String.class,
+                                        String.class, String.class, Set.class),
+                        giftCertificateDtoPage.getTotalPages(),
+                        filterDto.getOrderBy(),
+                        filterDto.getDirection(),
+                        filterDto.getName(),
+                        filterDto.getDescription(),
+                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        .withRel("lastPage"));
+            }
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+        return CollectionModel.of(giftCertificateDtoCollection, linkList);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public void addNewGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto) {
-        giftCertificateService.saveGiftCertificate(giftCertificateDto);
+    public EntityModel<GiftCertificateDto> addNewGiftCertificate(@RequestBody GiftCertificateDto giftCertificateDto) {
+        giftCertificateDto = giftCertificateService.saveGiftCertificate(giftCertificateDto);
+        addSelectGiftCertificateLink(giftCertificateDto);
+        return EntityModel.of(giftCertificateDto);
     }
 
     /**
@@ -72,9 +178,11 @@ public class GiftCertificateController {
      * @param giftCertificateDto Gift Certificate resource to update
      */
     @PatchMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateGiftCertificate(@PathVariable Long id, @RequestBody GiftCertificateDto giftCertificateDto) {
-        giftCertificateService.updateGiftCertificate(id, giftCertificateDto);
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<GiftCertificateDto> updateGiftCertificate(@PathVariable Long id, @RequestBody GiftCertificateDto giftCertificateDto) {
+        giftCertificateDto = giftCertificateService.updateGiftCertificate(id, giftCertificateDto);
+        addSelectGiftCertificateLink(giftCertificateDto);
+        return EntityModel.of(giftCertificateDto);
     }
 
     /**
@@ -98,9 +206,11 @@ public class GiftCertificateController {
      * @param tagDto Tag resource to add
      */
     @PutMapping("/tag/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void addTagToGiftCertificate(@PathVariable Long id, @RequestBody TagDto tagDto) {
-        giftCertificateService.addTagToGiftCertificate(id, tagDto);
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<GiftCertificateDto> addTagToGiftCertificate(@PathVariable Long id, @RequestBody TagDto tagDto) {
+        GiftCertificateDto giftCertificateDto = giftCertificateService.addTagToGiftCertificate(id, tagDto);
+        addSelectGiftCertificateLink(giftCertificateDto);
+        return EntityModel.of(giftCertificateDto);
     }
 
     /**
@@ -113,8 +223,25 @@ public class GiftCertificateController {
      * @param tagDto
      */
     @DeleteMapping("/tag/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void removeTagFromGiftCertificate(@PathVariable Long id, @RequestBody TagDto tagDto) {
-        giftCertificateService.removeTagFromGiftCertificate(id, tagDto);
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<GiftCertificateDto> removeTagFromGiftCertificate(@PathVariable Long id, @RequestBody TagDto tagDto) {
+        GiftCertificateDto giftCertificateDto = giftCertificateService.removeTagFromGiftCertificate(id, tagDto);
+        addSelectGiftCertificateLink(giftCertificateDto);
+        return EntityModel.of(giftCertificateDto);
+    }
+
+    protected static GiftCertificateDto addSelectGiftCertificateLink(GiftCertificateDto giftCertificateDto) {
+        try {
+            giftCertificateDto.getTags().stream().map(TagController::addSelectTagDtoLinks).collect(Collectors.toList());
+            Link linkById =
+                    linkTo(
+                            GiftCertificateController.class
+                                    .getMethod("showGiftCertificate", Long.class), giftCertificateDto.getId())
+                            .withSelfRel();
+            giftCertificateDto.add(linkById);
+            return giftCertificateDto;
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

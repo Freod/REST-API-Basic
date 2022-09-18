@@ -1,34 +1,38 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.generation.Generate;
+import com.epam.esm.model.Page;
 import com.epam.esm.service.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 /**
  * Controller for processing REST-api requests for Tag resource.
  * <p>
- * Works with relative to application context '/tag'
+ * Works with relative to application context '/tags'
  * </p>
  * Maps GET, POST, DELETE requests.
  */
 @RestController
-@RequestMapping("/tag")
+@RequestMapping("/tags")
 public class TagController {
 
     /**
      * Service for working with Tag resource.
      */
     private final TagService tagService;
-
-    // FIXME: 31.08.2022
-    @Autowired
-    private Generate generate;
 
     /**
      * Construct controller with injected Tag service.
@@ -40,41 +44,90 @@ public class TagController {
         this.tagService = Objects.requireNonNull(tagService);
     }
 
-    /**
-     * Gets Tag resource with requested name or id.
-     * <p>Example JSON request: {"name": "tag7"}</p>
-     * <p>Example JSON response: { "id": 1, "name": "tag1"}</p>
-     *
-     * @param tagDto to find Tag resource
-     * @return Tag resource that was found
-     */
-    @GetMapping
+    @GetMapping(params = "id")
     @ResponseStatus(HttpStatus.OK)
-    public TagDto showTag(@RequestBody TagDto tagDto) {
-        return tagService.selectTagByNameOrId(tagDto);
+    public EntityModel<TagDto> showTagById(@RequestParam Long id) throws NoSuchMethodException {
+        TagDto tagDto = tagService.selectTagById(id);
+        addSelectTagDtoLinks(tagDto);
+        return EntityModel.of(tagDto);
+    }
+
+    @GetMapping(params = "name")
+    @ResponseStatus(HttpStatus.OK)
+    public EntityModel<TagDto> showTagByName(@RequestParam String name) {
+        TagDto tagDto = tagService.selectTagByName(name);
+        addSelectTagDtoLinks(tagDto);
+        return EntityModel.of(tagDto);
     }
 
     /**
-     * Gets list of Tag resources.
+     * Gets page of Tags resources.
      *
-     * @return list of Tag resources that was found
+     * @return page of Tags resources that was found
      */
-    @GetMapping("/list")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Set<TagDto> showAllTags() {
-        return tagService.selectAllTags();
+    public CollectionModel<TagDto> showPageOfTags(@RequestParam(defaultValue = "1") Integer page) {
+        Page<TagDto> tagDtoPage = tagService.selectPageOfTags(page);
+        Collection<TagDto> tagDtoSet =
+                tagDtoPage.getCollection()
+                        .stream()
+                        .map(TagController::addSelectTagDtoLinks)
+                        .collect(Collectors.toList());
+
+        List<Link> linkList = new LinkedList<>();
+        try {
+            if (page > 1 && tagDtoPage.getTotalPages() > 0) {
+                linkList.add(linkTo(
+                        TagController.class
+                                .getMethod("showPageOfTags", Integer.class), 1)
+                        .withRel("firstPage"));
+            }
+
+            if (page > 2 && page <= tagDtoPage.getTotalPages()) {
+                linkList.add(linkTo(
+                        TagController.class
+                                .getMethod("showPageOfTags", Integer.class), page - 1)
+                        .withRel("previousPage"));
+            }
+
+            if (page <= tagDtoPage.getTotalPages()) {
+                linkList.add(linkTo(
+                        TagController.class
+                                .getMethod("showPageOfTags", Integer.class), page)
+                        .withSelfRel());
+            }
+
+            if (page + 1 < tagDtoPage.getTotalPages()) {
+                linkList.add(linkTo(
+                        TagController.class
+                                .getMethod("showPageOfTags", Integer.class), page + 1)
+                        .withRel("nextPage"));
+            }
+
+            if (tagDtoPage.getTotalPages() > 0 && page != tagDtoPage.getTotalPages()) {
+                linkList.add(linkTo(
+                        TagController.class
+                                .getMethod("showPageOfTags", Integer.class), tagDtoPage.getTotalPages())
+                        .withRel("lastPage"));
+            }
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+        return CollectionModel.of(tagDtoSet, linkList);
     }
 
     /**
      * Creates new Tag resource.
      * <p>
      * Example JSON request: {
-     *     "name": "tag7"
+     * "name": "tag7"
      * }
      * </p>
      * <p>Example JSON response:{
-     *     "id": 1,
-     *     "name": "tag1"
+     * "id": 1,
+     * "name": "tag1"
      * }
      * </p>
      *
@@ -83,8 +136,10 @@ public class TagController {
      */
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public TagDto addNewTag(@RequestBody TagDto tagDto) {
-        return tagService.saveTag(tagDto);
+    public EntityModel<TagDto> addNewTag(@RequestBody TagDto tagDto) {
+        tagDto = tagService.saveTag(tagDto);
+        addSelectTagDtoLinks(tagDto);
+        return EntityModel.of(tagDto);
     }
 
     /**
@@ -98,10 +153,22 @@ public class TagController {
         tagService.deleteTag(id);
     }
 
-    // FIXME: 31.08.2022
-    @GetMapping("/generate")
-    public void generateAndInsert(){
-        generate.insertTagsToDb(100);
-        generate.insertGiftCertificatesToDb(1000);
+    protected static TagDto addSelectTagDtoLinks(TagDto tagDto) {
+        try {
+            Link linkById =
+                    linkTo(
+                            TagController.class
+                                    .getMethod("showTagById", Long.class), tagDto.getId())
+                            .withSelfRel();
+            Link linkByName =
+                    linkTo(
+                            TagController.class
+                                    .getMethod("showTagByName", String.class), tagDto.getName())
+                            .withSelfRel();
+            tagDto.add(linkById, linkByName);
+            return tagDto;
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

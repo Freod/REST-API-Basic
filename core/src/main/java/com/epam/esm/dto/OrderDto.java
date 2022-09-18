@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.List;
 
 @Getter
 @EqualsAndHashCode
-public class OrderDto {
+public class OrderDto extends RepresentationModel {
     private final Long id;
     private final List<GiftCertificateDto> giftCertificates;
     private final Double cost;

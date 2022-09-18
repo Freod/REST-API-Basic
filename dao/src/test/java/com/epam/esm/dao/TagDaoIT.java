@@ -1,8 +1,8 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.config.Config;
-import com.epam.esm.exception.ResourceNotFound;
-import com.epam.esm.exception.ResourceViolation;
+import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.exception.ResourceViolationException;
 import com.epam.esm.generation.Generate;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,8 +72,8 @@ class TagDaoIT {
         String expectedMessage = "Tag with id = (0) isn't exists.";
 
         //when
-        ResourceNotFound thrown = assertThrows(
-                ResourceNotFound.class,
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
                 () -> tagDao.findById(resourceId)
         );
 
@@ -103,8 +103,8 @@ class TagDaoIT {
         String expectedMessage = "Tag with name = (tag404) isn't exists.";
 
         //when
-        ResourceNotFound thrown = assertThrows(
-                ResourceNotFound.class,
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
                 () -> tagDao.findByName(resourceName)
         );
 
@@ -137,8 +137,8 @@ class TagDaoIT {
 
         //when
         tagDao.save(tagToInsert);
-        ResourceViolation thrown = assertThrows(
-                ResourceViolation.class,
+        ResourceViolationException thrown = assertThrows(
+                ResourceViolationException.class,
                 () -> tagDao.save(tagToRepeatedInsert)
         );
 
@@ -157,8 +157,8 @@ class TagDaoIT {
         List<Tag> tagListBeforeRemove = tagDao.findAll();
         tagDao.removeById(resourceId);
         List<Tag> tagListAfterRemove = tagDao.findAll();
-        ResourceNotFound thrown = assertThrows(
-                ResourceNotFound.class,
+        ResourceNotFoundException thrown = assertThrows(
+                ResourceNotFoundException.class,
                 () -> tagDao.findById(resourceId)
         );
 

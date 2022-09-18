@@ -4,10 +4,11 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.springframework.hateoas.RepresentationModel;
 
 @Getter
 @EqualsAndHashCode
-public class TagDto {
+public class TagDto extends RepresentationModel {
     private final Long id;
     private final String name;
 

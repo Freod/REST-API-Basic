@@ -24,4 +24,9 @@ public class Config {
         return Persistence
                 .createEntityManagerFactory("h2config");
     }
+
+    @Bean
+    public int pageSize(){
+        return 8;
+    }
 }

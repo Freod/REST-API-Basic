@@ -3,8 +3,8 @@ package com.epam.esm.errors;
 public enum ErrorCode {
     RESOURCE_NOT_FOUND(40401),
     RESOURCE_VIOLATION(40402),
-    NULL_POINTER(40403),
-    HTTP_MESSAGE_NOT_READABLE(40404);
+    WRONG_PAGE(40403),
+    WRONG_VALUE(40404);
 
     private int code;
 

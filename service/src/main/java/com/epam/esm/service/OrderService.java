@@ -2,56 +2,43 @@ package com.epam.esm.service;
 
 import com.epam.esm.dao.OrderDao;
 import com.epam.esm.dto.OrderDto;
+import com.epam.esm.exception.WrongPageException;
 import com.epam.esm.model.Order;
+import com.epam.esm.model.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
 
-    private OrderDao orderDao;
+    private final OrderDao orderDao;
+    private final ObjectConverter objectConverter;
 
     @Autowired
-    public OrderService(OrderDao orderDao) {
-        this.orderDao = orderDao;
+    public OrderService(OrderDao orderDao, ObjectConverter objectConverter) {
+        this.orderDao = Objects.requireNonNull(orderDao);
+        this.objectConverter = Objects.requireNonNull(objectConverter);
     }
 
     public OrderDto showOrderById(Long id) {
-        return convertOrderToOrderDto(orderDao.findById(id));
+        return objectConverter.convertOrderToOrderDto(orderDao.findById(id));
     }
 
-    public List<OrderDto> showOrders() {
-        return orderDao
-                .findAll()
-                .stream()
-                .map(OrderService::convertOrderToOrderDto)
-                .collect(Collectors.toList());
-    }
-
-    static OrderDto convertOrderToOrderDto(Order order) {
-        return new OrderDto(
-                order.getId(),
-                order.getGiftCertificates()
+    public Page<OrderDto> showPageOfOrders(Integer page) {
+        if (page < 1) throw new WrongPageException("Page cannot be smaller by 1");
+        Page<Order> orderPage = orderDao.findPage(page);
+        return new Page<>(
+                orderPage.getPageNumber(),
+                orderPage.getPageSize(),
+                orderPage.getTotalPages(),
+                orderPage.getCollection()
                         .stream()
-                        .map(GiftCertificateService::convertGiftCertificateToGiftCertificateDto)
-                        .collect(Collectors.toList()),
-                order.getCost(),
-                order.getPurchaseDate()
-        );
+                        .map(objectConverter::convertOrderToOrderDto)
+                        .collect(Collectors.toList()));
     }
 
-    static Order convertOrderDtoToOrder(OrderDto orderDto) {
-        return new Order(
-                orderDto.getId(),
-                orderDto.getGiftCertificates()
-                        .stream()
-                        .map(GiftCertificateService::convertGiftCertificateDtoToGiftCertificate)
-                        .collect(Collectors.toList()),
-                orderDto.getCost(),
-                orderDto.getPurchaseDate()
-        );
-    }
+
 }

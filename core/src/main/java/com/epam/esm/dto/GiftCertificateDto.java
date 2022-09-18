@@ -4,13 +4,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.springframework.hateoas.RepresentationModel;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Getter
 @EqualsAndHashCode
-public class GiftCertificateDto {
+public class GiftCertificateDto extends RepresentationModel {
     private final Long id;
     private final String name;
     private final String description;
@@ -36,10 +37,9 @@ public class GiftCertificateDto {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
-        if(tags!=null) {
+        if (tags != null) {
             this.tags = tags;
-        }
-        else {
+        } else {
             this.tags = new HashSet<>();
         }
     }
