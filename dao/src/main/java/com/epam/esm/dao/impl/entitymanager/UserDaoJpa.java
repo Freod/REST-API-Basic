@@ -9,7 +9,6 @@ import com.epam.esm.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Query;
@@ -26,19 +25,19 @@ public class UserDaoJpa implements UserDao {
 
 
     // TODO: 02.09.2022
-    @PostConstruct
-    private void initUsers() {
-        for (int i = 0; i < 50; i++) {
-            User user = new User("user" + i);
-            this.save(user);
-
-//            GiftCertificate giftCertificate = new GiftCertificate();
-//            giftCertificate.setId(54L);
-//            Order order = new Order();
-//            order.setGiftCertificates(Arrays.asList(giftCertificate));
-//            this.makeAnOrder(user.getId(), order);
-        }
-    }
+//    @PostConstruct
+//    private void initUsers() {
+//        for (int i = 0; i < 50; i++) {
+//            User user = new User("user" + i);
+//            this.save(user);
+//
+////            GiftCertificate giftCertificate = new GiftCertificate();
+////            giftCertificate.setId(54L);
+////            Order order = new Order();
+////            order.setGiftCertificates(Arrays.asList(giftCertificate));
+////            this.makeAnOrder(user.getId(), order);
+//        }
+//    }
 
     @Autowired
     public UserDaoJpa(EntityManagerFactory entityManagerFactory, GiftCertificateDao giftCertificateDao, int pageSize) {

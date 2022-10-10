@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.dao.OrderDao;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.exception.WrongPageException;
+import com.epam.esm.exception.WrongValueException;
 import com.epam.esm.model.Order;
 import com.epam.esm.model.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,9 @@ public class OrderService {
     }
 
     public OrderDto showOrderById(Long id) {
+        if (id == null) {
+            throw new WrongValueException("Id cannot be null");
+        }
         return objectConverter.convertOrderToOrderDto(orderDao.findById(id));
     }
 

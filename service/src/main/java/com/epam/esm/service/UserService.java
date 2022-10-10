@@ -56,6 +56,10 @@ public class UserService {
                 userDao.makeAnOrder(id, objectConverter.convertOrderDtoToOrder(orderDto)));
     }
 
+    // TODO: 10/10/2022
+    //Get the most widely used tag of a user with the highest cost of all orders.
+    //Create separate endpoint for this query.
+    //Demonstrate SQL execution plan for this query (explain).
     public TagDto mostWidelyUsedTagOfUserWithTheHighestCostOfOrders() {
         return null;
     }

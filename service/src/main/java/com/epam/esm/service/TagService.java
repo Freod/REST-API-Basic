@@ -2,7 +2,7 @@ package com.epam.esm.service;
 
 import com.epam.esm.dao.TagDao;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.exception.WrongPageException;
+import com.epam.esm.exception.WrongValueException;
 import com.epam.esm.model.Page;
 import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class TagService {
 
     public TagDto saveTag(TagDto tagDto) {
         if (tagDto.getName() == null || tagDto.getName().isEmpty()) {
-            throw new NullPointerException("Field name cannot be empty");
+            throw new WrongValueException("Field name cannot be empty");
         }
 
         return objectConverter.convertTagToTagDto(
@@ -36,7 +36,7 @@ public class TagService {
 
     public TagDto selectTagById(Long id) {
         if (id == null) {
-            throw new NullPointerException("Id cannot be null");
+            throw new WrongValueException("Id cannot be null");
         }
 
         return objectConverter
@@ -46,7 +46,7 @@ public class TagService {
 
     public TagDto selectTagByName(String name) {
         if (name == null || name.isEmpty()) {
-            throw new NullPointerException("Name cannot be null or empty");
+            throw new WrongValueException("Name cannot be null or empty");
         }
         return objectConverter
                 .convertTagToTagDto(
@@ -56,7 +56,7 @@ public class TagService {
     }
 
     public Page<TagDto> selectPageOfTags(Integer page) {
-        if (page < 1) throw new WrongPageException("Page cannot be smaller by 1");
+        if (page < 1) throw new WrongValueException("Page cannot be smaller than 1");
         Page<Tag> tagPage = tagDao.findPage(page);
         return new Page<>(
                 tagPage.getPageNumber(),
@@ -70,7 +70,7 @@ public class TagService {
 
     public void deleteTag(Long id) {
         if (id == null) {
-            throw new NullPointerException("Id cannot be null");
+            throw new WrongValueException("Id cannot be null");
         }
 
         tagDao.removeById(id);

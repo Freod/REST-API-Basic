@@ -2,14 +2,12 @@ package com.epam.esm.service;
 
 import com.epam.esm.dto.*;
 import com.epam.esm.model.*;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Component
-@Scope("singleton")
 public class ObjectConverter {
 
     protected TagDto convertTagToTagDto(Tag tag) {
@@ -20,26 +18,24 @@ public class ObjectConverter {
     }
 
     protected Tag convertTagDtoToTag(TagDto tagDto) {
-        Tag tag = new Tag();
-        tag.setId(tagDto.getId());
-        tag.setName(tagDto.getName().toLowerCase(Locale.ROOT));
-        return tag;
+        return new Tag(
+                tagDto.getId(),
+                tagDto.getName().toLowerCase(Locale.ROOT)
+        );
     }
 
     protected GiftCertificate convertGiftCertificateDtoToGiftCertificate(GiftCertificateDto giftCertificateDto) {
-        GiftCertificate giftCertificate = new GiftCertificate();
-        giftCertificate.setId(giftCertificateDto.getId());
-        giftCertificate.setName(giftCertificateDto.getName());
-        giftCertificate.setDescription(giftCertificateDto.getDescription());
-        giftCertificate.setPrice(giftCertificateDto.getPrice());
-        giftCertificate.setDuration(giftCertificateDto.getDuration());
-        giftCertificate.setTags(
+        return new GiftCertificate(
+                giftCertificateDto.getId(),
+                giftCertificateDto.getName(),
+                giftCertificateDto.getDescription(),
+                giftCertificateDto.getPrice(),
+                giftCertificateDto.getDuration(),
                 giftCertificateDto.getTags()
                         .stream()
                         .map(this::convertTagDtoToTag)
-                        .collect(Collectors.toSet()));
-
-        return giftCertificate;
+                        .collect(Collectors.toSet())
+        );
     }
 
     protected GiftCertificateDto convertGiftCertificateToGiftCertificateDto(GiftCertificate giftCertificate) {

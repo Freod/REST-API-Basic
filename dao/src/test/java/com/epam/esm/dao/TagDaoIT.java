@@ -1,58 +1,46 @@
 package com.epam.esm.dao;
 
 import com.epam.esm.config.Config;
-import com.epam.esm.exception.ResourceNotFoundException;
-import com.epam.esm.exception.ResourceViolationException;
-import com.epam.esm.generation.Generate;
+import com.epam.esm.model.Page;
 import com.epam.esm.model.Tag;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.support.AnnotationConfigContextLoader;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ActiveProfiles("dev")
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {Config.class}, loader = AnnotationConfigContextLoader.class)
+@ContextConfiguration(classes = {Config.class})
+@Sql(scripts = "classpath:/database/insert-dml.sql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class TagDaoIT {
 
     @Autowired
     private TagDao tagDao;
 
-    @Autowired
-    private Generate generate;
-
-    private int generatedSize = 20;
-
-    // TODO: 31.08.2022 fix it, work too long
-    @BeforeEach
-    void beforeTests(){
-        generate.insertTagsToDb(generatedSize);
-    }
-
     // TODO: 31.08.2022 pagination
     @Test
-    void whenSelectAllTagsShouldReturnListTest() {
+    void whenSelectPageOfTagsShouldBeReturned() {
         //given
-        int expectedListSize = generatedSize;
+//        int expectedListSize = generatedSize;
 
         //when
-        List<Tag> actualTagList = tagDao.findAll();
+        Page<Tag> actualTagPage = tagDao.findPage(1);
 
         //then
-        assertEquals(expectedListSize, actualTagList.size());
+        assertNotNull(actualTagPage);
+        assertEquals(2, actualTagPage);
+//        assertEquals(expectedListSize, actualTagList.size());
     }
 
-    @Test
+    /*@Test
     void whenSelectTagByIdShouldReturnTagWithSameIdTest() {
         //given
         Long resourceId = 1L;
@@ -165,5 +153,5 @@ class TagDaoIT {
         //then
         assertEquals(tagListBeforeRemove.size() - expectedListDecreased, tagListAfterRemove.size());
         assertEquals(expectedMessage, thrown.getMessage());
-    }
+    }*/
 }

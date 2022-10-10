@@ -8,7 +8,6 @@ import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.transaction.Transactional;
 import java.util.List;
@@ -21,12 +20,12 @@ public class TagDaoJpa implements TagDao {
     private final int pageSize;
 
     // TODO: 13.09.2022
-    @PostConstruct
-    private void initTags() {
-        for (int i = 0; i < 50; i++) {
-            this.save(new Tag("tag" + i));
-        }
-    }
+//    @PostConstruct
+//    private void initTags() {
+//        for (int i = 0; i < 50; i++) {
+//            this.save(new Tag("tag" + i));
+//        }
+//    }
 
 
     @Autowired

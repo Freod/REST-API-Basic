@@ -33,13 +33,29 @@ public class GiftCertificate implements Serializable {
         this.tags.remove(tag);
     }
 
-    // FIXME: 01.09.2022 repair making it here
+
+//    public GiftCertificate(Long id, String name, String description, Double price, Integer duration) {
+//        this.id = id;
+//        this.name = name;
+//        this.description = description;
+//        this.price = price;
+//        this.duration = duration;
+//    }
+
+
     public GiftCertificate() {
-        this.createDate = LocalDateTime.now();
-        this.lastUpdateDate = LocalDateTime.now();
     }
 
-    public GiftCertificate(Long id, String name, String description, Double price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate) {
+    public GiftCertificate(Long id, String name, String description, Double price, Integer duration, Set<Tag> tags) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.tags = tags;
+    }
+
+    public GiftCertificate(Long id, String name, String description, Double price, Integer duration, LocalDateTime createDate, LocalDateTime lastUpdateDate, Set<Tag> tags) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -47,14 +63,7 @@ public class GiftCertificate implements Serializable {
         this.duration = duration;
         this.createDate = createDate;
         this.lastUpdateDate = lastUpdateDate;
-    }
-
-    public GiftCertificate(Long id, String name, String description, Double price, Integer duration) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.price = price;
-        this.duration = duration;
+        this.tags = tags;
     }
 
     public Set<Tag> getTags() {

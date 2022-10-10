@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
+// TODO: 05/10/2022 javadocs
 /**
  * Controller for processing REST-api requests for Gift Certificate resource.
  * <p>

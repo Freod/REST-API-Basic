@@ -10,7 +10,6 @@ import com.epam.esm.model.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.RollbackException;
@@ -32,19 +31,19 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
     private final int pageSize;
 
     // TODO: 16.09.2022
-    @PostConstruct
-    private void initGiftCertificate() {
-        for (int i = 0; i < 50; i++) {
-            GiftCertificate giftCertificate = new GiftCertificate(null, "Giftcertf" + i, "descript", 3.0, 5);
-            if (i < 25) {
-                giftCertificate.addTag(new Tag("tag1"));
-                giftCertificate.addTag(new Tag("tag3"));
-            } else {
-                giftCertificate.addTag(new Tag("tag2"));
-            }
-            this.save(giftCertificate);
-        }
-    }
+//    @PostConstruct
+//    private void initGiftCertificate() {
+//        for (int i = 0; i < 50; i++) {
+//            GiftCertificate giftCertificate = new GiftCertificate(null, "Giftcertf" + i, "descript", 3.0, 5);
+//            if (i < 25) {
+//                giftCertificate.addTag(new Tag("tag1"));
+//                giftCertificate.addTag(new Tag("tag3"));
+//            } else {
+//                giftCertificate.addTag(new Tag("tag2"));
+//            }
+//            this.save(giftCertificate);
+//        }
+//    }
 
     @Autowired
     public GiftCertificateDaoJpa(EntityManagerFactory entityManagerFactory, TagDaoJpa tagDao, int pageSize) {
@@ -88,6 +87,8 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
         return giftCertificate;
     }
 
+    // TODO: 10/10/2022
+    //Search for gift certificates by several tags (“and” condition).
     @Override
     public Page<GiftCertificate> findPageUsingFilter(Integer page, Filter filter) {
         em.getTransaction().begin();
