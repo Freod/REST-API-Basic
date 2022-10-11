@@ -4,6 +4,8 @@ import com.epam.esm.dto.OrderDto;
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.model.Page;
 import com.epam.esm.service.UserService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -26,6 +28,7 @@ public class UserController {
 
     private UserService userService;
     private static final String SHOW_PAGE_OF_USERS_METHOD_NAME = "showPageOfUsers";
+    private static Logger logger = LogManager.getLogger(UserController.class);
 
     @Autowired
     public UserController(UserService userService){
@@ -87,7 +90,7 @@ public class UserController {
                         .withRel("lastPage"));
             }
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
         }
 
         return CollectionModel.of(userDtoCollection, linkList);
@@ -106,10 +109,10 @@ public class UserController {
             userDto.getOrders().forEach(OrderController::addSelectOrderDtoLink);
             Link linkById = linkTo(UserController.class.getMethod("showUserById", Long.class), userDto.getId()).withSelfRel();
             userDto.add(linkById);
-            return userDto;
         }
         catch (NoSuchMethodException e){
-            throw new RuntimeException(e);
+            logger.error(e);
         }
+        return userDto;
     }
 }

@@ -3,6 +3,8 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.model.Page;
 import com.epam.esm.service.TagService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -35,6 +37,7 @@ public class TagController {
      */
     private final TagService tagService;
     private static final String SHOW_PAGE_OF_TAGS_METHOD_NAME = "showPageOfTags";
+    private static Logger logger = LogManager.getLogger(TagController.class);
 
     /**
      * Construct controller with injected Tag service.
@@ -114,7 +117,7 @@ public class TagController {
                         .withRel("lastPage"));
             }
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
         }
 
         return CollectionModel.of(tagDtoSet, linkList);
@@ -168,9 +171,9 @@ public class TagController {
                                     .getMethod("showTagByName", String.class), tagDto.getName())
                             .withSelfRel();
             tagDto.add(linkById, linkByName);
-            return tagDto;
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
         }
+        return tagDto;
     }
 }

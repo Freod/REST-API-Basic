@@ -5,6 +5,8 @@ import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.model.Page;
 import com.epam.esm.service.GiftCertificateService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -18,6 +20,7 @@ import java.util.stream.Collectors;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 // TODO: 05/10/2022 javadocs
+
 /**
  * Controller for processing REST-api requests for Gift Certificate resource.
  * <p>
@@ -31,6 +34,7 @@ public class GiftCertificateController {
 
     private final GiftCertificateService giftCertificateService;
     private static final String SHOW_PAGE_OF_GIFT_CERTIFICATES_METHOD_NAME = "showPageOfGiftCertificates";
+    private static Logger logger = LogManager.getLogger(GiftCertificateController.class);
 
     /**
      * Construct controller with injected Gift Certificate service.
@@ -152,7 +156,7 @@ public class GiftCertificateController {
                         .withRel("lastPage"));
             }
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
         }
 
         return CollectionModel.of(giftCertificateDtoCollection, linkList);
@@ -238,9 +242,9 @@ public class GiftCertificateController {
                                     .getMethod("showGiftCertificate", Long.class), giftCertificateDto.getId())
                             .withSelfRel();
             giftCertificateDto.add(linkById);
-            return giftCertificateDto;
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
         }
+        return giftCertificateDto;
     }
 }

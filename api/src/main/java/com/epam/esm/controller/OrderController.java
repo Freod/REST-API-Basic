@@ -3,6 +3,8 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.model.Page;
 import com.epam.esm.service.OrderService;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
@@ -23,6 +25,7 @@ public class OrderController {
 
     private OrderService orderService;
     private static final String SHOW_PAGE_OF_ORDERS_METHOD_NAME = "showPageOfOrders";
+    private static Logger logger = LogManager.getLogger(OrderController.class);
 
     @Autowired
     public OrderController(OrderService orderService) {
@@ -84,7 +87,7 @@ public class OrderController {
                         .withRel("lastPage"));
             }
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
         }
 
         return CollectionModel.of(orderDtoCollection, linkList);
@@ -95,9 +98,9 @@ public class OrderController {
             orderDto.getGiftCertificates().forEach(GiftCertificateController::addSelectGiftCertificateLink);
             Link linkById = linkTo(OrderController.class.getMethod("showOrderById", Long.class), orderDto.getId()).withSelfRel();
             orderDto.add(linkById);
-            return orderDto;
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException(e);
+            logger.error(e);
         }
+        return orderDto;
     }
 }
