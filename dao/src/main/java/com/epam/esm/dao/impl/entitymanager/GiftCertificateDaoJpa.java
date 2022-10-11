@@ -40,22 +40,15 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
     @Override
     public GiftCertificate save(GiftCertificate giftCertificate) {
         em.getTransaction().begin();
-        giftCertificate
-                .setTags(
-                        giftCertificate
-                                .getTags()
-                                .stream()
-                                .map(tag -> {
-                                            try {
-                                                tag = tagDao.findByName(tag.getName());
-                                                tag = em.merge(tag);
-                                                return tag;
-                                            } catch (ResourceNotFoundException e) {
-                                                return tag;
-                                            }
-                                        }
-                                )
-                                .collect(Collectors.toSet()));
+        giftCertificate.setTags(giftCertificate.getTags().stream().map(tag -> {
+            try {
+                tag = tagDao.findByName(tag.getName());
+                tag = em.merge(tag);
+                return tag;
+            } catch (ResourceNotFoundException e) {
+                return tag;
+            }
+        }).collect(Collectors.toSet()));
         giftCertificate.setCreateDate(LocalDateTime.now());
         giftCertificate.setLastUpdateDate(LocalDateTime.now());
         em.persist(giftCertificate);
@@ -103,10 +96,7 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
 
         int totalPages = (em.createQuery(criteriaQuery).getResultList().size() - 1) / pageSize + 1;
 
-        TypedQuery<GiftCertificate> typedQuery =
-                em.createQuery(criteriaQuery)
-                        .setFirstResult(((page - 1) * pageSize))
-                        .setMaxResults(pageSize);
+        TypedQuery<GiftCertificate> typedQuery = em.createQuery(criteriaQuery).setFirstResult(((page - 1) * pageSize)).setMaxResults(pageSize);
         List<GiftCertificate> giftCertificates = typedQuery.getResultList();
 
         em.getTransaction().commit();
@@ -124,7 +114,7 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
             em.getTransaction().rollback();
             throw new ResourceNotFoundException(e.getMessage());
         }
-        actualGiftCertificate = updateFields(actualGiftCertificate, giftCertificate);
+        updateFields(actualGiftCertificate, giftCertificate);
         em.merge(actualGiftCertificate);
         em.getTransaction().commit();
         return actualGiftCertificate;
@@ -153,11 +143,7 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
         GiftCertificate giftCertificate;
         try {
             giftCertificate = findById(giftCertificateId);
-            try {
-                tag = tagDao.findByName(tag.getName());
-            } catch (ResourceNotFoundException e) {
-                tag = em.merge(tag);
-            }
+            findByName(tag);
             giftCertificate.addTag(tag);
         } catch (ResourceNotFoundException e) {
             em.getTransaction().rollback();
@@ -204,5 +190,14 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
         }
         actualGiftCertificate.setLastUpdateDate(LocalDateTime.now());
         return actualGiftCertificate;
+    }
+
+    private Tag findByName(Tag tag){
+        try {
+            tagDao.findByName(tag.getName());
+        } catch (ResourceNotFoundException e) {
+            tag = em.merge(tag);
+        }
+        return tag;
     }
 }

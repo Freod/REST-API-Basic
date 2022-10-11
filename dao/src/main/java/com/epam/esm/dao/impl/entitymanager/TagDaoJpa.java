@@ -18,6 +18,7 @@ public class TagDaoJpa implements TagDao {
 
     private final EntityManager em;
     private final int pageSize;
+    private static final String IS_NOT_EXIST= ") isn't exists.";
 
     @Autowired
     public TagDaoJpa(EntityManagerFactory entityManagerFactory, int pageSize) {
@@ -44,7 +45,7 @@ public class TagDaoJpa implements TagDao {
     public Tag findById(Long id) {
         Tag tag = em.find(Tag.class, id);
         if (tag == null) {
-            throw new ResourceNotFoundException("Tag with id = (" + id + ") isn't exists.");
+            throw new ResourceNotFoundException("Tag with id = (" + id + IS_NOT_EXIST);
         }
         return tag;
     }
@@ -56,7 +57,7 @@ public class TagDaoJpa implements TagDao {
                     .setParameter("name", name)
                     .getSingleResult();
         } catch (NoResultException e) {
-            throw new ResourceNotFoundException("Tag with name = (" + name + ") isn't exists.");
+            throw new ResourceNotFoundException("Tag with name = (" + name + IS_NOT_EXIST);
         }
     }
 
@@ -83,7 +84,7 @@ public class TagDaoJpa implements TagDao {
         Tag tag = em.find(Tag.class, id);
         if (tag == null) {
             em.getTransaction().rollback();
-            throw new ResourceNotFoundException("Tag with id = (" + id + ") isn't exists.");
+            throw new ResourceNotFoundException("Tag with id = (" + id + IS_NOT_EXIST);
         }
         try {
             em.remove(tag);
