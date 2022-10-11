@@ -29,10 +29,8 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequestMapping("/giftCertificates")
 public class GiftCertificateController {
 
-    /**
-     * Service for working with Gift Certificate resource.
-     */
     private final GiftCertificateService giftCertificateService;
+    private static final String SHOW_PAGE_OF_GIFT_CERTIFICATES_METHOD_NAME = "showPageOfGiftCertificates";
 
     /**
      * Construct controller with injected Gift Certificate service.
@@ -82,7 +80,7 @@ public class GiftCertificateController {
             if (page > 1 && giftCertificateDtoPage.getTotalPages() > 0) {
                 linkList.add(linkTo(
                         GiftCertificateController.class
-                                .getMethod("showPageOfGiftCertificates",
+                                .getMethod(SHOW_PAGE_OF_GIFT_CERTIFICATES_METHOD_NAME,
                                         Integer.class, String.class, String.class,
                                         String.class, String.class, Set.class),
                         1,
@@ -97,7 +95,7 @@ public class GiftCertificateController {
             if (page > 2 && page <= giftCertificateDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         GiftCertificateController.class
-                                .getMethod("showPageOfGiftCertificates",
+                                .getMethod(SHOW_PAGE_OF_GIFT_CERTIFICATES_METHOD_NAME,
                                         Integer.class, String.class, String.class,
                                         String.class, String.class, Set.class),
                         page - 1,
@@ -112,7 +110,7 @@ public class GiftCertificateController {
             if (page <= giftCertificateDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         GiftCertificateController.class
-                                .getMethod("showPageOfGiftCertificates",
+                                .getMethod(SHOW_PAGE_OF_GIFT_CERTIFICATES_METHOD_NAME,
                                         Integer.class, String.class, String.class,
                                         String.class, String.class, Set.class),
                         page,
@@ -127,7 +125,7 @@ public class GiftCertificateController {
             if (page + 1 < giftCertificateDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         GiftCertificateController.class
-                                .getMethod("showPageOfGiftCertificates",
+                                .getMethod(SHOW_PAGE_OF_GIFT_CERTIFICATES_METHOD_NAME,
                                         Integer.class, String.class, String.class,
                                         String.class, String.class, Set.class),
                         page + 1,
@@ -142,7 +140,7 @@ public class GiftCertificateController {
             if (giftCertificateDtoPage.getTotalPages() > 0 && page != giftCertificateDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         GiftCertificateController.class
-                                .getMethod("showPageOfGiftCertificates",
+                                .getMethod(SHOW_PAGE_OF_GIFT_CERTIFICATES_METHOD_NAME,
                                         Integer.class, String.class, String.class,
                                         String.class, String.class, Set.class),
                         giftCertificateDtoPage.getTotalPages(),
@@ -233,7 +231,7 @@ public class GiftCertificateController {
 
     protected static GiftCertificateDto addSelectGiftCertificateLink(GiftCertificateDto giftCertificateDto) {
         try {
-            giftCertificateDto.getTags().stream().map(TagController::addSelectTagDtoLinks).collect(Collectors.toList());
+            giftCertificateDto.getTags().forEach(TagController::addSelectTagDtoLinks);
             Link linkById =
                     linkTo(
                             GiftCertificateController.class

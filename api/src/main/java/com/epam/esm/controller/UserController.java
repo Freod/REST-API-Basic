@@ -25,6 +25,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class UserController {
 
     private UserService userService;
+    private static final String SHOW_PAGE_OF_USERS_METHOD_NAME = "showPageOfUsers";
 
     @Autowired
     public UserController(UserService userService){
@@ -54,35 +55,35 @@ public class UserController {
             if (page > 1 && userDtoPage.getTotalPages() > 0) {
                 linkList.add(linkTo(
                         UserController.class
-                                .getMethod("showPageOfUsers", Integer.class), 1)
+                                .getMethod(SHOW_PAGE_OF_USERS_METHOD_NAME, Integer.class), 1)
                         .withRel("firstPage"));
             }
 
             if (page > 2 && page <= userDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         UserController.class
-                                .getMethod("showPageOfUsers", Integer.class), page - 1)
+                                .getMethod(SHOW_PAGE_OF_USERS_METHOD_NAME, Integer.class), page - 1)
                         .withRel("previousPage"));
             }
 
             if (page <= userDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         UserController.class
-                                .getMethod("showPageOfUsers", Integer.class), page)
+                                .getMethod(SHOW_PAGE_OF_USERS_METHOD_NAME, Integer.class), page)
                         .withSelfRel());
             }
 
             if (page + 1 < userDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         UserController.class
-                                .getMethod("showPageOfUsers", Integer.class), page + 1)
+                                .getMethod(SHOW_PAGE_OF_USERS_METHOD_NAME, Integer.class), page + 1)
                         .withRel("nextPage"));
             }
 
             if (userDtoPage.getTotalPages() > 0 && page != userDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         UserController.class
-                                .getMethod("showPageOfUsers", Integer.class), userDtoPage.getTotalPages())
+                                .getMethod(SHOW_PAGE_OF_USERS_METHOD_NAME, Integer.class), userDtoPage.getTotalPages())
                         .withRel("lastPage"));
             }
         } catch (NoSuchMethodException e) {
@@ -102,7 +103,7 @@ public class UserController {
 
     private static UserDto addSelectUserDtoLink(UserDto userDto){
         try {
-            userDto.getOrders().stream().map(OrderController::addSelectOrderDtoLink).collect(Collectors.toList());
+            userDto.getOrders().forEach(OrderController::addSelectOrderDtoLink);
             Link linkById = linkTo(UserController.class.getMethod("showUserById", Long.class), userDto.getId()).withSelfRel();
             userDto.add(linkById);
             return userDto;

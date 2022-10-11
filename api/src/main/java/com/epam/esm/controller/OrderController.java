@@ -22,6 +22,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class OrderController {
 
     private OrderService orderService;
+    private static final String SHOW_PAGE_OF_ORDERS_METHOD_NAME = "showPageOfOrders";
 
     @Autowired
     public OrderController(OrderService orderService) {
@@ -51,35 +52,35 @@ public class OrderController {
             if (page > 1 && orderDtoPage.getTotalPages() > 0) {
                 linkList.add(linkTo(
                         OrderController.class
-                                .getMethod("showPageOfOrders", Integer.class), 1)
+                                .getMethod(SHOW_PAGE_OF_ORDERS_METHOD_NAME, Integer.class), 1)
                         .withRel("firstPage"));
             }
 
             if (page > 2 && page <= orderDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         OrderController.class
-                                .getMethod("showPageOfOrders", Integer.class), page - 1)
+                                .getMethod(SHOW_PAGE_OF_ORDERS_METHOD_NAME, Integer.class), page - 1)
                         .withRel("previousPage"));
             }
 
             if (page <= orderDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         OrderController.class
-                                .getMethod("showPageOfOrders", Integer.class), page)
+                                .getMethod(SHOW_PAGE_OF_ORDERS_METHOD_NAME, Integer.class), page)
                         .withSelfRel());
             }
 
             if (page + 1 < orderDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         OrderController.class
-                                .getMethod("showPageOfOrders", Integer.class), page + 1)
+                                .getMethod(SHOW_PAGE_OF_ORDERS_METHOD_NAME, Integer.class), page + 1)
                         .withRel("nextPage"));
             }
 
             if (orderDtoPage.getTotalPages() > 0 && page != orderDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         OrderController.class
-                                .getMethod("showPageOfOrders", Integer.class), orderDtoPage.getTotalPages())
+                                .getMethod(SHOW_PAGE_OF_ORDERS_METHOD_NAME, Integer.class), orderDtoPage.getTotalPages())
                         .withRel("lastPage"));
             }
         } catch (NoSuchMethodException e) {
@@ -91,7 +92,7 @@ public class OrderController {
 
     protected static OrderDto addSelectOrderDtoLink(OrderDto orderDto) {
         try {
-            orderDto.getGiftCertificates().stream().map(GiftCertificateController::addSelectGiftCertificateLink).collect(Collectors.toList());
+            orderDto.getGiftCertificates().forEach(GiftCertificateController::addSelectGiftCertificateLink);
             Link linkById = linkTo(OrderController.class.getMethod("showOrderById", Long.class), orderDto.getId()).withSelfRel();
             orderDto.add(linkById);
             return orderDto;

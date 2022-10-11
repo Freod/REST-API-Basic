@@ -29,10 +29,12 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequestMapping("/tags")
 public class TagController {
 
+
     /**
      * Service for working with Tag resource.
      */
     private final TagService tagService;
+    private static final String SHOW_PAGE_OF_TAGS_METHOD_NAME = "showPageOfTags";
 
     /**
      * Construct controller with injected Tag service.
@@ -80,35 +82,35 @@ public class TagController {
             if (page > 1 && tagDtoPage.getTotalPages() > 0) {
                 linkList.add(linkTo(
                         TagController.class
-                                .getMethod("showPageOfTags", Integer.class), 1)
+                                .getMethod(SHOW_PAGE_OF_TAGS_METHOD_NAME, Integer.class), 1)
                         .withRel("firstPage"));
             }
 
             if (page > 2 && page <= tagDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         TagController.class
-                                .getMethod("showPageOfTags", Integer.class), page - 1)
+                                .getMethod(SHOW_PAGE_OF_TAGS_METHOD_NAME, Integer.class), page - 1)
                         .withRel("previousPage"));
             }
 
             if (page <= tagDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         TagController.class
-                                .getMethod("showPageOfTags", Integer.class), page)
+                                .getMethod(SHOW_PAGE_OF_TAGS_METHOD_NAME, Integer.class), page)
                         .withSelfRel());
             }
 
             if (page + 1 < tagDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         TagController.class
-                                .getMethod("showPageOfTags", Integer.class), page + 1)
+                                .getMethod(SHOW_PAGE_OF_TAGS_METHOD_NAME, Integer.class), page + 1)
                         .withRel("nextPage"));
             }
 
             if (tagDtoPage.getTotalPages() > 0 && page != tagDtoPage.getTotalPages()) {
                 linkList.add(linkTo(
                         TagController.class
-                                .getMethod("showPageOfTags", Integer.class), tagDtoPage.getTotalPages())
+                                .getMethod(SHOW_PAGE_OF_TAGS_METHOD_NAME, Integer.class), tagDtoPage.getTotalPages())
                         .withRel("lastPage"));
             }
         } catch (NoSuchMethodException e) {

@@ -6,7 +6,6 @@ import com.epam.esm.exception.WrongValueException;
 import com.epam.esm.model.Page;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
