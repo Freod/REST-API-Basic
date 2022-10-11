@@ -19,15 +19,6 @@ public class TagDaoJpa implements TagDao {
     private final EntityManager em;
     private final int pageSize;
 
-    // TODO: 13.09.2022
-//    @PostConstruct
-//    private void initTags() {
-//        for (int i = 0; i < 50; i++) {
-//            this.save(new Tag("tag" + i));
-//        }
-//    }
-
-
     @Autowired
     public TagDaoJpa(EntityManagerFactory entityManagerFactory, int pageSize) {
         this.em = Objects.requireNonNull(entityManagerFactory.createEntityManager());

@@ -96,10 +96,4 @@ public class ObjectConverter {
                 user.getOrders().stream().map(this::convertOrderToOrderDto).collect(Collectors.toList())
         );
     }
-
-    protected User convertUserDtoToUser(UserDto userDto) {
-        return new User(
-                userDto.getUsername()
-        );
-    }
 }

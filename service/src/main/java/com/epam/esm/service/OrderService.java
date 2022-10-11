@@ -32,7 +32,7 @@ public class OrderService {
     }
 
     public Page<OrderDto> showPageOfOrders(Integer page) {
-        if (page < 1) throw new WrongPageException("Page cannot be smaller by 1");
+        if (page < 1) throw new WrongPageException("Page cannot be smaller than 1");
         Page<Order> orderPage = orderDao.findPage(page);
         return new Page<>(
                 orderPage.getPageNumber(),

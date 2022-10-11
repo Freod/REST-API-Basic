@@ -3,6 +3,7 @@ package com.epam.esm.dao;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.Order;
 import com.epam.esm.model.Page;
+import com.epam.esm.model.Tag;
 import com.epam.esm.model.User;
 
 public interface UserDao {
@@ -13,4 +14,6 @@ public interface UserDao {
     Page<User> findPage(Integer page);
 
     Order makeAnOrder(Long id, Order order);
+
+    Tag mostWidelyUsedTagOfUserWithTheHighestCostOfOrders();
 }

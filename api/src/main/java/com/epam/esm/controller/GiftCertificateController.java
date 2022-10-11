@@ -90,7 +90,7 @@ public class GiftCertificateController {
                         filterDto.getDirection(),
                         filterDto.getName(),
                         filterDto.getDescription(),
-                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        filterDto.getTags().stream().map(TagDto::getName).collect(Collectors.toList()))
                         .withRel("firstPage"));
             }
 
@@ -105,7 +105,7 @@ public class GiftCertificateController {
                         filterDto.getDirection(),
                         filterDto.getName(),
                         filterDto.getDescription(),
-                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        filterDto.getTags().stream().map(TagDto::getName).collect(Collectors.toList()))
                         .withRel("previousPage"));
             }
 
@@ -120,7 +120,7 @@ public class GiftCertificateController {
                         filterDto.getDirection(),
                         filterDto.getName(),
                         filterDto.getDescription(),
-                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        filterDto.getTags().stream().map(TagDto::getName).collect(Collectors.toList()))
                         .withSelfRel());
             }
 
@@ -135,7 +135,7 @@ public class GiftCertificateController {
                         filterDto.getDirection(),
                         filterDto.getName(),
                         filterDto.getDescription(),
-                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        filterDto.getTags().stream().map(TagDto::getName).collect(Collectors.toList()))
                         .withRel("nextPage"));
             }
 
@@ -150,7 +150,7 @@ public class GiftCertificateController {
                         filterDto.getDirection(),
                         filterDto.getName(),
                         filterDto.getDescription(),
-                        filterDto.getTags().stream().map(tagDto -> tagDto.getName()).collect(Collectors.toList()))
+                        filterDto.getTags().stream().map(TagDto::getName).collect(Collectors.toList()))
                         .withRel("lastPage"));
             }
         } catch (NoSuchMethodException e) {

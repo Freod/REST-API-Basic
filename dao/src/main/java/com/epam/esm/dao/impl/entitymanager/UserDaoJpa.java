@@ -5,6 +5,7 @@ import com.epam.esm.dao.UserDao;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.model.Order;
 import com.epam.esm.model.Page;
+import com.epam.esm.model.Tag;
 import com.epam.esm.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -22,22 +23,6 @@ public class UserDaoJpa implements UserDao {
     private final EntityManager em;
     private final GiftCertificateDao giftCertificateDao;
     private final int pageSize;
-
-
-    // TODO: 02.09.2022
-//    @PostConstruct
-//    private void initUsers() {
-//        for (int i = 0; i < 50; i++) {
-//            User user = new User("user" + i);
-//            this.save(user);
-//
-////            GiftCertificate giftCertificate = new GiftCertificate();
-////            giftCertificate.setId(54L);
-////            Order order = new Order();
-////            order.setGiftCertificates(Arrays.asList(giftCertificate));
-////            this.makeAnOrder(user.getId(), order);
-//        }
-//    }
 
     @Autowired
     public UserDaoJpa(EntityManagerFactory entityManagerFactory, GiftCertificateDao giftCertificateDao, int pageSize) {
@@ -109,5 +94,10 @@ public class UserDaoJpa implements UserDao {
             em.getTransaction().rollback();
             throw e;
         }
+    }
+
+    @Override
+    public Tag mostWidelyUsedTagOfUserWithTheHighestCostOfOrders() {
+        return null;
     }
 }

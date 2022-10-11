@@ -46,7 +46,7 @@ public class TagController {
 
     @GetMapping(params = "id")
     @ResponseStatus(HttpStatus.OK)
-    public EntityModel<TagDto> showTagById(@RequestParam Long id) throws NoSuchMethodException {
+    public EntityModel<TagDto> showTagById(@RequestParam Long id){
         TagDto tagDto = tagService.selectTagById(id);
         addSelectTagDtoLinks(tagDto);
         return EntityModel.of(tagDto);

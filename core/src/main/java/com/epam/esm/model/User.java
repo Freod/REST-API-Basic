@@ -25,6 +25,12 @@ public class User implements Serializable {
         this.username = username;
     }
 
+    public User(Long id, String username, List<Order> orders) {
+        this.id = id;
+        this.username = username;
+        this.orders = orders;
+    }
+
     public void addOrder(Order order){
         orders.add(order);
     }

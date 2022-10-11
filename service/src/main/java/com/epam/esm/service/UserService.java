@@ -5,6 +5,7 @@ import com.epam.esm.dto.OrderDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.exception.WrongPageException;
+import com.epam.esm.exception.WrongValueException;
 import com.epam.esm.model.Page;
 import com.epam.esm.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class UserService {
 
     public UserDto findById(Long id) {
         if (id == null) {
-            throw new NullPointerException("Id cannot be null.");
+            throw new WrongValueException("Id cannot be null");
         }
 
         return objectConverter.convertUserToUserDto(
@@ -35,7 +36,7 @@ public class UserService {
     }
 
     public Page<UserDto> selectPageOfUsers(Integer page) {
-        if (page < 1) throw new WrongPageException("Page cannot be smaller by 1");
+        if (page < 1) throw new WrongPageException("Page cannot be smaller than 1");
         Page<User> userPage = userDao.findPage(page);
         return new Page<>(
                 userPage.getPageNumber(),
@@ -49,18 +50,15 @@ public class UserService {
 
     public OrderDto makeNewOrder(Long id, OrderDto orderDto) {
         if (id == null) {
-            throw new NullPointerException("Id cannot be null.");
+            throw new WrongValueException("Id cannot be null");
         }
 
         return objectConverter.convertOrderToOrderDto(
                 userDao.makeAnOrder(id, objectConverter.convertOrderDtoToOrder(orderDto)));
     }
 
-    // TODO: 10/10/2022
-    //Get the most widely used tag of a user with the highest cost of all orders.
-    //Create separate endpoint for this query.
-    //Demonstrate SQL execution plan for this query (explain).
     public TagDto mostWidelyUsedTagOfUserWithTheHighestCostOfOrders() {
-        return null;
+        return objectConverter.convertTagToTagDto(
+                userDao.mostWidelyUsedTagOfUserWithTheHighestCostOfOrders());
     }
 }

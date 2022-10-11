@@ -33,16 +33,6 @@ public class GiftCertificate implements Serializable {
         this.tags.remove(tag);
     }
 
-
-//    public GiftCertificate(Long id, String name, String description, Double price, Integer duration) {
-//        this.id = id;
-//        this.name = name;
-//        this.description = description;
-//        this.price = price;
-//        this.duration = duration;
-//    }
-
-
     public GiftCertificate() {
     }
 

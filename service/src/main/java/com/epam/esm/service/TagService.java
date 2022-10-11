@@ -46,7 +46,7 @@ public class TagService {
 
     public TagDto selectTagByName(String name) {
         if (name == null || name.isEmpty()) {
-            throw new WrongValueException("Name cannot be null or empty");
+            throw new WrongValueException("Field name cannot be empty");
         }
         return objectConverter
                 .convertTagToTagDto(

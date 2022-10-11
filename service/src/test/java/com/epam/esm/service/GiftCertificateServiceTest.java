@@ -1,20 +1,28 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.GiftCertificateDao;
+import com.epam.esm.dto.FilterDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.exception.WrongPageException;
 import com.epam.esm.exception.WrongValueException;
+import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.Page;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import javax.print.attribute.standard.Fidelity;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,9 +36,9 @@ class GiftCertificateServiceTest {
 
     @Mock
     private GiftCertificateDao giftCertificateDao;
-    // FIXME: 10/10/2022
-    @Mock
+    @Spy
     private ObjectConverter objectConverter;
+
     @InjectMocks
     private GiftCertificateService giftCertificateService;
 
@@ -97,31 +105,82 @@ class GiftCertificateServiceTest {
     }
 
     @Test
+    void whenSelectPageOfGiftCertificatesShouldReturnThisPage() {
+        //given
+        int page = takePageNumber();
+        FilterDto filterDto = takeFilterDto();
+        Filter filter = takeFilter();
+        Page<GiftCertificate> returnedPage = takeReturnedGiftCertificatePage();
+        Page<GiftCertificateDto> expectedPage = takeExpectedGiftCertificateDtoPage();
+
+        //when
+        when(giftCertificateDao.findPageUsingFilter(page, filter)).thenReturn(returnedPage);
+        Page<GiftCertificateDto> actualPage= giftCertificateService.selectPageOfGiftCertificates(page, filterDto);
+
+        //then
+        assertEquals(expectedPage, actualPage);
+    }
+
+    @Test
+    void whenSelectPageOfGiftCertificatesSmallerThanOneShouldThrowWrongValueException() {
+        //given
+        String expectedExceptionMessage = takeExceptionMessagePageCannotBeSmallerThan();
+        int page = 0;
+        FilterDto filterDto = takeFilterDto();
+
+        //when
+        WrongPageException thrown = Assertions.assertThrows(WrongPageException.class, () -> {
+            giftCertificateService.selectPageOfGiftCertificates(page, filterDto);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
     void whenUpdateGiftCertificateShouldReturnGiftCertificateDto() {
         //given
-        GiftCertificateDto giftCertificateDtoToSave = takeGiftCertificateDtoToSaveOrUpdate();
-        GiftCertificate giftCertificateToSave = takeGiftCertificateToSaveOrUpdate();
+        Long idToUpdate = takeId();
+        GiftCertificateDto giftCertificateDtoToUpdate = takeGiftCertificateDtoToSaveOrUpdate();
+        GiftCertificate giftCertificateToUpdate = takeGiftCertificateToSaveOrUpdate();
         GiftCertificate returnedGiftCertificate = takeReturnedGiftCertificate();
         GiftCertificateDto expectedGiftCertificateDto = takeExpectedGiftCertificateDto();
 
         //when
-        when(giftCertificateDao.save(giftCertificateToSave)).thenReturn(returnedGiftCertificate);
+        when(giftCertificateDao.update(idToUpdate, giftCertificateToUpdate)).thenReturn(returnedGiftCertificate);
         GiftCertificateDto actualGiftCertificateDto
-                = giftCertificateService.saveGiftCertificate(giftCertificateDtoToSave);
+                = giftCertificateService.updateGiftCertificate(idToUpdate, giftCertificateDtoToUpdate);
 
         //then
         assertEquals(expectedGiftCertificateDto, actualGiftCertificateDto);
     }
 
     @Test
+    void whenUpdateGiftCertificateWithNullIdShouldThrowWrongValueException() {
+        //given
+        Long nullId = takeNullId();
+        GiftCertificateDto giftCertificateDtoToUpdate = takeGiftCertificateDtoToSaveOrUpdate();
+        String expectedExceptionMessage = takeExceptionMessageIdCannotBeNull();
+
+        //when
+        WrongValueException thrown = Assertions.assertThrows(WrongValueException.class, () -> {
+            giftCertificateService.updateGiftCertificate(nullId, giftCertificateDtoToUpdate);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
     void whenUpdateGiftCertificateWithNullValuesShouldThrowWrongValueException() {
         //given
+        Long idToUpdate = takeId();
         GiftCertificateDto giftCertificateWithNulls = takeGiftCertificateDtoWithNulls();
         String expectedExceptionMessage = takeExceptionMessageGiftCertificateNullOrEmptyValues();
 
         //when
         WrongValueException thrown = Assertions.assertThrows(WrongValueException.class, () -> {
-            giftCertificateService.saveGiftCertificate(giftCertificateWithNulls);
+            giftCertificateService.updateGiftCertificate(idToUpdate, giftCertificateWithNulls);
         });
 
         //then
@@ -192,7 +251,7 @@ class GiftCertificateServiceTest {
         when(giftCertificateDao.removeTagFromGiftCertificate(giftCertificateIdToRemoveTag, tagToRemove))
                 .thenReturn(giftCertificateReturnedWithoutTag);
         GiftCertificateDto actualGiftCertificateDto =
-                giftCertificateService.addTagToGiftCertificate(giftCertificateIdToRemoveTag, tagDtoToRemove);
+                giftCertificateService.removeTagFromGiftCertificate(giftCertificateIdToRemoveTag, tagDtoToRemove);
 
         //then
         assertEquals(expectedGiftCertificateDto, actualGiftCertificateDto);
@@ -254,6 +313,18 @@ class GiftCertificateServiceTest {
         return null;
     }
 
+    private int takePageNumber(){
+        return 1;
+    }
+
+    private int takePageSize(){
+        return 8;
+    }
+
+    private int takeTotalPages(){
+        return 1;
+    }
+
     private TagDto takeTagDtoWithNullValues() {
         return new TagDto(null, null);
     }
@@ -262,7 +333,7 @@ class GiftCertificateServiceTest {
         return new TagDto(null, "broken");
     }
 
-    private Tag takeTagToAdd(){
+    private Tag takeTagToAdd() {
         return new Tag(takeTagDtoToAdd().getName());
     }
 
@@ -270,7 +341,7 @@ class GiftCertificateServiceTest {
         return new TagDto(null, "bear");
     }
 
-    private Tag takeTagToRemove(){
+    private Tag takeTagToRemove() {
         return new Tag(takeTagDtoToRemove().getName());
     }
 
@@ -282,7 +353,14 @@ class GiftCertificateServiceTest {
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    private Set<TagDto> tagsDto(){
+    private Set<Tag> tagsWithoutTag() {
+        return Stream.of(
+                        new Tag(4L, "toy"),
+                        new Tag(9L, "brown"))
+                .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    private Set<TagDto> tagsDto() {
         return Stream.of(
                         new TagDto(4L, "toy"),
                         new TagDto(6L, "bear"),
@@ -290,7 +368,7 @@ class GiftCertificateServiceTest {
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    private Set<TagDto> tagsDtoWithNewTag(){
+    private Set<TagDto> tagsDtoWithNewTag() {
         return Stream.of(
                         new TagDto(4L, "toy"),
                         new TagDto(6L, "bear"),
@@ -299,34 +377,34 @@ class GiftCertificateServiceTest {
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    private Set<TagDto> tagsDtoWithoutTag(){
+    private Set<TagDto> tagsDtoWithoutTag() {
         return Stream.of(
                         new TagDto(4L, "toy"),
                         new TagDto(9L, "brown"))
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    private GiftCertificate takeReturnedGiftCertificate() {
+    protected GiftCertificate takeReturnedGiftCertificate() {
         return new GiftCertificate(
                 takeId(),
                 "Teddy bear",
                 "Teddy bear gift certificate",
                 32.99,
                 5,
-                LocalDateTime.of(2022, 10, 23, 10, 50, 44, 555),
-                LocalDateTime.of(2022, 10, 23, 10, 50, 44, 556),
+                LocalDateTime.of(2022, 10, 23, 10, 50, 44),
+                LocalDateTime.of(2022, 10, 23, 10, 50, 44),
                 tags());
     }
 
-    private GiftCertificate takeGiftCertificateReturnedWithNewTag(){
+    private GiftCertificate takeGiftCertificateReturnedWithNewTag() {
         GiftCertificate giftCertificate = takeReturnedGiftCertificate();
         giftCertificate.addTag(takeTagToAdd());
         return giftCertificate;
     }
 
-    private GiftCertificate takeGiftCertificateReturnedWithoutTag(){
+    private GiftCertificate takeGiftCertificateReturnedWithoutTag() {
         GiftCertificate giftCertificate = takeReturnedGiftCertificate();
-        giftCertificate.removeTag(takeTagToRemove());
+        giftCertificate.setTags(tagsWithoutTag());
         return giftCertificate;
     }
 
@@ -354,7 +432,7 @@ class GiftCertificateServiceTest {
                 tagsDto());
     }
 
-    private GiftCertificateDto takeExpectedGiftCertificateDtoWithNewTag(){
+    private GiftCertificateDto takeExpectedGiftCertificateDtoWithNewTag() {
         GiftCertificate returnedGiftCertificate = takeReturnedGiftCertificate();
         return new GiftCertificateDto(
                 returnedGiftCertificate.getId(),
@@ -367,7 +445,7 @@ class GiftCertificateServiceTest {
                 tagsDtoWithNewTag());
     }
 
-    private GiftCertificateDto takeExpectedGiftCertificateDtoWithoutTag(){
+    private GiftCertificateDto takeExpectedGiftCertificateDtoWithoutTag() {
         GiftCertificate returnedGiftCertificate = takeReturnedGiftCertificate();
         return new GiftCertificateDto(
                 returnedGiftCertificate.getId(),
@@ -406,6 +484,42 @@ class GiftCertificateServiceTest {
         );
     }
 
+    private FilterDto takeFilterDto(){
+        return new FilterDto(new HashSet<>(), null, null, "name", "asc");
+    }
+
+    private Filter takeFilter(){
+        FilterDto filterDto = takeFilterDto();
+        return new Filter(
+                filterDto.getTags().stream()
+                        .map(tagDto -> new Tag(tagDto.getName()))
+                        .collect(Collectors.toCollection(HashSet::new)),
+                filterDto.getName(),
+                filterDto.getDescription(),
+                "name",
+                "asc");
+    }
+
+    private Page<GiftCertificate> takeReturnedGiftCertificatePage(){
+        List<GiftCertificate> giftCertificates = Arrays.asList(takeReturnedGiftCertificate());
+        return new Page<>(
+                takePageNumber(),
+                takePageSize(),
+                takeTotalPages(),
+                giftCertificates
+        );
+    }
+
+    private Page<GiftCertificateDto> takeExpectedGiftCertificateDtoPage(){
+        List<GiftCertificateDto> giftCertificatesDto = Arrays.asList(takeExpectedGiftCertificateDto());
+        return new Page<>(
+                takePageNumber(),
+                takePageSize(),
+                takeTotalPages(),
+                giftCertificatesDto
+        );
+    }
+
     private String takeExceptionMessageGiftCertificateNullOrEmptyValues() {
         return "GiftCertificate fields cannot be null or empty";
     }
@@ -416,5 +530,9 @@ class GiftCertificateServiceTest {
 
     private String takeExceptionMessageTagNullOrEmptyValues() {
         return "Tag fields cannot be null or empty";
+    }
+
+    private String takeExceptionMessagePageCannotBeSmallerThan() {
+        return "Page cannot be smaller than 1";
     }
 }

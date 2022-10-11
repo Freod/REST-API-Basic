@@ -5,6 +5,7 @@ import com.epam.esm.dto.FilterDto;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.exception.WrongPageException;
+import com.epam.esm.exception.WrongValueException;
 import com.epam.esm.model.GiftCertificate;
 import com.epam.esm.model.Page;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class GiftCertificateService {
 
     private final GiftCertificateDao giftCertificateDao;
     private final ObjectConverter objectConverter;
+    private static final String EXCEPTION_MESSAGE_ID_CANNOT_BE_NULL = "Id cannot be null";
 
     @Autowired
     public GiftCertificateService(GiftCertificateDao giftCertificateDao, ObjectConverter objectConverter) {
@@ -26,7 +28,7 @@ public class GiftCertificateService {
     }
 
     public GiftCertificateDto saveGiftCertificate(GiftCertificateDto giftCertificateDto) {
-        checkNullValuesGiftCertificate(giftCertificateDto, "save");
+        checkNullValuesGiftCertificate(giftCertificateDto);
 
         return objectConverter.convertGiftCertificateToGiftCertificateDto(
                 giftCertificateDao.save(
@@ -35,12 +37,15 @@ public class GiftCertificateService {
     }
 
     public GiftCertificateDto selectGiftCertificate(Long id) {
+        if (id == null) {
+            throw new WrongValueException(EXCEPTION_MESSAGE_ID_CANNOT_BE_NULL);
+        }
         return objectConverter.convertGiftCertificateToGiftCertificateDto(
                 giftCertificateDao.findById(id));
     }
 
     public Page<GiftCertificateDto> selectPageOfGiftCertificates(Integer page, FilterDto filterDto) {
-        if (page < 1) throw new WrongPageException("Page cannot be smaller by 1");
+        if (page < 1) throw new WrongPageException("Page cannot be smaller than 1");
         Page<GiftCertificate> giftCertificatePage = giftCertificateDao.findPageUsingFilter(page, objectConverter.convertFiltersDtoToFilters(filterDto));
         return new Page<>(
                 giftCertificatePage.getPageNumber(),
@@ -53,7 +58,10 @@ public class GiftCertificateService {
     }
 
     public GiftCertificateDto updateGiftCertificate(Long id, GiftCertificateDto giftCertificateDto) {
-        checkNullValuesGiftCertificate(giftCertificateDto, "update");
+        if (id == null) {
+            throw new WrongValueException(EXCEPTION_MESSAGE_ID_CANNOT_BE_NULL);
+        }
+        checkNullValuesGiftCertificate(giftCertificateDto);
         return objectConverter.convertGiftCertificateToGiftCertificateDto(
                 giftCertificateDao.update(
                         id,
@@ -62,14 +70,20 @@ public class GiftCertificateService {
     }
 
     public GiftCertificateDto addTagToGiftCertificate(Long giftCertificateId, TagDto tagDto) {
-        checkTagNullNameValue(tagDto, "add");
+        if (giftCertificateId == null) {
+            throw new WrongValueException(EXCEPTION_MESSAGE_ID_CANNOT_BE_NULL);
+        }
+        checkTagNullNameValue(tagDto);
         return objectConverter.convertGiftCertificateToGiftCertificateDto(
                 giftCertificateDao.addTagToGiftCertificate(
                         giftCertificateId, objectConverter.convertTagDtoToTag(tagDto)));
     }
 
     public GiftCertificateDto removeTagFromGiftCertificate(Long giftCertificateId, TagDto tagDto) {
-        checkTagNullNameValue(tagDto, "remove");
+        if (giftCertificateId == null) {
+            throw new WrongValueException(EXCEPTION_MESSAGE_ID_CANNOT_BE_NULL);
+        }
+        checkTagNullNameValue(tagDto);
         return objectConverter.convertGiftCertificateToGiftCertificateDto(
                 giftCertificateDao.removeTagFromGiftCertificate(
                         giftCertificateId, objectConverter.convertTagDtoToTag(tagDto)));
@@ -79,24 +93,18 @@ public class GiftCertificateService {
         giftCertificateDao.removeById(id);
     }
 
-    private void checkNullValuesGiftCertificate(GiftCertificateDto giftCertificateDto, String methodName) {
+    private void checkNullValuesGiftCertificate(GiftCertificateDto giftCertificateDto) {
         if (giftCertificateDto.getName() == null
                 || giftCertificateDto.getDescription() == null
                 || giftCertificateDto.getDuration() == null
                 || giftCertificateDto.getPrice() == null) {
-            if (methodName.equals("save")) {
-                throw new NullPointerException("cannot save giftCertificate with null values");
-            }
-            throw new NullPointerException("cannot update giftCertificate with null values");
+            throw new WrongValueException("GiftCertificate fields cannot be null or empty");
         }
     }
 
-    private void checkTagNullNameValue(TagDto tagDto, String methodName) {
+    private void checkTagNullNameValue(TagDto tagDto) {
         if (tagDto.getName() == null) {
-            if (methodName.equals("add")) {
-                throw new NullPointerException("cannot add tag with null values");
-            }
-            throw new NullPointerException("cannot remove tag with null values");
+            throw new WrongValueException("Tag fields cannot be null or empty");
         }
     }
 }

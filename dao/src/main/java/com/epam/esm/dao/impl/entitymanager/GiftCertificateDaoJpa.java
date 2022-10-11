@@ -30,21 +30,6 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
     private final TagDaoJpa tagDao;
     private final int pageSize;
 
-    // TODO: 16.09.2022
-//    @PostConstruct
-//    private void initGiftCertificate() {
-//        for (int i = 0; i < 50; i++) {
-//            GiftCertificate giftCertificate = new GiftCertificate(null, "Giftcertf" + i, "descript", 3.0, 5);
-//            if (i < 25) {
-//                giftCertificate.addTag(new Tag("tag1"));
-//                giftCertificate.addTag(new Tag("tag3"));
-//            } else {
-//                giftCertificate.addTag(new Tag("tag2"));
-//            }
-//            this.save(giftCertificate);
-//        }
-//    }
-
     @Autowired
     public GiftCertificateDaoJpa(EntityManagerFactory entityManagerFactory, TagDaoJpa tagDao, int pageSize) {
         this.em = entityManagerFactory.createEntityManager();

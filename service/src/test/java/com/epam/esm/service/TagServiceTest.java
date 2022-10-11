@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
@@ -21,30 +22,23 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class TagServiceTest {
+class TagServiceTest {
 
     @Mock
     private TagDao tagDao;
-    @Mock
+    @Spy
     private ObjectConverter objectConverter;
 
     @InjectMocks
     private TagService tagService;
 
-    private static TagDto expectedTagDto;
-    private static Tag insertedTag;
-
-    @BeforeAll
-    public static void init() {
-        insertedTag = new Tag(1L, "tag1");
-        expectedTagDto = new TagDto(1L, "tag1");
-    }
-
     @Test
     void whenSaveNewTagShouldReturnCreatedTag() {
         //given
-        TagDto tagDtoToSave = new TagDto(null, insertedTag.getName());
-        Tag tagToInsert = new Tag(insertedTag.getName());
+        Tag tagToInsert = takeTagToInsert();
+        Tag insertedTag = takeInsertedTag();
+        TagDto tagDtoToSave = takeTagDtoToSave();
+        TagDto expectedTagDto = takeExpectedTagDto();
 
         //when
         when(tagDao.save(tagToInsert)).thenReturn(insertedTag);
@@ -57,8 +51,8 @@ public class TagServiceTest {
     @Test
     void whenSaveNewTagWithoutNameShouldThrowNullPointerException() {
         //given
-        TagDto tagDtoToSave = new TagDto(null, null);
-        String expectedExceptionMessage = "Field name cannot be empty";
+        TagDto tagDtoToSave = takeTagDtoWithoutName();
+        String expectedExceptionMessage = takeExceptionMessageNameCannotBeEmpty();
 
         //when
         WrongValueException thrown = Assertions.assertThrows(WrongValueException.class, () -> {
@@ -72,8 +66,8 @@ public class TagServiceTest {
     @Test
     void whenSaveNewTagWithEmptyNameShouldThrowWrongValueException() {
         //given
-        TagDto tagDtoToSave = new TagDto(null, "");
-        String expectedExceptionMessage = "Field name cannot be empty";
+        TagDto tagDtoToSave = takeTagDtoWithEmptyName();
+        String expectedExceptionMessage = takeExceptionMessageNameCannotBeEmpty();
 
         //when
         WrongValueException thrown = Assertions.assertThrows(WrongValueException.class, () -> {
@@ -87,7 +81,9 @@ public class TagServiceTest {
     @Test
     void whenSelectTagByIdShouldReturnTag() {
         //given
-        Long idToFind = insertedTag.getId();
+        Long idToFind = takeId();
+        Tag insertedTag = takeInsertedTag();
+        TagDto expectedTagDto = takeExpectedTagDto();
 
         //when
         when(tagDao.findById(idToFind)).thenReturn(insertedTag);
@@ -100,8 +96,8 @@ public class TagServiceTest {
     @Test
     void whenSelectTagWithoutIdShouldThrowWrongValueException() {
         //given
-        Long nullIdToFind = null;
-        String expectedExceptionMessage = "Id cannot be null";
+        Long nullIdToFind = takeNullId();
+        String expectedExceptionMessage = takeExceptionMessageIdCannotBeNull();
 
         //when
         WrongValueException thrown = Assertions.assertThrows(WrongValueException.class, () -> {
@@ -115,7 +111,9 @@ public class TagServiceTest {
     @Test
     void whenSelectTagByNameShouldReturnTag() {
         //given
-        String nameToFind = insertedTag.getName();
+        String nameToFind = takeNameToFind();
+        Tag insertedTag = takeInsertedTag();
+        TagDto expectedTagDto = takeExpectedTagDto();
 
         //when
         when(tagDao.findByName(nameToFind)).thenReturn(insertedTag);
@@ -128,9 +126,9 @@ public class TagServiceTest {
     @Test
     void whenSelectTagWithoutNameShouldThrowWrongValueException() {
         //given
-        String nullNameToFind = null;
-        String emptyNameToFind = "";
-        String expectedExceptionMessage = "Name cannot be null or empty";
+        String nullNameToFind = takeNullName();
+        String emptyNameToFind = takeEmptyName();
+        String expectedExceptionMessage = takeExceptionMessageNameCannotBeEmpty();
 
         //when
         WrongValueException thrown = Assertions.assertThrows(WrongValueException.class, () -> {
@@ -180,7 +178,7 @@ public class TagServiceTest {
     @Test
     void whenSelectPageOfTagsSmallerThanOneShouldThrowWrongValueException() {
         //given
-        String expectedExceptionMessage = "Page cannot be smaller than 1";
+        String expectedExceptionMessage = takeExceptionMessagePageCannotBeSmallerThan();
         int page = 0;
 
         //when
@@ -195,7 +193,7 @@ public class TagServiceTest {
     @Test
     void whenDeleteTagShouldBeRemoved() {
         //given
-        Long idToRemove = Long.valueOf(1);
+        Long idToRemove = takeId();
 
         //when
         doAnswer(invocationOnMock -> {
@@ -211,8 +209,8 @@ public class TagServiceTest {
     @Test
     void whenDeleteTagWithoutIdShouldThrowWrongValueException() {
         //given
-        Long nullIdToRemove = null;
-        String expectedExceptionMessage = "Id cannot be null";
+        Long nullIdToRemove = takeNullId();
+        String expectedExceptionMessage = takeExceptionMessageIdCannotBeNull();
 
         //when
         WrongValueException thrown = Assertions.assertThrows(WrongValueException.class, () -> {
@@ -221,5 +219,62 @@ public class TagServiceTest {
 
         //then
         assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    private Long takeId(){
+        return 1L;
+    }
+
+    private Long takeNullId(){
+        return null;
+    }
+
+    private String takeNameToFind(){
+        return "tag1";
+    }
+
+    private String takeNullName(){
+        return null;
+    }
+
+    private String takeEmptyName(){
+        return "";
+    }
+
+    private TagDto takeExpectedTagDto(){
+        return new TagDto(takeId(), takeNameToFind());
+    }
+
+    private TagDto takeTagDtoToSave(){
+        return new TagDto(takeNullId(), takeExpectedTagDto().getName());
+    }
+
+    private TagDto takeTagDtoWithoutName(){
+        return new TagDto(takeNullId(), takeNullName());
+    }
+
+    private TagDto takeTagDtoWithEmptyName(){
+        return new TagDto(takeNullId(),takeEmptyName());
+    }
+
+    private Tag takeInsertedTag(){
+        TagDto tagDto = takeExpectedTagDto();
+        return new Tag(tagDto.getId(), tagDto.getName());
+    }
+
+    private Tag takeTagToInsert(){
+        return new Tag(takeInsertedTag().getName());
+    }
+
+    private String takeExceptionMessageNameCannotBeEmpty(){
+        return "Field name cannot be empty";
+    }
+
+    private String takeExceptionMessageIdCannotBeNull() {
+        return "Id cannot be null";
+    }
+
+    private String takeExceptionMessagePageCannotBeSmallerThan(){
+        return "Page cannot be smaller than 1";
     }
 }
