@@ -12,9 +12,8 @@ import java.util.Set;
 @Entity
 @Table(name = "gift_certificates")
 public class GiftCertificate implements Serializable {
-    // FIXME: 01.09.2022 id is generate by one sequence for all objects
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;

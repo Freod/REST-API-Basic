@@ -163,7 +163,7 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
             tag = tagDao.findByName(tag.getName());
             if (!giftCertificate.getTags().contains(tag)) {
                 em.getTransaction().rollback();
-                throw new ResourceNotFoundException("GiftGertificate with id = (" + giftCertificateId + ") doesn't contains Tag with name = (" + tag.getName() + ").");
+                throw new ResourceNotFoundException("GiftCertificate with id = (" + giftCertificateId + ") doesn't contains Tag with name = (" + tag.getName() + ").");
             }
             giftCertificate.removeTag(tag);
         } catch (ResourceNotFoundException e) {

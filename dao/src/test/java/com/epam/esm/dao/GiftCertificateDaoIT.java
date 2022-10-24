@@ -1,312 +1,261 @@
-//package com.epam.esm.dao;
-//
-//import com.epam.esm.config.Config;
-//import com.epam.esm.exception.ResourceNotFound;
-//import com.epam.esm.model.Filter;
-//import com.epam.esm.model.GiftCertificate;
-//import com.epam.esm.model.Tag;
-//import org.junit.jupiter.api.Test;
-//import org.junit.jupiter.api.extension.ExtendWith;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.test.context.ActiveProfiles;
-//import org.springframework.test.context.ContextConfiguration;
-//import org.springframework.test.context.junit.jupiter.SpringExtension;
-//import org.springframework.test.context.support.AnnotationConfigContextLoader;
-//
-//import java.time.LocalDateTime;
-//import java.util.List;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//
-//@ActiveProfiles("dev")
-//@ExtendWith(SpringExtension.class)
-//@ContextConfiguration(classes = {Config.class}, loader = AnnotationConfigContextLoader.class)
-//class GiftCertificateDaoIT {
-//
-//    @Autowired
-//    private GiftCertificateDao giftCertificateDao;
-//
-////    @BeforeEach
-////    void initDatabaseAndInsertToDatabase(@Autowired DataSource dataSource) throws SQLException, FileNotFoundException {
-////        Reader initReader = new FileReader("src/test/resources/database/init-ddl.sql");
-////        Reader insertReader = new FileReader("src/test/resources/database/insert-dml.sql");
-////
-////        RunScript.execute(dataSource.getConnection(), initReader);
-////        RunScript.execute(dataSource.getConnection(), insertReader);
-////    }
-////
-////    @AfterEach
-////    void dropDatabase(@Autowired DataSource dataSource) throws FileNotFoundException, SQLException {
-////        Reader dropReader = new FileReader("src/test/resources/database/drop-ddl.sql");
-////
-////        RunScript.execute(dataSource.getConnection(), dropReader);
-////    }
-//
-//    @Test
-//    void whenSelectAllGiftCertificateShouldReturnGiftCertificateList() {
-//        //given
-//        Filter filterToSelect = new Filter();
-//        int expectedListSize = 3;
-//
-//        //when
-//        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.findAllUsingFilter(filterToSelect);
-//
-//        //then
-//        assertEquals(expectedListSize, actualGiftCertificateList.size());
-//    }
-//
-//    @Test
-//    void whenSelectAllGiftCertificateWithFilterOnlyForNameShouldReturnGiftCertificateWithThisNameList(){
-//        //given
-//        Filter filterToSelect = new Filter();
-//        filterToSelect.setName("Name1");
-//        int expectedListSize = 1;
-//
-//        //when
-//        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.findAllUsingFilter(filterToSelect);
-//
-//        //then
-//        assertEquals(expectedListSize, actualGiftCertificateList.size());
-//    }
-//
-//    @Test
-//    void whenSelectAllGiftCertificateWithFilterOnlyForDescriptionShouldReturnGiftCertificateWithThisDescriptionList(){
-//        //given
-//        Filter filterToSelect = new Filter();
-//        filterToSelect.setDescription("Description1");
-//        int expectedListSize = 1;
-//
-//        //when
-//        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.findAllUsingFilter(filterToSelect);
-//
-//        //then
-//        assertEquals(expectedListSize, actualGiftCertificateList.size());
-//    }
-//
-//    @Test
-//    void whenSelectAllGiftCertificateWithFilterOnlyForTagNameShouldReturnGiftCertificateWithThisTagNameList(){
-//        //given
-//        Filter filterToSelect = new Filter();
-//        filterToSelect.setTag("tag3");
-//        int expectedListSize = 1;
-//
-//        //when
-//        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.findAllUsingFilter(filterToSelect);
-//
-//        //then
-//        assertEquals(expectedListSize, actualGiftCertificateList.size());
-//    }
-//
-//    @Test
-//    void whenSelectAllGiftCertificateWithFilterOnlyForNameAndDescriptionShouldReturnGiftCertificateWithThisNameAndDescriptionList(){
-//        //given
-//        Filter filterToSelect = new Filter();
-//        filterToSelect.setName("Name1");
-//        filterToSelect.setDescription("Description1");
-//        int expectedListSize = 1;
-//
-//        //when
-//        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.findAllUsingFilter(filterToSelect);
-//
-//        //then
-//        assertEquals(expectedListSize, actualGiftCertificateList.size());
-//    }
-//
-//    @Test
-//    void whenSelectAllGiftCertificateWithFilterOnlyForNameAndTagNameShouldReturnGiftCertificateWithThisNameAndTagNameList(){
-//        //given
-//        Filter filterToSelect = new Filter();
-//        filterToSelect.setName("Name1");
-//        filterToSelect.setTag("tag2");
-//        int expectedListSize = 1;
-//
-//        //when
-//        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.findAllUsingFilter(filterToSelect);
-//
-//        //then
-//        assertEquals(expectedListSize, actualGiftCertificateList.size());
-//    }
-//
-//    @Test
-//    void whenSelectAllGiftCertificateWithFilterOnlyForDescriptionAndTagNameShouldReturnGiftCertificateWithThisDescriptionAndTagNameList(){
-//        //given
-//        Filter filterToSelect = new Filter();
-//        filterToSelect.setDescription("Description1");
-//        filterToSelect.setTag("tag2");
-//        int expectedListSize = 1;
-//
-//        //when
-//        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.findAllUsingFilter(filterToSelect);
-//
-//        //then
-//        assertEquals(expectedListSize, actualGiftCertificateList.size());
-//    }
-//
-//    @Test
-//    void whenSelectAllGiftCertificateFiltersShouldReturnGiftCertificateWithFiltersList(){
-//        //given
-//        Filter filterToSelect = new Filter();
-//        filterToSelect.setName("Name2");
-//        filterToSelect.setDescription("Description2");
-//        filterToSelect.setTag("tag3");
-//        int expectedListSize = 1;
-//
-//        //when
-//        List<GiftCertificate> actualGiftCertificateList = giftCertificateDao.findAllUsingFilter(filterToSelect);
-//
-//        //then
-//        assertEquals(expectedListSize, actualGiftCertificateList.size());
-//    }
-//
-//    @Test
-//    void whenSelectGiftCertificateByIdShouldReturnGiftCertificateWithThatId() {
-//        //given
-//        Long resourceIdToFind = 1L;
-//        GiftCertificate expectedGiftCertificate =
-//                new GiftCertificate(
-//                        1L,
-//                        "Name1",
-//                        "Description1",
-//                        3.5,
-//                        5,
-//                        LocalDateTime.parse("2022-06-26T12:04:01.891"),
-//                        LocalDateTime.parse("2022-06-26T12:04:01.891")
-//                );
-//
-//        //then
-//        GiftCertificate actualGiftCertificate = giftCertificateDao.findById(resourceIdToFind);
-//
-//        //then
-//        assertEquals(expectedGiftCertificate.getId(), actualGiftCertificate.getId());
-//        assertMainValuesOfGiftCertificate(expectedGiftCertificate, actualGiftCertificate);
-//        assertEquals(expectedGiftCertificate.getLastUpdateDate(), actualGiftCertificate.getLastUpdateDate());
-//        assertEquals(expectedGiftCertificate.getCreateDate(), actualGiftCertificate.getCreateDate());
-//
-//    }
-//
-//    @Test
-//    void whenSelectGiftCertificateThatNotExistShouldThrowResourceNotFoundException() {
-//        //given
-//        String expectedMessage = "Certificate not found (id = 0)";
-//        Long resourceId = 0L;
-//
-//        //when
-//        ResourceNotFound thrown = assertThrows(
-//                ResourceNotFound.class,
-//                () -> giftCertificateDao.findById(resourceId)
-//        );
-//
-//        //then
-//        assertEquals(expectedMessage, thrown.getMessage());
-//    }
-//
-//    @Test
-//    void whenInsertGiftCertificateShouldInsertThatGiftCertificateIntoDB() {
-//        //given
-//        int expectedIncreasedListSize = 1;
-//        GiftCertificate giftCertificateToInsert = new GiftCertificate();
-//        giftCertificateToInsert.setName("TestingName");
-//        giftCertificateToInsert.setDescription("TestingDescription");
-//        giftCertificateToInsert.setPrice(4.5);
-//        giftCertificateToInsert.setDuration(6);
-//        giftCertificateToInsert.addTag(new Tag("tag1"));
-//        giftCertificateToInsert.addTag(new Tag("tag4"));
-//
-//        //when
-//        List<GiftCertificate> giftCertificatesBefore = giftCertificateDao.findAllUsingFilter(new Filter());
-//        // TODO: 29.07.2022
-////        GiftCertificate giftCertificateInserted =
-//                giftCertificateDao.save(giftCertificateToInsert);
-//        List<GiftCertificate> giftCertificatesAfter = giftCertificateDao.findAllUsingFilter(new Filter());
-//
-//        //then
-//        assertEquals(giftCertificatesBefore.size() + expectedIncreasedListSize, giftCertificatesAfter.size());
-////        assertMainValuesOfGiftCertificate(giftCertificateToInsert, giftCertificateInserted);
-////        assertNotNull(giftCertificateInserted.getId());
-////        assertEquals(giftCertificateToInsert.getTags().size(), giftCertificateInserted.getTags().size());
-//    }
-//
-//    @Test
-//    void whenUpdateGiftCertificateShouldUpdateThatGiftCertificateInDB() {
-//        //given
-//        Long resourceId = 1L;
-//        GiftCertificate giftCertificateToUpdate = giftCertificateDao.findById(resourceId);
-//        giftCertificateToUpdate.setName("changedName");
-//        giftCertificateToUpdate.setDescription("changedDescription");
-//        giftCertificateToUpdate.setPrice(2.0);
-//        giftCertificateToUpdate.setDuration(2);
-//
-//        //when
-//        giftCertificateDao.update(giftCertificateToUpdate);
-//        GiftCertificate giftCertificateFromDB = giftCertificateDao.findById(resourceId);
-//
-//        //then
-//        assertEquals(giftCertificateToUpdate.getId(), giftCertificateFromDB.getId());
-//        assertMainValuesOfGiftCertificate(giftCertificateToUpdate, giftCertificateFromDB);
-//        assertEquals(giftCertificateToUpdate.getCreateDate(), giftCertificateFromDB.getCreateDate());
-//        assertNotEquals(giftCertificateToUpdate.getLastUpdateDate(), giftCertificateFromDB.getLastUpdateDate());
-//    }
-//
-//    @Test
-//    void whenAddTagToGiftCertificateShouldBeAdded() {
-//        //given
-//        Long resourceId = 1L;
-//        Tag tagToAdd = new Tag("tag10");
-//        GiftCertificate giftCertificateBeforeAdd = giftCertificateDao.findById(resourceId);
-//        int expectedTagListIncreased = 1;
-//
-//        //when
-//        giftCertificateDao.addTagToGiftCertificate(resourceId, tagToAdd);
-//        GiftCertificate giftCertificateAfterAdd = giftCertificateDao.findById(resourceId);
-//
-//        //then
-//        assertEquals(giftCertificateBeforeAdd.getTags().size() + expectedTagListIncreased, giftCertificateAfterAdd.getTags().size());
-//        assertTrue(giftCertificateAfterAdd.getTags().contains(tagToAdd));
-//    }
-//
-//    @Test
-//    void whenRemoveTagFromGiftCertificateShouldBeRemoved() {
-//        //given
-//        Long resourceId = 1L;
-//        Tag tagToAdd = new Tag("tag1");
-//        GiftCertificate giftCertificateBeforeRemove = giftCertificateDao.findById(resourceId);
-//        int expectedTagListDecreased = 1;
-//
-//        //when
-//        giftCertificateDao.removeTagFromGiftCertificate(resourceId, tagToAdd);
-//        GiftCertificate giftCertificateAfterRemove = giftCertificateDao.findById(resourceId);
-//
-//        //then
-//        assertEquals(giftCertificateBeforeRemove.getTags().size() - expectedTagListDecreased, giftCertificateAfterRemove.getTags().size());
-//        assertFalse(giftCertificateAfterRemove.getTags().contains(tagToAdd));
-//    }
-//
-//    @Test
-//    void whenDeleteGiftCertificateByIdShouldRemoveResourceWithThatId() {
-//        //given
-//        int expectedListDecreased = 1;
-//        Long resourceIdToRemove = 1L;
-//        String expectedMessage = "Certificate not found (id = 1)";
-//
-//        //when
-//        List<GiftCertificate> giftCertificateListBefore = giftCertificateDao.findAllUsingFilter(new Filter());
-//        giftCertificateDao.removeById(resourceIdToRemove);
-//        List<GiftCertificate> giftCertificateListAfter = giftCertificateDao.findAllUsingFilter(new Filter());
-//        ResourceNotFound thrown = assertThrows(
-//                ResourceNotFound.class,
-//                () -> giftCertificateDao.findById(resourceIdToRemove)
-//        );
-//
-//        //then
-//        assertNotEquals(giftCertificateListBefore, giftCertificateListAfter);
-//        assertEquals(giftCertificateListBefore.size() - expectedListDecreased, giftCertificateListAfter.size());
-//        assertEquals(expectedMessage, thrown.getMessage());
-//    }
-//
-//    private void assertMainValuesOfGiftCertificate(GiftCertificate expectedGiftCertificate, GiftCertificate actualGiftCertificate) {
-//        assertEquals(expectedGiftCertificate.getName(), actualGiftCertificate.getName());
-//        assertEquals(expectedGiftCertificate.getDescription(), actualGiftCertificate.getDescription());
-//        assertEquals(expectedGiftCertificate.getPrice(), actualGiftCertificate.getPrice());
-//        assertEquals(expectedGiftCertificate.getDuration(), actualGiftCertificate.getDuration());
-//    }
-//}
+package com.epam.esm.dao;
+
+import com.epam.esm.config.Config;
+import com.epam.esm.exception.ResourceNotFoundException;
+import com.epam.esm.exception.ResourceViolationException;
+import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.Tag;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@ActiveProfiles("dev")
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {Config.class})
+@Sql(scripts = "classpath:/database/insert-gift-certificate-test-dml.sql")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+class GiftCertificateDaoIT {
+
+    @Autowired
+    private GiftCertificateDao giftCertificateDao;
+
+    @Test
+    void whenSaveGiftCertificateShouldSaveAndReturnThisGiftCertificate() {
+        //given
+        GiftCertificate giftCertificateToSave = new GiftCertificate(
+                null,
+                "NewGiftCertificateTest",
+                "TestDescription",
+                34.59,
+                7,
+                Stream.of(
+                        new Tag("tagtestgiftcert1"),
+                        new Tag("bear")
+                ).collect(Collectors.toCollection(HashSet::new))
+        );
+
+        //when
+        GiftCertificate actualGiftCertificate = giftCertificateDao.save(giftCertificateToSave);
+
+        //then
+        assertNotNull(actualGiftCertificate.getId());
+        assertEquals(giftCertificateToSave.getName(), actualGiftCertificate.getName());
+        assertEquals(giftCertificateToSave.getDescription(), actualGiftCertificate.getDescription());
+        assertEquals(giftCertificateToSave.getPrice(), actualGiftCertificate.getPrice());
+        assertEquals(giftCertificateToSave.getDuration(), actualGiftCertificate.getDuration());
+        assertEquals(giftCertificateToSave.getTags().size(), actualGiftCertificate.getTags().size());
+    }
+
+    @Test
+    void whenFindGiftCertificateByIdShouldReturnThisGiftCertificate() {
+        //given
+        Long idToFind = 1L;
+
+        //when
+        GiftCertificate actualGiftCertificate = giftCertificateDao.findById(idToFind);
+
+        //then
+        assertEquals(idToFind, actualGiftCertificate.getId());
+        assertNotNull(actualGiftCertificate.getName());
+        assertNotNull(actualGiftCertificate.getDescription());
+        assertNotNull(actualGiftCertificate.getPrice());
+        assertNotNull(actualGiftCertificate.getDuration());
+        assertNotNull(actualGiftCertificate.getTags());
+    }
+
+    @Test
+    void whenFindGiftCertificateByIdWhichIsNotExistsShouldThrowResourceNotFoundException() {
+        //given
+        Long idToFind = 0L;
+        String expectedExceptionMessage = "GiftCertificate with id = (" + idToFind + ") isn't exists.";
+
+        //when
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            giftCertificateDao.findById(idToFind);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    // TODO: 24/10/2022
+    @Test
+    void whenFindGiftCertificatePageShouldReturnThisPage() {
+        //given
+
+
+        //when
+//        Page<GiftCertificate> giftCertificatePage = giftCertificateDao.findPageUsingFilter();
+
+        //then
+//        assertEquals(pageNumber, actualPage.getPageNumber());
+//        assertNotNull(actualPage.getPageSize());
+//        assertNotNull(actualPage.getTotalPages());
+//        assertNotNull(actualPage.getCollection());
+        assertTrue(false);
+    }
+
+    @Test
+    void whenUpdateGiftCertificateShouldReturnUpdatedGiftCertificate() {
+        //given
+        Long idToFind = 1L;
+        GiftCertificate giftCertificate = giftCertificateDao.findById(idToFind);
+        LocalDateTime notExpectedDate = giftCertificate.getLastUpdateDate();
+        String name = "name";
+        String description = "description";
+        Integer duration = 4;
+        Double price = 4.55;
+        giftCertificate.setName(name);
+        giftCertificate.setDescription(description);
+        giftCertificate.setDuration(duration);
+        giftCertificate.setPrice(price);
+
+        //when
+        GiftCertificate actualGiftCertificate = giftCertificateDao.update(idToFind, giftCertificate);
+
+        //then
+        assertEquals(giftCertificate, actualGiftCertificate);
+        assertEquals(name, actualGiftCertificate.getName());
+        assertEquals(description, actualGiftCertificate.getDescription());
+        assertEquals(duration, actualGiftCertificate.getDuration());
+        assertEquals(price, actualGiftCertificate.getPrice());
+        assertNotEquals(notExpectedDate, actualGiftCertificate.getLastUpdateDate());
+    }
+
+    @Test
+    void whenUpdateGiftCertificateWhichIsNotExistShouldThrowResourceNotFoundException() {
+        //given
+        Long idToUpdate = 0L;
+        String expectedExceptionMessage = "GiftCertificate with id = (" + idToUpdate + ") isn't exists.";
+
+        //when
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            giftCertificateDao.update(idToUpdate, new GiftCertificate());
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenRemoveGiftCertificateByIdShouldRemoveThisGiftCertificate() {
+        //given
+        Long idToRemove = 2L;
+        String expectedExceptionMessage = "GiftCertificate with id = (" + idToRemove + ") isn't exists.";
+
+        //when
+        giftCertificateDao.removeById(idToRemove);
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            giftCertificateDao.findById(idToRemove);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenRemoveByIdWhichNotExistsShouldThrowResourceNotFoundException() {
+        //given
+        Long idToFind = 0L;
+        String expectedExceptionMessage = "GiftCertificate with id = (" + idToFind + ") isn't exists.";
+
+        //when
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            giftCertificateDao.removeById(idToFind);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenRemoveByIdWhichIsUsedInOrderShouldThrowResourceViolationException() {
+        //given
+        Long idToFind = 1L;
+        String expectedExceptionMessage = "GiftCertificate cannot be removed. GiftCertificate is connected with at least one order.";
+
+        //when
+        ResourceViolationException thrown = assertThrows(ResourceViolationException.class, () -> {
+            giftCertificateDao.removeById(idToFind);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenAddTagToGiftCertificateShouldReturnGiftCertificateWithThisTag() {
+        //given
+        Long id = 1L;
+        Tag tag = new Tag("new");
+        int increasedTagCollectionSize = 1;
+        int expectedTagCollectionSize = giftCertificateDao.findById(id).getTags().size() + increasedTagCollectionSize;
+
+        //when
+        GiftCertificate actualGiftCertificate = giftCertificateDao.addTagToGiftCertificate(id, tag);
+
+        //then
+        assertEquals(id, actualGiftCertificate.getId());
+        assertEquals(expectedTagCollectionSize, actualGiftCertificate.getTags().size());
+    }
+
+    @Test
+    void whenAddTagToGiftCertificateWhichIsNotExistShouldThrowResourceNotFoundException() {
+        //given
+        Long id = 0L;
+        Tag tag = new Tag("random");
+        String expectedExceptionMessage = "GiftCertificate with id = (" + id + ") isn't exists.";
+
+        //when
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            giftCertificateDao.addTagToGiftCertificate(id, tag);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenRemoveTagFromGiftCertificateShouldReturnGiftCertificateWithoutThisTag() {
+        //given
+        Long id = 1L;
+        Tag tagToRemove = new Tag("bear");
+        int decreasedTagCollectionSize = 1;
+        int expectedTagCollectionSize = giftCertificateDao.findById(id).getTags().size() - decreasedTagCollectionSize;
+
+        //when
+        GiftCertificate actualGiftCertificate = giftCertificateDao.removeTagFromGiftCertificate(id, tagToRemove);
+
+        //then
+        assertEquals(id, actualGiftCertificate.getId());
+        assertEquals(expectedTagCollectionSize, actualGiftCertificate.getTags().size());
+    }
+
+    @Test
+    void whenRemoveTagFromGiftCertificateWhichIsNotExistShouldThrowResourceNotFoundException() {
+        //given
+        Long id = 0L;
+        Tag tag = new Tag("random");
+        String expectedExceptionMessage = "GiftCertificate with id = (" + id + ") isn't exists.";
+
+        //when
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            giftCertificateDao.removeTagFromGiftCertificate(id, tag);
+        });
+
+        //then
+        assertEquals(expectedExceptionMessage, thrown.getMessage());
+    }
+}

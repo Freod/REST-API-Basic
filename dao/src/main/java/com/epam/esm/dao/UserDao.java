@@ -7,8 +7,6 @@ import com.epam.esm.model.Tag;
 import com.epam.esm.model.User;
 
 public interface UserDao {
-    User save(User user);
-
     User findById(Long id) throws ResourceNotFoundException;
 
     Page<User> findPage(Integer page);

@@ -37,7 +37,7 @@ public class TagDaoJpa implements TagDao {
         } catch (PersistenceException e) {
             e.printStackTrace();
             em.getTransaction().rollback();
-            throw new ResourceViolationException("Tag with name=(" + tag.getName() + ") already exists.");
+            throw new ResourceViolationException("Tag with name = (" + tag.getName() + ") already exists.");
         }
     }
 

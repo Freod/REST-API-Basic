@@ -55,32 +55,6 @@ VALUES (5, 12);
 
 INSERT INTO orders(cost, purchaseDate)
 VALUES (10.4, '2022-09-09T13:33:23');
-INSERT INTO orders(cost, purchaseDate)
-VALUES (80.5, '2022-10-10T14:32:43');
-INSERT INTO orders(cost, purchaseDate)
-VALUES (30.5, '2022-10-11T10:56:21');
 
 INSERT INTO orders_gift_certificates(order_id, giftcertificates_id)
 VALUES (1, 1);
-INSERT INTO orders_gift_certificates(order_id, giftcertificates_id)
-VALUES (2, 2);
-INSERT INTO orders_gift_certificates(order_id, giftcertificates_id)
-VALUES (2, 3);
-INSERT INTO orders_gift_certificates(order_id, giftcertificates_id)
-VALUES (2, 4);
-INSERT INTO orders_gift_certificates(order_id, giftcertificates_id)
-VALUES (3, 5);
-
-INSERT INTO users(username)
-VALUES ('john33');
-INSERT INTO users(username)
-VALUES ('anna2');
-INSERT INTO users(username)
-VALUES ('rechi3');
-
-INSERT INTO users_orders(user_id, orders_id)
-VALUES (1, 1);
-INSERT INTO users_orders(user_id, orders_id)
-VALUES (1, 2);
-INSERT INTO users_orders(user_id, orders_id)
-VALUES (2, 3);

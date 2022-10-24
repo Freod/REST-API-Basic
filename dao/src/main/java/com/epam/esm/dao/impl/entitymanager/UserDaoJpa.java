@@ -32,14 +32,6 @@ public class UserDaoJpa implements UserDao {
     }
 
     @Override
-    public User save(User user) {
-        em.getTransaction().begin();
-        em.persist(user);
-        em.getTransaction().commit();
-        return user;
-    }
-
-    @Override
     public User findById(Long id) throws ResourceNotFoundException {
         User user = em.find(User.class, id);
         if (user == null) {
