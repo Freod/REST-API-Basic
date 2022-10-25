@@ -61,13 +61,11 @@ public class UserDaoJpa implements UserDao {
                 users);
     }
 
-    //fixme problem with add new order with used certificate
     @Override
     public Order makeAnOrder(Long id, Order order) {
         em.getTransaction().begin();
         try {
             User user = findById(id);
-
             order.setCost((double) 0);
             order.setGiftCertificates(order.getGiftCertificates()
                     .stream()
@@ -84,12 +82,30 @@ public class UserDaoJpa implements UserDao {
             return order;
         } catch (ResourceNotFoundException e) {
             em.getTransaction().rollback();
-            throw e;
+            throw new ResourceNotFoundException(e.getMessage());
         }
     }
 
     @Override
     public Tag mostWidelyUsedTagOfUserWithTheHighestCostOfOrders() {
-        return null;
+        em.getTransaction().begin();
+        Query query1 =
+                em.createQuery("select t from User u " +
+                        "join u.orders o " +
+                        "join o.giftCertificates gc " +
+                        "join gc.tags t " +
+                        "where u.id = ?1 " +
+                        "group by t.name, u.username " +
+                        "order by count (t.name) desc ");
+        Query query2 =
+                em.createQuery("select u.id from User u " +
+                        "join u.orders o " +
+                        "group by u.id " +
+                        "order by sum (o.cost)" +
+                        "desc");
+        long id = (long) query2.setMaxResults(1).getSingleResult();
+        Tag tag = (Tag) query1.setParameter(1, id).setMaxResults(1).getSingleResult();
+        em.getTransaction().commit();
+        return tag;
     }
 }

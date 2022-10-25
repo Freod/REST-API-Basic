@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 @Repository
 public class GiftCertificateDaoJpa implements GiftCertificateDao {
 
+    public static final String GIFT_CERTIFICATE_WITH_ID = "GiftCertificate with id = (";
     private final EntityManager em;
     private final TagDaoJpa tagDao;
     private final int pageSize;
@@ -60,13 +61,11 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
     public GiftCertificate findById(Long id) {
         GiftCertificate giftCertificate = em.find(GiftCertificate.class, id);
         if (giftCertificate == null) {
-            throw new ResourceNotFoundException("GiftCertificate with id = (" + id + ") isn't exists.");
+            throw new ResourceNotFoundException(GIFT_CERTIFICATE_WITH_ID + id + ") isn't exists.");
         }
         return giftCertificate;
     }
 
-    // TODO: 10/10/2022
-    //Search for gift certificates by several tags (“and” condition).
     @Override
     public Page<GiftCertificate> findPageUsingFilter(Integer page, Filter filter) {
         em.getTransaction().begin();
@@ -126,7 +125,7 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
         GiftCertificate giftCertificate = em.find(GiftCertificate.class, id);
         if (giftCertificate == null) {
             em.getTransaction().rollback();
-            throw new ResourceNotFoundException("GiftCertificate with id = (" + id + ") isn't exists.");
+            throw new ResourceNotFoundException(GIFT_CERTIFICATE_WITH_ID + id + ") isn't exists.");
         }
         try {
             em.remove(giftCertificate);
@@ -163,7 +162,7 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
             tag = tagDao.findByName(tag.getName());
             if (!giftCertificate.getTags().contains(tag)) {
                 em.getTransaction().rollback();
-                throw new ResourceNotFoundException("GiftCertificate with id = (" + giftCertificateId + ") doesn't contains Tag with name = (" + tag.getName() + ").");
+                throw new ResourceNotFoundException(GIFT_CERTIFICATE_WITH_ID + giftCertificateId + ") doesn't contains Tag with name = (" + tag.getName() + ").");
             }
             giftCertificate.removeTag(tag);
         } catch (ResourceNotFoundException e) {
@@ -175,7 +174,7 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
         return giftCertificate;
     }
 
-    private GiftCertificate updateFields(GiftCertificate actualGiftCertificate, GiftCertificate giftCertificate) {
+    private void updateFields(GiftCertificate actualGiftCertificate, GiftCertificate giftCertificate) {
         if (giftCertificate.getName() != null) {
             actualGiftCertificate.setName(giftCertificate.getName());
         }
@@ -189,15 +188,13 @@ public class GiftCertificateDaoJpa implements GiftCertificateDao {
             actualGiftCertificate.setDuration(giftCertificate.getDuration());
         }
         actualGiftCertificate.setLastUpdateDate(LocalDateTime.now());
-        return actualGiftCertificate;
     }
 
-    private Tag findByName(Tag tag){
+    private void findByName(Tag tag){
         try {
             tagDao.findByName(tag.getName());
         } catch (ResourceNotFoundException e) {
-            tag = em.merge(tag);
+            em.merge(tag);
         }
-        return tag;
     }
 }

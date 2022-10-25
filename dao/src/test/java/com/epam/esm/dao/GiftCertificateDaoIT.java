@@ -3,7 +3,9 @@ package com.epam.esm.dao;
 import com.epam.esm.config.Config;
 import com.epam.esm.exception.ResourceNotFoundException;
 import com.epam.esm.exception.ResourceViolationException;
+import com.epam.esm.model.Filter;
 import com.epam.esm.model.GiftCertificate;
+import com.epam.esm.model.Page;
 import com.epam.esm.model.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -90,21 +92,26 @@ class GiftCertificateDaoIT {
         assertEquals(expectedExceptionMessage, thrown.getMessage());
     }
 
-    // TODO: 24/10/2022
     @Test
     void whenFindGiftCertificatePageShouldReturnThisPage() {
         //given
-
+        int pageNumber = 1;
+        Filter filter = new Filter(
+                Stream.of(new Tag("bear"), new Tag("toy")).collect(Collectors.toCollection(HashSet::new)),
+                "teddy",
+                "teddy",
+                "name",
+                "asc");
+        int expectedAtLeastCollectionSize = 1;
 
         //when
-//        Page<GiftCertificate> giftCertificatePage = giftCertificateDao.findPageUsingFilter();
+        Page<GiftCertificate> actualPage = giftCertificateDao.findPageUsingFilter(pageNumber, filter);
 
         //then
-//        assertEquals(pageNumber, actualPage.getPageNumber());
-//        assertNotNull(actualPage.getPageSize());
-//        assertNotNull(actualPage.getTotalPages());
-//        assertNotNull(actualPage.getCollection());
-        assertTrue(false);
+        assertEquals(pageNumber, actualPage.getPageNumber());
+        assertNotNull(actualPage.getPageSize());
+        assertNotNull(actualPage.getTotalPages());
+        assertTrue(actualPage.getCollection().size() >= expectedAtLeastCollectionSize);
     }
 
     @Test
@@ -141,12 +148,14 @@ class GiftCertificateDaoIT {
         String expectedExceptionMessage = "GiftCertificate with id = (" + idToUpdate + ") isn't exists.";
 
         //when
-        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+        try{
             giftCertificateDao.update(idToUpdate, new GiftCertificate());
-        });
+        }
 
         //then
-        assertEquals(expectedExceptionMessage, thrown.getMessage());
+        catch (ResourceNotFoundException thrown){
+            assertEquals(expectedExceptionMessage, thrown.getMessage());
+        }
     }
 
     @Test

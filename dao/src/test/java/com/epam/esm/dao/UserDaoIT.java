@@ -1,20 +1,37 @@
 package com.epam.esm.dao;
 
+import com.epam.esm.config.Config;
 import com.epam.esm.exception.ResourceNotFoundException;
-import com.epam.esm.model.Page;
-import com.epam.esm.model.User;
+import com.epam.esm.model.*;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ActiveProfiles("dev")
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {Config.class})
+@Sql(scripts = "classpath:/database/insert-dml.sql")
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 class UserDaoIT {
 
     @Autowired
     private UserDao userDao;
+    @Autowired
+    private GiftCertificateDao giftCertificateDao;
 
     @Test
-    void whenFindUserByIdShouldReturnThisUser(){
+    void whenFindUserByIdShouldReturnThisUser() {
         //given
         Long idToFind = 1L;
 
@@ -28,10 +45,10 @@ class UserDaoIT {
     }
 
     @Test
-    void whenFindUserByIdWhichNotExistShouldThrowResourceNotFoundException(){
+    void whenFindUserByIdWhichNotExistShouldThrowResourceNotFoundException() {
         //given
         Long idToFind = 0L;
-        String expectedMessage = "";
+        String expectedMessage = "User with id = (" + idToFind + ") isn't exists.";
 
         //when
         ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
@@ -43,7 +60,7 @@ class UserDaoIT {
     }
 
     @Test
-    void whenFindPageShouldReturnThisPage(){
+    void whenFindPageShouldReturnThisPage() {
         //given
         int pageNumber = 1;
 
@@ -58,16 +75,74 @@ class UserDaoIT {
     }
 
     @Test
-    void whenMakeAnOrderShouldReturnThisOrder(){
+    void whenMakeAnOrderShouldReturnThisOrder() {
         //given
+        Long idToFind = 1L;
+        List<GiftCertificate> giftCertificateList = Arrays.asList(
+                new GiftCertificate(idToFind, null, null, null, null, new HashSet<>())
+        );
+        Order order = new Order(null, giftCertificateList, null, null);
+
         //when
+        Order actualOrder = userDao.makeAnOrder(idToFind, order);
+
         //then
+        assertNotNull(actualOrder.getId());
+        assertNotNull(actualOrder.getGiftCertificates());
+        assertNotNull(actualOrder.getCost());
+        assertNotNull(actualOrder.getPurchaseDate());
     }
 
     @Test
-    void whenSelectMostWidelyUsedTagOfUserWithHighestCostOfOrdersShouldReturnThisTag(){
+    void whenMakeAnOrderWhenUserIsNotExistShouldThrowResourceNotFoundException() {
         //given
+        Long idToFindUser = 0L;
+        Long idToFind = 1L;
+        String expectedMessage = "User with id = (" + idToFindUser + ") isn't exists.";
+        List<GiftCertificate> giftCertificateList = Arrays.asList(
+                new GiftCertificate(idToFind, null, null, null, null, new HashSet<>())
+        );
+        Order order = new Order(null, giftCertificateList, null, null);
+
         //when
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            userDao.makeAnOrder(idToFindUser, order);
+        });
+
         //then
+        assertEquals(expectedMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenMakeAnOrderWhenGiftCertificateIsNotExistShouldThrowResourceNotFoundException() {
+        //given
+        Long idToFindGiftCertificate = 0L;
+        Long idToFind = 1L;
+        String expectedMessage = "GiftCertificate with id = (" + idToFindGiftCertificate + ") isn't exists.";
+        List<GiftCertificate> giftCertificateList = Arrays.asList(
+                new GiftCertificate(idToFindGiftCertificate, null, null, null, null, new HashSet<>())
+        );
+        Order order = new Order(null, giftCertificateList, null, null);
+
+        //when
+        ResourceNotFoundException thrown = assertThrows(ResourceNotFoundException.class, () -> {
+            userDao.makeAnOrder(idToFind, order);
+        });
+
+        //then
+        assertEquals(expectedMessage, thrown.getMessage());
+    }
+
+    @Test
+    void whenSelectMostWidelyUsedTagOfUserWithHighestCostOfOrdersShouldReturnThisTag() {
+        //given
+        String expectedTagName = "mostUsedTag";
+
+        //when
+        Tag tag = userDao.mostWidelyUsedTagOfUserWithTheHighestCostOfOrders();
+
+        //then
+        assertNotNull(tag.getId());
+        assertEquals(expectedTagName, tag.getName());
     }
 }

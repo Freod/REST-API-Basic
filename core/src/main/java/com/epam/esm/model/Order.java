@@ -17,7 +17,7 @@ public class Order implements Serializable {
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @OneToMany
+    @ManyToMany
     private List<GiftCertificate> giftCertificates;
     private Double cost;
     private LocalDateTime purchaseDate;

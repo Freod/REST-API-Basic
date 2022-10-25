@@ -22,6 +22,8 @@ INSERT INTO tags(name)
 VALUES ('dress');
 INSERT INTO tags(name)
 VALUES ('shirt');
+INSERT INTO tags(name)
+VALUES ('mostUsedTag');
 
 INSERT INTO gift_certificates(name, description, price, duration, createDate, lastUpdateDate)
 VALUES ('Teddy', 'Teddy bear gift', 10.4, 5, '2022-06-26T12:04:01', '2022-06-26T12:04:01');
@@ -52,6 +54,18 @@ INSERT INTO gift_certificates_tags(giftcertificate_id, tags_id)
 VALUES (5, 11);
 INSERT INTO gift_certificates_tags(giftcertificate_id, tags_id)
 VALUES (5, 12);
+
+-- mostUsedTag
+INSERT INTO gift_certificates_tags(giftcertificate_id, tags_id)
+VALUES (1, 13);
+INSERT INTO gift_certificates_tags(giftcertificate_id, tags_id)
+VALUES (2, 13);
+INSERT INTO gift_certificates_tags(giftcertificate_id, tags_id)
+VALUES (3, 13);
+INSERT INTO gift_certificates_tags(giftcertificate_id, tags_id)
+VALUES (4, 13);
+INSERT INTO gift_certificates_tags(giftcertificate_id, tags_id)
+VALUES (5, 13);
 
 INSERT INTO orders(cost, purchaseDate)
 VALUES (10.4, '2022-09-09T13:33:23');
