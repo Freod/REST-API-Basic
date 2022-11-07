@@ -1,5 +1,6 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.dto.CredentialDto;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.model.Page;
@@ -11,6 +12,7 @@ import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -114,5 +116,11 @@ public class UserController {
             logger.error(e);
         }
         return userDto;
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody CredentialDto credentialDto) {
+        String token = userService.generateToken(credentialDto);
+        return ResponseEntity.ok().body(token);
     }
 }

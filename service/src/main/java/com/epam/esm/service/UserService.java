@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.UserDao;
+import com.epam.esm.dto.CredentialDto;
 import com.epam.esm.dto.OrderDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.dto.UserDto;
@@ -9,8 +10,13 @@ import com.epam.esm.exception.WrongValueException;
 import com.epam.esm.model.Page;
 import com.epam.esm.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -19,6 +25,8 @@ public class UserService {
 
     private UserDao userDao;
     private ObjectConverter objectConverter;
+    @Autowired
+    private JwtEncoder jwtEncoder;
 
     @Autowired
     public UserService(UserDao userDao, ObjectConverter objectConverter) {
@@ -60,5 +68,18 @@ public class UserService {
     public TagDto mostWidelyUsedTagOfUserWithTheHighestCostOfOrders() {
         return objectConverter.convertTagToTagDto(
                 userDao.mostWidelyUsedTagOfUserWithTheHighestCostOfOrders());
+    }
+
+    public String generateToken(CredentialDto credentialDto){
+        Instant now = Instant.now();
+        String scope = "USER";
+        JwtClaimsSet claims = JwtClaimsSet.builder()
+                .issuer("self")
+                .issuedAt(now)
+                .expiresAt(now.plus(1, ChronoUnit.MINUTES))
+                .subject(credentialDto.getLogin())
+                .claim("scope", scope)
+                .build();
+        return this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 }

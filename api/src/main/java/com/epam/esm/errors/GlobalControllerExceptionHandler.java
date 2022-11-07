@@ -17,12 +17,12 @@ public class GlobalControllerExceptionHandler {
 
     private static Logger logger = LogManager.getLogger(GlobalControllerExceptionHandler.class);
 
-    @ResponseStatus(HttpStatus.CONFLICT)
-    @ExceptionHandler(Exception.class)
-    public @ResponseBody String handleUnknownExceptionAndLog(Exception exception) {
-        logger.error(exception);
-        return "Unexpected error occurred, please contact: example@mail.com";
-    }
+//    @ResponseStatus(HttpStatus.CONFLICT)
+//    @ExceptionHandler(Exception.class)
+//    public @ResponseBody String handleUnknownExceptionAndLog(Exception exception) {
+//        logger.error(exception);
+//        return "Unexpected error occurred, please contact: example@mail.com";
+//    }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(ResourceNotFoundException.class)
