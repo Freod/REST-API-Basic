@@ -52,7 +52,7 @@ public class GiftCertificateController {
      * @param id to find Gift Certificate resource
      * @return Gift Certificate resource that was found
      */
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<GiftCertificateDto> showGiftCertificate(@PathVariable Long id) {
         GiftCertificateDto giftCertificateDto = giftCertificateService.selectGiftCertificate(id);
@@ -180,7 +180,7 @@ public class GiftCertificateController {
      * @param id                 to find Gift Certificate resource
      * @param giftCertificateDto Gift Certificate resource to update
      */
-    @PatchMapping("{id}")
+    @PatchMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<GiftCertificateDto> updateGiftCertificate(@PathVariable Long id, @RequestBody GiftCertificateDto giftCertificateDto) {
         giftCertificateDto = giftCertificateService.updateGiftCertificate(id, giftCertificateDto);
@@ -193,7 +193,7 @@ public class GiftCertificateController {
      *
      * @param id to remove Gift Certificate resource
      */
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteGiftCertificate(@PathVariable Long id) {
         giftCertificateService.deleteGiftCertificate(id);

@@ -32,7 +32,7 @@ public class OrderController {
         this.orderService = orderService;
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<OrderDto> showOrderById(@PathVariable Long id) {
         OrderDto orderDto = orderService.showOrderById(id);

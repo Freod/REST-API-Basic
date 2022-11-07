@@ -35,7 +35,7 @@ public class UserController {
         this.userService = Objects.requireNonNull(userService);
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<UserDto> showUserById(@PathVariable Long id) {
         UserDto userDto = userService.findById(id);
@@ -96,7 +96,7 @@ public class UserController {
         return CollectionModel.of(userDtoCollection, linkList);
     }
 
-    @PostMapping("{id}/orders")
+    @PostMapping("/{id}/orders")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<OrderDto> makeNewOrder(@PathVariable Long id, @RequestBody OrderDto orderDto) {
         orderDto = userService.makeNewOrder(id, orderDto);

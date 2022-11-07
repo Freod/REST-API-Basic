@@ -152,7 +152,7 @@ public class TagController {
      *
      * @param id to remove Tag resource
      */
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteTag(@PathVariable Long id) {
         tagService.deleteTag(id);
