@@ -17,7 +17,10 @@ public class User implements Serializable {
     @Column(nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String username;
+    private String password;
+    private String roles;
     @OneToMany
     private List<Order> orders =  new ArrayList<>();
 
@@ -28,6 +31,14 @@ public class User implements Serializable {
     public User(Long id, String username, List<Order> orders) {
         this.id = id;
         this.username = username;
+        this.orders = orders;
+    }
+
+    public User(Long id, String username, String password, String roles, List<Order> orders) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.roles = roles;
         this.orders = orders;
     }
 

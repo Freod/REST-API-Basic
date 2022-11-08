@@ -14,12 +14,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.epam.esm</groupId>
-			<artifactId>dao</artifactId>
-			<version>${project.version}</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.epam.esm</groupId>
 			<artifactId>security</artifactId>
 			<version>${project.version}</version>
 			<scope>compile</scope>

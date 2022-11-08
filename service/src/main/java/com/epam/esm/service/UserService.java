@@ -1,15 +1,14 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.UserDao;
-import com.epam.esm.dto.CredentialDto;
-import com.epam.esm.dto.OrderDto;
-import com.epam.esm.dto.TagDto;
-import com.epam.esm.dto.UserDto;
+import com.epam.esm.dto.*;
 import com.epam.esm.exception.WrongPageException;
 import com.epam.esm.exception.WrongValueException;
 import com.epam.esm.model.Page;
 import com.epam.esm.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -25,13 +24,13 @@ public class UserService {
 
     private UserDao userDao;
     private ObjectConverter objectConverter;
-    @Autowired
-    private JwtEncoder jwtEncoder;
+    private final JwtEncoder jwtEncoder;
 
     @Autowired
-    public UserService(UserDao userDao, ObjectConverter objectConverter) {
+    public UserService(UserDao userDao, ObjectConverter objectConverter, JwtEncoder jwtEncoder) {
         this.userDao = Objects.requireNonNull(userDao);
         this.objectConverter = Objects.requireNonNull(objectConverter);
+        this.jwtEncoder = Objects.requireNonNull(jwtEncoder);
     }
 
     public UserDto findById(Long id) {
@@ -70,16 +69,23 @@ public class UserService {
                 userDao.mostWidelyUsedTagOfUserWithTheHighestCostOfOrders());
     }
 
-    public String generateToken(CredentialDto credentialDto){
+    public TokenDto generateToken(Authentication authentication) {
         Instant now = Instant.now();
-        String scope = "USER";
+        String scope = authentication
+                .getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(" "));
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.MINUTES))
-                .subject(credentialDto.getLogin())
+                .subject(authentication.getName())
                 .claim("scope", scope)
                 .build();
-        return this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
+        return new TokenDto(
+                "bearer",
+                this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue()
+        );
     }
 }

@@ -13,8 +13,12 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.Link;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.PermitAll;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,13 +32,16 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 @RequestMapping("/users")
 public class UserController {
 
-    private UserService userService;
     private static final String SHOW_PAGE_OF_USERS_METHOD_NAME = "showPageOfUsers";
     private static Logger logger = LogManager.getLogger(UserController.class);
 
+    private UserService userService;
+    private AuthenticationManager authenticationManager;
+
     @Autowired
-    public UserController(UserService userService){
+    public UserController(UserService userService, AuthenticationManager authenticationManager) {
         this.userService = Objects.requireNonNull(userService);
+        this.authenticationManager = Objects.requireNonNull(authenticationManager);
     }
 
     @GetMapping("/{id}")
@@ -47,7 +54,7 @@ public class UserController {
 
     @GetMapping
     @ResponseStatus
-    public CollectionModel<UserDto> showPageOfUsers(@RequestParam(defaultValue = "1") Integer page){
+    public CollectionModel<UserDto> showPageOfUsers(@RequestParam(defaultValue = "1") Integer page) {
         Page<UserDto> userDtoPage = userService.selectPageOfUsers(page);
         Collection<UserDto> userDtoCollection =
                 userDtoPage.getCollection()
@@ -106,21 +113,26 @@ public class UserController {
         return EntityModel.of(orderDto);
     }
 
-    private static UserDto addSelectUserDtoLink(UserDto userDto){
+    private static UserDto addSelectUserDtoLink(UserDto userDto) {
         try {
             userDto.getOrders().forEach(OrderController::addSelectOrderDtoLink);
             Link linkById = linkTo(UserController.class.getMethod("showUserById", Long.class), userDto.getId()).withSelfRel();
             userDto.add(linkById);
-        }
-        catch (NoSuchMethodException e){
+        } catch (NoSuchMethodException e) {
             logger.error(e);
         }
         return userDto;
     }
 
     @PostMapping("/login")
+    @PermitAll
     public ResponseEntity login(@RequestBody CredentialDto credentialDto) {
-        String token = userService.generateToken(credentialDto);
-        return ResponseEntity.ok().body(token);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        credentialDto.getLogin(),
+                        credentialDto.getPassword()));
+        return ResponseEntity
+                .ok()
+                .body(userService.generateToken(authentication));
     }
 }

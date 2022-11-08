@@ -13,7 +13,7 @@ import javax.sql.DataSource;
 public class Config {
     @Bean
     @Profile("prod")
-    public EntityManagerFactory postgresConfigEntityManager() {
+    public EntityManagerFactory entityManagerFactory() {
         return Persistence
                 .createEntityManagerFactory("rest-api-advanced");
     }
