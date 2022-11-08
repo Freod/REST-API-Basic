@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import sun.security.util.Password;
 
 @EnableConfigurationProperties(RsaKeyProperties.class)
 @SpringBootApplication
@@ -19,13 +18,24 @@ public class Application {
     }
 
     @Bean
-    CommandLineRunner commandLineRunner(UserRepository userRepository, PasswordEncoder encoder) {
+    CommandLineRunner commandLineRunner(UserRepository userRepository/*, PasswordEncoder encoder*/) {
         return args -> {
             userRepository.save(
                     new User(
                             null,
+                            "admin",
+//                            encoder.encode("password"),
+                            "{noop}password",
+                            "ADMIN",
+                            null
+                    )
+            );
+            userRepository.save(
+                    new User(
+                            null,
                             "user",
-                            encoder.encode("password"),
+//                            encoder.encode("password"),
+                            "{noop}password",
                             "USER",
                             null
                     )

@@ -2,6 +2,7 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.CredentialDto;
 import com.epam.esm.dto.OrderDto;
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.dto.UserDto;
 import com.epam.esm.model.Page;
 import com.epam.esm.service.UserService;
@@ -18,13 +19,13 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.PermitAll;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.epam.esm.controller.TagController.addSelectTagDtoLinks;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 
@@ -42,6 +43,23 @@ public class UserController {
     public UserController(UserService userService, AuthenticationManager authenticationManager) {
         this.userService = Objects.requireNonNull(userService);
         this.authenticationManager = Objects.requireNonNull(authenticationManager);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity login(@RequestBody CredentialDto credentialDto) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        credentialDto.getLogin(),
+                        credentialDto.getPassword()));
+        return ResponseEntity
+                .ok()
+                .body(userService.generateToken(authentication));
+    }
+
+    @PostMapping("/signup")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto signup(@RequestBody CredentialDto credentialDto){
+        return userService.signup(credentialDto);
     }
 
     @GetMapping("/{id}")
@@ -105,12 +123,23 @@ public class UserController {
         return CollectionModel.of(userDtoCollection, linkList);
     }
 
-    @PostMapping("/{id}/orders")
+    @PostMapping("/order/{id}")
     @ResponseStatus(HttpStatus.OK)
     public EntityModel<OrderDto> makeNewOrder(@PathVariable Long id, @RequestBody OrderDto orderDto) {
         orderDto = userService.makeNewOrder(id, orderDto);
         OrderController.addSelectOrderDtoLink(orderDto);
         return EntityModel.of(orderDto);
+    }
+
+    @GetMapping("/mostUsedTag")
+    public ResponseEntity<TagDto> mostUsedTag(){
+        return ResponseEntity
+                .ok()
+                .body(
+                        addSelectTagDtoLinks(
+                                userService.mostWidelyUsedTagOfUserWithTheHighestCostOfOrders()
+                        )
+                );
     }
 
     private static UserDto addSelectUserDtoLink(UserDto userDto) {
@@ -122,17 +151,5 @@ public class UserController {
             logger.error(e);
         }
         return userDto;
-    }
-
-    @PostMapping("/login")
-    @PermitAll
-    public ResponseEntity login(@RequestBody CredentialDto credentialDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        credentialDto.getLogin(),
-                        credentialDto.getPassword()));
-        return ResponseEntity
-                .ok()
-                .body(userService.generateToken(authentication));
     }
 }

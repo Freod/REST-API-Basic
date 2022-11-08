@@ -1,6 +1,7 @@
 package com.epam.esm.service;
 
 import com.epam.esm.dao.UserDao;
+import com.epam.esm.dao.UserRepository;
 import com.epam.esm.dto.*;
 import com.epam.esm.exception.WrongPageException;
 import com.epam.esm.exception.WrongValueException;
@@ -9,6 +10,7 @@ import com.epam.esm.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -25,12 +28,16 @@ public class UserService {
     private UserDao userDao;
     private ObjectConverter objectConverter;
     private final JwtEncoder jwtEncoder;
+    private UserRepository userRepository;
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserDao userDao, ObjectConverter objectConverter, JwtEncoder jwtEncoder) {
+    public UserService(UserDao userDao, ObjectConverter objectConverter, JwtEncoder jwtEncoder, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userDao = Objects.requireNonNull(userDao);
         this.objectConverter = Objects.requireNonNull(objectConverter);
         this.jwtEncoder = Objects.requireNonNull(jwtEncoder);
+        this.userRepository = Objects.requireNonNull(userRepository);
+        this.passwordEncoder = Objects.requireNonNull(passwordEncoder);
     }
 
     public UserDto findById(Long id) {
@@ -86,6 +93,20 @@ public class UserService {
         return new TokenDto(
                 "bearer",
                 this.jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue()
+        );
+    }
+
+    public UserDto signup(CredentialDto credentialDto) {
+        return objectConverter.convertUserToUserDto(
+                userRepository.save(
+                        new User(
+                                null,
+                                credentialDto.getLogin(),
+                                passwordEncoder.encode(credentialDto.getPassword()),
+                                "ROLE_USER",
+                                new ArrayList<>()
+                        )
+                )
         );
     }
 }
